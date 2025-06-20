@@ -24,7 +24,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
 
   // Ensure we're in patient context
   useEffect(() => {
-    if (!pathname.startsWith("/patient") && !pathname.startsWith("/chat")) {
+    if (!pathname.startsWith("/patient")) {
       // If not in patient routes, redirect to patient dashboard
       router.push("/patient/dashboard")
     }
@@ -34,7 +34,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     { name: t("dashboard"), href: "/patient/dashboard", icon: Home },
     { name: t("reportSymptoms"), href: "/patient/symptoms", icon: Plus },
     { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
-    { name: t("chat"), href: "/chat", icon: MessageSquare },
+    { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
     { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
   ]
 
