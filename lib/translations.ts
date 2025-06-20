@@ -1,0 +1,556 @@
+export const translations = {
+  en: {
+    // App Name
+    appName: "CareConnect",
+    healthcareAI: "CareConnect",
+
+    // Hero Section
+    heroTitle: "Smart Healthcare at Your Fingertips",
+    heroSubtitle: "Get instant AI-powered health insights and connect with doctors seamlessly",
+
+    // Features
+    aiDiagnosis: "AI Diagnosis",
+    aiDiagnosisDesc: "Get instant health insights powered by advanced AI",
+    secureRecords: "Secure Records",
+    secureRecordsDesc: "Your medical data is encrypted and safely stored",
+    instantConnect: "Instant Connect",
+    instantConnectDesc: "Video chat with doctors anytime, anywhere",
+
+    // Auth
+    getStarted: "Get Started",
+    chooseUserType: "Choose your account type to continue",
+    patient: "Patient",
+    doctor: "Doctor",
+    login: "Login",
+    signup: "Sign Up",
+    loginAs: "Login as",
+    signupAs: "Sign up as",
+    email: "Email",
+    emailPlaceholder: "Enter your email",
+    password: "Password",
+    passwordPlaceholder: "Enter your password",
+    fullName: "Full Name",
+    fullNamePlaceholder: "Enter your full name",
+    medicalLicense: "Medical License",
+    medicalLicensePlaceholder: "Enter your license number",
+
+    // Navigation
+    dashboard: "Dashboard",
+    reportSymptoms: "Report Symptoms",
+    medicalRecords: "Medical Records",
+    chat: "Chat",
+    appointments: "Appointments",
+    settings: "Settings",
+    patients: "Patients",
+    reports: "Reports",
+    analytics: "Analytics",
+    logout: "Logout",
+
+    // Dashboard
+    welcome: "Welcome",
+    dashboardSubtitle: "Here's your health overview for today",
+    doctorDashboardSubtitle: "Here's your patient overview for today",
+
+    // Stats
+    heartRate: "Heart Rate",
+    temperature: "Temperature",
+    weight: "Weight",
+    lastCheckup: "Last Checkup",
+    normal: "Normal",
+    stable: "Stable",
+    weeksAgo: "weeks ago",
+    totalPatients: "Total Patients",
+    todayAppointments: "Today's Appointments",
+    pendingReviews: "Pending Reviews",
+    avgConsultTime: "Avg. Consult Time",
+    thisWeek: "this week",
+    completed: "completed",
+    requiresAttention: "requires attention",
+    fromLastWeek: "from last week",
+
+    // Quick Actions
+    reportSymptomsDesc: "Tell us how you're feeling today",
+    viewRecords: "View Records",
+    viewRecordsDesc: "Access your complete medical history",
+    chatWithAI: "Chat with AI",
+    chatWithAIDesc: "Get instant health advice",
+
+    // Activity
+    recentActivity: "Recent Activity",
+    upcomingAppointments: "Upcoming Appointments",
+    joinCall: "Join Call",
+
+    // Symptoms Form
+    symptomsFormDesc: "Provide detailed information about your symptoms for accurate AI analysis",
+    commonSymptoms: "Common Symptoms",
+    selectApplicableSymptoms: "Select all symptoms that apply to you",
+    selectedSymptoms: "Selected symptoms",
+    detailedDescription: "Detailed Description",
+    additionalSymptoms: "Additional Symptoms",
+    describeSymptomsPlaceholder: "Describe any additional symptoms or concerns...",
+    severity: "Severity",
+    selectSeverity: "Select severity",
+    mild: "Mild",
+    moderate: "Moderate",
+    severe: "Severe",
+    duration: "Duration",
+    selectDuration: "Select duration",
+    fewHours: "A few hours",
+    fewDays: "A few days",
+    fewWeeks: "A few weeks",
+    fewMonths: "A few months",
+    affectedArea: "Affected Area",
+    bodyPartPlaceholder: "e.g., head, chest, stomach",
+
+    // Image Upload
+    uploadImages: "Upload Images",
+    uploadImagesDesc: "Upload photos of affected areas or relevant documents (optional)",
+    dragDropImages: "Drag and drop images here, or click to select",
+    selectImages: "Select Images",
+    uploadedImages: "Uploaded Images",
+
+    // Additional Info
+    additionalInfo: "Additional Information",
+    additionalInfoPlaceholder: "Any other relevant information about your symptoms...",
+
+    // Form Actions
+    saveDraft: "Save Draft",
+    submitSymptoms: "Submit Symptoms",
+    analyzing: "Analyzing...",
+    analyzingSymptoms: "Analyzing Your Symptoms",
+    aiAnalysisInProgress: "Our AI is analyzing your symptoms. This may take a few moments.",
+
+    // Validation
+    symptomsRequired: "Please describe your symptoms or select from common symptoms",
+    severityRequired: "Please select symptom severity",
+    durationRequired: "Please select symptom duration",
+
+    // Medical Records
+    medicalRecordsDesc: "View and manage your complete medical history",
+    searchRecords: "Search records...",
+    filterByType: "Filter by type",
+    allRecords: "All Records",
+    diagnosis: "Diagnosis",
+    prescriptions: "Prescriptions",
+    labResults: "Lab Results",
+    visits: "Visits",
+    view: "View",
+    download: "Download",
+    showing: "Showing",
+    to: "to",
+    of: "of",
+    records: "records",
+    previous: "Previous",
+    next: "Next",
+    noRecordsFound: "No Records Found",
+    noRecordsFoundDesc: "Try adjusting your search or filter criteria",
+
+    // Doctor Dashboard
+    patientQueue: "Patient Queue",
+    patientQueueDesc: "Manage your patient consultations and appointments",
+    searchPatients: "Search patients...",
+    call: "Call",
+    priority: "Priority",
+    lastVisit: "Last visit",
+    high: "High",
+    medium: "Medium",
+    low: "Low",
+    todaySchedule: "Today's Schedule",
+    upcoming: "Upcoming",
+
+    // Video Calls
+    startVideoCall: "Start Video Call",
+    startCallWith: "Start video call with",
+    opensGoogleMeet: "Opens Google Meet for doctor consultation",
+
+    // Chat
+    aiAssistant: "AI Assistant",
+    online: "Online",
+    typeMessage: "Type your message...",
+    ai: "AI",
+
+    // AI Responses
+    aiResponse1: "I understand your concern. Can you provide more details about when these symptoms started?",
+    aiResponse2:
+      "Based on what you've described, I recommend monitoring your symptoms. If they persist, please consult with a doctor.",
+    aiResponse3: "Thank you for the additional information. Let me analyze your symptoms and provide recommendations.",
+    aiResponse4: "I've noted your symptoms. Would you like me to connect you with a doctor for further evaluation?",
+
+    // Diagnosis Modal
+    aiDiagnosisResult: "AI Diagnosis Result",
+    aiDiagnosisDesc: "Based on your symptoms, here's what our AI analysis suggests",
+    primaryDiagnosis: "Primary Diagnosis",
+    confidenceLevel: "Confidence Level",
+    recommendations: "Recommendations",
+    followRecommendations: "Follow these recommendations for better health",
+    whenToSeekCare: "When to Seek Immediate Care",
+    seekCareDesc: "Contact a healthcare provider immediately if you experience:",
+    followUp: "Follow-up",
+    followUpRecommended: "A follow-up is recommended in",
+    scheduleFollowUp: "Schedule Follow-up",
+    consultDoctor: "Consult Doctor",
+    saveToRecords: "Save to Records",
+    downloadReport: "Download Report",
+    importantDisclaimer: "Important Disclaimer",
+    aiDisclaimerText:
+      "This AI diagnosis is for informational purposes only and should not replace professional medical advice. Always consult with a qualified healthcare provider for proper diagnosis and treatment.",
+
+    // Notifications
+    notifications: "Notifications",
+    markAllRead: "Mark All Read",
+    unreadNotifications: "unread notifications",
+    allCaughtUp: "You're all caught up!",
+    noNotifications: "No notifications yet",
+
+    // PWA
+    installApp: "Install App",
+    installAppDesc: "Install our app for a better experience",
+    install: "Install",
+    offlineMode: "Offline Mode",
+    offlineModeDesc: "You're currently offline. Some features may be limited.",
+    goOnline: "Go Online",
+
+    // Common
+    and: "and",
+    or: "or",
+    cancel: "Cancel",
+    save: "Save",
+    delete: "Delete",
+    edit: "Edit",
+    close: "Close",
+    back: "Back",
+    continue: "Continue",
+    loading: "Loading...",
+    error: "Error",
+    success: "Success",
+    warning: "Warning",
+    info: "Information",
+
+    // Appointments
+    appointments: "Appointments",
+    appointmentsDesc: "Manage your medical appointments and consultations",
+    doctorAppointmentsDesc: "Manage patient appointments and consultation schedule",
+    bookAppointment: "Book Appointment",
+    bookNewAppointment: "Book New Appointment",
+    bookAppointmentDesc: "Schedule a consultation with your preferred doctor",
+    searchAppointments: "Search appointments...",
+    filterByStatus: "Filter by status",
+    allAppointments: "All Appointments",
+    confirmed: "Confirmed",
+    pending: "Pending",
+    completed: "Completed",
+    cancelled: "Cancelled",
+    noAppointmentsFound: "No Appointments Found",
+    noAppointmentsFoundDesc: "Try adjusting your search or filter criteria",
+    bookFirstAppointment: "Book Your First Appointment",
+
+    // Appointment booking
+    specialty: "Specialty",
+    selectSpecialty: "Select specialty",
+    generalMedicine: "General Medicine",
+    cardiology: "Cardiology",
+    dermatology: "Dermatology",
+    orthopedics: "Orthopedics",
+    pediatrics: "Pediatrics",
+    preferredDoctor: "Preferred Doctor",
+    selectDoctor: "Select doctor",
+    appointmentType: "Appointment Type",
+    selectType: "Select type",
+    videoConsultation: "Video Consultation",
+    phoneConsultation: "Phone Consultation",
+    inPersonVisit: "In-Person Visit",
+    preferredDate: "Preferred Date",
+    availableTimeSlots: "Available Time Slots",
+    reasonForVisit: "Reason for Visit",
+    reasonPlaceholder: "Please describe the reason for your appointment...",
+
+    // Appointment actions
+    approve: "Approve",
+    decline: "Decline",
+    reschedule: "Reschedule",
+    viewDetails: "View Details",
+    viewPatientRecord: "View Patient Record",
+    pendingRequests: "Pending Requests",
+    requiresApproval: "requires approval",
+    totalScheduled: "total scheduled",
+    reason: "Reason",
+    notes: "Notes",
+  },
+  hi: {
+    // App Name
+    appName: "केयरकनेक्ट",
+    healthcareAI: "केयरकनेक्ट",
+
+    // Hero Section
+    heroTitle: "आपकी उंगलियों पर स्मार्ट हेल्थकेयर",
+    heroSubtitle: "तुरंत AI-संचालित स्वास्थ्य अंतर्दृष्टि प्राप्त करें और डॉक्टरों से निर्बाध रूप से जुड़ें",
+
+    // Features
+    aiDiagnosis: "AI निदान",
+    aiDiagnosisDesc: "उन्नत AI द्वारा संचालित तुरंत स्वास्थ्य अंतर्दृष्टि प्राप्त करें",
+    secureRecords: "सुरक्षित रिकॉर्ड",
+    secureRecordsDesc: "आपका मेडिकल डेटा एन्क्रिप्टेड और सुरक्षित रूप से संग्रहीत है",
+    instantConnect: "तुरंत कनेक्ट",
+    instantConnectDesc: "कभी भी, कहीं भी डॉक्टरों के साथ वीडियो चैट करें",
+
+    // Auth
+    getStarted: "शुरू करें",
+    chooseUserType: "जारी रखने के लिए अपना खाता प्रकार चुनें",
+    patient: "मरीज़",
+    doctor: "डॉक्टर",
+    login: "लॉगिन",
+    signup: "साइन अप",
+    loginAs: "के रूप में लॉगिन",
+    signupAs: "के रूप में साइन अप",
+    email: "ईमेल",
+    emailPlaceholder: "अपना ईमेल दर्ज करें",
+    password: "पासवर्ड",
+    passwordPlaceholder: "अपना पासवर्ड दर्ज करें",
+    fullName: "पूरा नाम",
+    fullNamePlaceholder: "अपना पूरा नाम दर्ज करें",
+    medicalLicense: "मेडिकल लाइसेंस",
+    medicalLicensePlaceholder: "अपना लाइसेंस नंबर दर्ज करें",
+
+    // Navigation
+    dashboard: "डैशबोर्ड",
+    reportSymptoms: "लक्षण रिपोर्ट करें",
+    medicalRecords: "मेडिकल रिकॉर्ड",
+    chat: "चैट",
+    appointments: "अपॉइंटमेंट",
+    settings: "सेटिंग्स",
+    patients: "मरीज़",
+    reports: "रिपोर्ट्स",
+    analytics: "एनालिटिक्स",
+    logout: "लॉगआउट",
+
+    // Dashboard
+    welcome: "स्वागत",
+    dashboardSubtitle: "यहाँ आज के लिए आपका स्वास्थ्य अवलोकन है",
+    doctorDashboardSubtitle: "यहाँ आज के लिए आपका मरीज़ अवलोकन है",
+
+    // Stats
+    heartRate: "हृदय गति",
+    temperature: "तापमान",
+    weight: "वजन",
+    lastCheckup: "अंतिम जांच",
+    normal: "सामान्य",
+    stable: "स्थिर",
+    weeksAgo: "सप्ताह पहले",
+    totalPatients: "कुल मरीज़",
+    todayAppointments: "आज के अपॉइंटमेंट",
+    pendingReviews: "लंबित समीक्षाएं",
+    avgConsultTime: "औसत परामर्श समय",
+    thisWeek: "इस सप्ताह",
+    completed: "पूर्ण",
+    requiresAttention: "ध्यान की आवश्यकता",
+    fromLastWeek: "पिछले सप्ताह से",
+
+    // Quick Actions
+    reportSymptomsDesc: "हमें बताएं कि आज आप कैसा महसूस कर रहे हैं",
+    viewRecords: "रिकॉर्ड देखें",
+    viewRecordsDesc: "अपना पूरा मेडिकल इतिहास देखें",
+    chatWithAI: "AI के साथ चैट करें",
+    chatWithAIDesc: "तुरंत स्वास्थ्य सलाह प्राप्त करें",
+
+    // Activity
+    recentActivity: "हाल की गतिविधि",
+    upcomingAppointments: "आगामी अपॉइंटमेंट",
+    joinCall: "कॉल में शामिल हों",
+
+    // Symptoms Form
+    symptomsFormDesc: "सटीक AI विश्लेषण के लिए अपने लक्षणों के बारे में विस्तृत जानकारी प्रदान करें",
+    commonSymptoms: "सामान्य लक्षण",
+    selectApplicableSymptoms: "आप पर लागू होने वाले सभी लक्षण चुनें",
+    selectedSymptoms: "चयनित लक्षण",
+    detailedDescription: "विस्तृत विवरण",
+    additionalSymptoms: "अतिरिक्त लक्षण",
+    describeSymptomsPlaceholder: "कोई अतिरिक्त लक्षण या चिंताओं का वर्णन करें...",
+    severity: "गंभीरता",
+    selectSeverity: "गंभीरता चुनें",
+    mild: "हल्का",
+    moderate: "मध्यम",
+    severe: "गंभीर",
+    duration: "अवधि",
+    selectDuration: "अवधि चुनें",
+    fewHours: "कुछ घंटे",
+    fewDays: "कुछ दिन",
+    fewWeeks: "कुछ सप्ताह",
+    fewMonths: "कुछ महीने",
+    affectedArea: "प्रभावित क्षेत्र",
+    bodyPartPlaceholder: "जैसे, सिर, छाती, पेट",
+
+    // Image Upload
+    uploadImages: "छवियां अपलोड करें",
+    uploadImagesDesc: "प्रभावित क्षेत्रों या संबंधित दस्तावेजों की तस्वीरें अपलोड करें (वैकल्पिक)",
+    dragDropImages: "छवियों को यहाँ खींचें और छोड़ें, या चुनने के लिए क्लिक करें",
+    selectImages: "छवियां चुनें",
+    uploadedImages: "अपलोड की गई छवियां",
+
+    // Additional Info
+    additionalInfo: "अतिरिक्त जानकारी",
+    additionalInfoPlaceholder: "आपके लक्षणों के बारे में कोई अन्य प्रासंगिक जानकारी...",
+
+    // Form Actions
+    saveDraft: "ड्राफ्ट सेव करें",
+    submitSymptoms: "लक्षण सबमिट करें",
+    analyzing: "विश्लेषण कर रहे हैं...",
+    analyzingSymptoms: "आपके लक्षणों का विश्लेषण",
+    aiAnalysisInProgress: "हमारा AI आपके लक्षणों का विश्लेषण कर रहा है। इसमें कुछ समय लग सकता है।",
+
+    // Validation
+    symptomsRequired: "कृपया अपने लक्षणों का वर्णन करें या सामान्य लक्षणों से चुनें",
+    severityRequired: "कृपया लक्षण की गंभीरता चुनें",
+    durationRequired: "कृपया लक्षण की अवधि चुनें",
+
+    // Medical Records
+    medicalRecordsDesc: "अपना पूरा मेडिकल इतिहास देखें और प्रबंधित करें",
+    searchRecords: "रिकॉर्ड खोजें...",
+    filterByType: "प्रकार के अनुसार फ़िल्टर करें",
+    allRecords: "सभी रिकॉर्ड",
+    diagnosis: "निदान",
+    prescriptions: "नुस्खे",
+    labResults: "लैब परिणाम",
+    visits: "विज़िट",
+    view: "देखें",
+    download: "डाउनलोड",
+    showing: "दिखा रहे हैं",
+    to: "से",
+    of: "का",
+    records: "रिकॉर्ड",
+    previous: "पिछला",
+    next: "अगला",
+    noRecordsFound: "कोई रिकॉर्ड नहीं मिला",
+    noRecordsFoundDesc: "अपने खोज या फ़िल्टर मानदंड को समायोजित करने का प्रयास करें",
+
+    // Doctor Dashboard
+    patientQueue: "मरीज़ कतार",
+    patientQueueDesc: "अपने मरीज़ परामर्श और अपॉइंटमेंट प्रबंधित करें",
+    searchPatients: "मरीज़ खोजें...",
+    call: "कॉल",
+    priority: "प्राथमिकता",
+    lastVisit: "अंतिम विज़िट",
+    high: "उच्च",
+    medium: "मध्यम",
+    low: "कम",
+    todaySchedule: "आज का कार्यक्रम",
+    upcoming: "आगामी",
+
+    // Video Calls
+    startVideoCall: "वीडियो कॉल शुरू करें",
+    startCallWith: "के साथ वीडियो कॉल शुरू करें",
+    opensGoogleMeet: "डॉक्टर परामर्श के लिए Google Meet खोलता है",
+
+    // Chat
+    aiAssistant: "AI सहायक",
+    online: "ऑनलाइन",
+    typeMessage: "अपना संदेश टाइप करें...",
+    ai: "AI",
+
+    // AI Responses
+    aiResponse1: "मैं आपकी चिंता समझता हूं। क्या आप इस बारे में और विवरण दे सकते हैं कि ये लक्षण कब शुरू हुए?",
+    aiResponse2:
+      "आपने जो वर्णन किया है, उसके आधार पर मैं आपके लक्षणों पर नज़र रखने की सलाह देता हूं। यदि ये बने रहते हैं, तो कृपया डॉक्टर से सलाह लें।",
+    aiResponse3: "अतिरिक्त जानकारी के लिए धन्यवाद। मुझे आपके लक्षणों का विश्लेषण करने और सिफारिशें प्रदान करने दें।",
+    aiResponse4: "मैंने आपके लक्षणों को नोट किया है। क्या आप चाहते हैं कि मैं आपको आगे के मूल्यांकन के लिए डॉक्टर से जोड़ूं?",
+
+    // Diagnosis Modal
+    aiDiagnosisResult: "AI निदान परिणाम",
+    aiDiagnosisDesc: "आपके लक्षणों के आधार पर, यहाँ हमारा AI विश्लेषण सुझाता है",
+    primaryDiagnosis: "प्राथमिक निदान",
+    confidenceLevel: "विश्वास स्तर",
+    recommendations: "सिफारिशें",
+    followRecommendations: "बेहतर स्वास्थ्य के लिए इन सिफारिशों का पालन करें",
+    whenToSeekCare: "तत्काल देखभाल कब लें",
+    seekCareDesc: "यदि आप निम्नलिखित का अनुभव करते हैं तो तुरंत स्वास्थ्य सेवा प्रदाता से संपर्क करें:",
+    followUp: "फॉलो-अप",
+    followUpRecommended: "फॉलो-अप की सिफारिश की जाती है",
+    scheduleFollowUp: "फॉलो-अप शेड्यूल करें",
+    consultDoctor: "डॉक्टर से सलाह लें",
+    saveToRecords: "रिकॉर्ड में सेव करें",
+    downloadReport: "रिपोर्ट डाउनलोड करें",
+    importantDisclaimer: "महत्वपूर्ण अस्वीकरण",
+    aiDisclaimerText:
+      "यह AI निदान केवल सूचनात्मक उद्देश्यों के लिए है और पेशेवर चिकित्सा सलाह का विकल्प नहीं होना चाहिए। उचित निदान और उपचार के लिए हमेशा योग्य स्वास्थ्य सेवा प्रदाता से सलाह लें।",
+
+    // Notifications
+    notifications: "सूचनाएं",
+    markAllRead: "सभी को पढ़ा हुआ चिह्नित करें",
+    unreadNotifications: "अपठित सूचनाएं",
+    allCaughtUp: "आप सभी के साथ अप टू डेट हैं!",
+    noNotifications: "अभी तक कोई सूचना नहीं",
+
+    // PWA
+    installApp: "ऐप इंस्टॉल करें",
+    installAppDesc: "बेहतर अनुभव के लिए हमारा ऐप इंस्टॉल करें",
+    install: "इंस्टॉल",
+    offlineMode: "ऑफलाइन मोड",
+    offlineModeDesc: "आप वर्तमान में ऑफलाइन हैं। कुछ सुविधाएं सीमित हो सकती हैं।",
+    goOnline: "ऑनलाइन जाएं",
+
+    // Common
+    and: "और",
+    or: "या",
+    cancel: "रद्द करें",
+    save: "सेव करें",
+    delete: "डिलीट करें",
+    edit: "संपादित करें",
+    close: "बंद करें",
+    back: "वापस",
+    continue: "जारी रखें",
+    loading: "लोड हो रहा है...",
+    error: "त्रुटि",
+    success: "सफलता",
+    warning: "चेतावनी",
+    info: "जानकारी",
+
+    // Appointments
+    appointments: "अपॉइंटमेंट",
+    appointmentsDesc: "अपने मेडिकल अपॉइंटमेंट और परामर्श प्रबंधित करें",
+    doctorAppointmentsDesc: "मरीज़ अपॉइंटमेंट और परामर्श कार्यक्रम प्रबंधित करें",
+    bookAppointment: "अपॉइंटमेंट बुक करें",
+    bookNewAppointment: "नया अपॉइंटमेंट बुक करें",
+    bookAppointmentDesc: "अपने पसंदीदा डॉक्टर के साथ परामर्श शेड्यूल करें",
+    searchAppointments: "अपॉइंटमेंट खोजें...",
+    filterByStatus: "स्थिति के अनुसार फ़िल्टर करें",
+    allAppointments: "सभी अपॉइंटमेंट",
+    confirmed: "पुष्ट",
+    pending: "लंबित",
+    completed: "पूर्ण",
+    cancelled: "रद्द",
+    noAppointmentsFound: "कोई अपॉइंटमेंट नहीं मिला",
+    noAppointmentsFoundDesc: "अपने खोज या फ़िल्टर मानदंड को समायोजित करने का प्रयास करें",
+    bookFirstAppointment: "अपना पहला अपॉइंटमेंट बुक करें",
+
+    // Appointment booking
+    specialty: "विशेषता",
+    selectSpecialty: "विशेषता चुनें",
+    generalMedicine: "सामान्य चिकित्सा",
+    cardiology: "हृदय रोग विज्ञान",
+    dermatology: "त्वचा विज्ञान",
+    orthopedics: "हड्डी रोग",
+    pediatrics: "बाल चिकित्सा",
+    preferredDoctor: "पसंदीदा डॉक्टर",
+    selectDoctor: "डॉक्टर चुनें",
+    appointmentType: "अपॉइंटमेंट प्रकार",
+    selectType: "प्रकार चुनें",
+    videoConsultation: "वीडियो परामर्श",
+    phoneConsultation: "फोन परामर्श",
+    inPersonVisit: "व्यक्तिगत विज़िट",
+    preferredDate: "पसंदीदा तारीख",
+    availableTimeSlots: "उपलब्ध समय स्लॉट",
+    reasonForVisit: "विज़िट का कारण",
+    reasonPlaceholder: "कृपया अपने अपॉइंटमेंट का कारण बताएं...",
+
+    // Appointment actions
+    approve: "अनुमोदन",
+    decline: "अस्वीकार",
+    reschedule: "पुनर्निर्धारण",
+    viewDetails: "विवरण देखें",
+    viewPatientRecord: "मरीज़ रिकॉर्ड देखें",
+    pendingRequests: "लंबित अनुरोध",
+    requiresApproval: "अनुमोदन की आवश्यकता",
+    totalScheduled: "कुल निर्धारित",
+    reason: "कारण",
+    notes: "नोट्स",
+  },
+}
