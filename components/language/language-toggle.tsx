@@ -8,8 +8,8 @@ export function LanguageToggle() {
 
   return (
     <Select value={language} onValueChange={(value: "en" | "hi") => setLanguage(value)} >
-      <SelectTrigger className="w-32 ml-[1200px]">
-        <Globe className="h-4 w-4 mr-2" />
+      <SelectTrigger className="w-24 ml-32">
+        {/* <Globe className="h-3 w-3 mr-1" /> */}
         <SelectValue />
       </SelectTrigger>
       <SelectContent>

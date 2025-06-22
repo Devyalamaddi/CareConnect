@@ -54,7 +54,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
       <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700">
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20">
+          <div className="flex-col items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20 py-5">
             <Logo size="md" variant="default" className="text-blue-900 dark:text-blue-100" />
             <LanguageToggle />
           </div>
