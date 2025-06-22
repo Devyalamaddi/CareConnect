@@ -169,12 +169,28 @@ export const translations = {
     typeMessage: "Type your message...",
     ai: "AI",
 
+    // Enhanced AI Chat responses in English
+    aiChatWelcome: "Hello! I'm your AI health assistant. You can chat with me in Hindi or English.",
+    aiLanguageDetected: "Language detected",
+    aiRespondingIn: "Responding in",
+    hindiSupport: "Hindi Assistant",
+    multilingualSupport: "Multilingual Support",
+    typeInAnyLanguage: "Type in any language",
+
     // AI Responses
     aiResponse1: "I understand your concern. Can you provide more details about when these symptoms started?",
     aiResponse2:
       "Based on what you've described, I recommend monitoring your symptoms. If they persist, please consult with a doctor.",
     aiResponse3: "Thank you for the additional information. Let me analyze your symptoms and provide recommendations.",
     aiResponse4: "I've noted your symptoms. Would you like me to connect you with a doctor for further evaluation?",
+
+    // Medical terms in English
+    symptoms: "Symptoms",
+    treatment: "Treatment",
+    medicine: "Medicine",
+    checkup: "Checkup",
+    consultation: "Consultation",
+    emergency: "Emergency",
 
     // Diagnosis Modal
     aiDiagnosisResult: "AI Diagnosis Result",
@@ -446,12 +462,28 @@ export const translations = {
     typeMessage: "अपना संदेश टाइप करें...",
     ai: "AI",
 
+    // Enhanced AI Chat responses in Hindi
+    aiChatWelcome: "Namaste! Main aapka AI health assistant hun. Aap Hindi ya English mein baat kar sakte hain.",
+    aiLanguageDetected: "भाषा पहचानी गई",
+    aiRespondingIn: "में जवाब दे रहा है",
+    hindiSupport: "हिंदी सहायक",
+    multilingualSupport: "बहुभाषी सहायता",
+    typeInAnyLanguage: "किसी भी भाषा में टाइप करें",
+
     // AI Responses
     aiResponse1: "मैं आपकी चिंता समझता हूं। क्या आप इस बारे में और विवरण दे सकते हैं कि ये लक्षण कब शुरू हुए?",
     aiResponse2:
       "आपने जो वर्णन किया है, उसके आधार पर मैं आपके लक्षणों पर नज़र रखने की सलाह देता हूं। यदि ये बने रहते हैं, तो कृपया डॉक्टर से सलाह लें।",
     aiResponse3: "अतिरिक्त जानकारी के लिए धन्यवाद। मुझे आपके लक्षणों का विश्लेषण करने और सिफारिशें प्रदान करने दें।",
     aiResponse4: "मैंने आपके लक्षणों को नोट किया है। क्या आप चाहते हैं कि मैं आपको आगे के मूल्यांकन के लिए डॉक्टर से जोड़ूं?",
+
+    // Medical terms in Hindi
+    symptoms: "लक्षण",
+    treatment: "इलाज",
+    medicine: "दवा",
+    checkup: "जांच",
+    consultation: "परामर्श",
+    emergency: "आपातकाल",
 
     // Diagnosis Modal
     aiDiagnosisResult: "AI निदान परिणाम",

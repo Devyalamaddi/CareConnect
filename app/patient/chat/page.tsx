@@ -13,8 +13,70 @@ import { PatientLayout } from "@/components/patient/patient-layout"
 import { mockChatData } from "@/lib/mock-data"
 import { useLanguage } from "@/components/language/language-provider"
 
+// Simple language detection for Hinglish (Hindi written in English)
+const detectLanguage = (text: string): "en" | "hi" => {
+  const hindiWords = [
+    "kya",
+    "hai",
+    "mera",
+    "mujhe",
+    "aap",
+    "main",
+    "hoon",
+    "kar",
+    "kaise",
+    "kahan",
+    "kyun",
+    "kab",
+    "kaun",
+    "kitna",
+    "bahut",
+    "thoda",
+    "accha",
+    "bura",
+    "dard",
+    "pet",
+    "sir",
+    "paani",
+    "khana",
+    "dawai",
+    "doctor",
+    "sahab",
+    "ji",
+    "nahi",
+    "haan",
+    "theek",
+    "problem",
+    "issue",
+    "help",
+    "madad",
+    "samjha",
+    "samjhi",
+    "fever",
+    "bukhar",
+    "headache",
+    "sirdard",
+    "stomach",
+    "pet",
+    "pain",
+    "dard",
+    "medicine",
+    "dawai",
+    "tablet",
+    "syrup",
+    "injection",
+    "suyi",
+  ]
+
+  const words = text.toLowerCase().split(" ")
+  const hindiWordCount = words.filter((word) => hindiWords.includes(word)).length
+
+  // If more than 20% of words are Hindi/Hinglish, consider it Hindi
+  return hindiWordCount / words.length > 0.2 ? "hi" : "en"
+}
+
 export default function PatientChatPage() {
-  const { t } = useLanguage()
+  const { t, language } = useLanguage()
   const [messages, setMessages] = useState(mockChatData.messages)
   const [newMessage, setNewMessage] = useState("")
   const [isTyping, setIsTyping] = useState(false)
@@ -64,9 +126,35 @@ export default function PatientChatPage() {
   }
 
   const getAIResponse = (userMessage: string): string => {
-    // TODO: Replace with actual AI integration
-    const responses = [t("aiResponse1"), t("aiResponse2"), t("aiResponse3"), t("aiResponse4")]
-    return responses[Math.floor(Math.random() * responses.length)]
+    const detectedLang = detectLanguage(userMessage)
+    const currentLang = language === "hi" ? "hi" : detectedLang
+
+    // Enhanced AI responses based on detected language
+    const responses = {
+      en: [
+        "I understand your concern. Can you provide more details about when these symptoms started?",
+        "Based on what you've described, I recommend monitoring your symptoms. If they persist, please consult with a doctor.",
+        "Thank you for the additional information. Let me analyze your symptoms and provide recommendations.",
+        "I've noted your symptoms. Would you like me to connect you with a doctor for further evaluation?",
+        "It sounds like you're experiencing some discomfort. Can you tell me more about the severity and duration?",
+        "I'm here to help you with your health concerns. Please describe your symptoms in detail.",
+        "Based on your description, this could be related to several factors. Let me ask you a few more questions.",
+        "I recommend keeping track of your symptoms. Have you noticed any patterns or triggers?",
+      ],
+      hi: [
+        "Main aapki pareshani samajh sakta hun. Kya aap bata sakte hain ki ye lakshan kab se shuru hue hain?",
+        "Aapne jo bataya hai, uske hisaab se main suggest karunga ki aap apne symptoms ko monitor kariye. Agar ye continue rahe to doctor se miliye.",
+        "Additional information ke liye dhanyawad. Main aapke symptoms ka analysis kar ke recommendations dunga.",
+        "Maine aapke symptoms note kar liye hain. Kya aap chahte hain ki main aapko doctor se connect kar dun further evaluation ke liye?",
+        "Lagta hai aap kuch discomfort feel kar rahe hain. Kya aap severity aur duration ke baare mein aur bata sakte hain?",
+        "Main yahan hun aapki health concerns mein help karne ke liye. Kripaya apne symptoms detail mein describe kariye.",
+        "Aapke description ke hisaab se, ye kai factors se related ho sakta hai. Main aapse kuch aur questions puchta hun.",
+        "Main recommend karunga ki aap apne symptoms ka track rakhiye. Kya aapne koi patterns ya triggers notice kiye hain?",
+      ],
+    }
+
+    const langResponses = responses[currentLang]
+    return langResponses[Math.floor(Math.random() * langResponses.length)]
   }
 
   const formatTime = (timestamp: string) => {
@@ -96,7 +184,7 @@ export default function PatientChatPage() {
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <span className="text-sm text-gray-600">{t("online")}</span>
                     <Badge variant="secondary" className="text-xs">
-                      Patient Support
+                      {language === "hi" ? "हिंदी सहायक" : "Multilingual Support"}
                     </Badge>
                   </div>
                 </div>
@@ -190,6 +278,18 @@ export default function PatientChatPage() {
 
           {/* Message Input */}
           <div className="border-t p-4">
+            {/* Language Detection Indicator */}
+            {newMessage && (
+              <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
+                <span>
+                  {detectLanguage(newMessage) === "hi"
+                    ? "🇮🇳 Hindi detected - AI will respond in Hindi"
+                    : "🇺🇸 English detected - AI will respond in English"}
+                </span>
+                <span className="text-blue-500">Current UI: {language === "hi" ? "हिंदी" : "English"}</span>
+              </div>
+            )}
+
             <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
               <Button type="button" variant="outline" size="sm">
                 <Paperclip className="h-4 w-4" />
@@ -197,7 +297,11 @@ export default function PatientChatPage() {
               <Input
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder={t("typeMessage")}
+                placeholder={
+                  language === "hi"
+                    ? "अपना संदेश टाइप करें... (Hindi ya English mein)"
+                    : "Type your message... (in Hindi or English)"
+                }
                 className="flex-1"
                 disabled={isTyping}
               />
