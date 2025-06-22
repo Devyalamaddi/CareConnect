@@ -28,7 +28,7 @@ export function Logo({ size = "md", showText = true, variant = "default", classN
         className={`object-contain ${sizeClasses[size]}`}
       />
       {showText && (
-        <h1 className={`font-bold ${textSizeClasses[size]}`}>CareConnect{variant === "pro" ? " Pro" : ""}</h1>
+        <h1 className={`font-bold ${textSizeClasses[size]}`}>CareConnect</h1>
       )}
     </div>
   )

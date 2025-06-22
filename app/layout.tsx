@@ -20,7 +20,6 @@ export const metadata: Metadata = {
     icon: "/images/careconnect-logo.png",
     apple: "/images/careconnect-logo.png",
   },
-    generator: 'v0.dev'
 }
 
 export default function RootLayout({

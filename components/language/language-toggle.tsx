@@ -7,8 +7,8 @@ export function LanguageToggle() {
   const { language, setLanguage } = useLanguage()
 
   return (
-    <Select value={language} onValueChange={(value: "en" | "hi") => setLanguage(value)}>
-      <SelectTrigger className="w-32">
+    <Select value={language} onValueChange={(value: "en" | "hi") => setLanguage(value)} >
+      <SelectTrigger className="w-32 ml-[1200px]">
         <Globe className="h-4 w-4 mr-2" />
         <SelectValue />
       </SelectTrigger>
