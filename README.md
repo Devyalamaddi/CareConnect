@@ -8,12 +8,11 @@ A comprehensive healthcare application prototype featuring AI-powered diagnosis,
 - **Role-Based Authentication**: Separate login/signup flows for patients, doctors, and police
 - **Patient Symptom Submission**: Comprehensive form with image upload and validation
 - **AI Diagnosis Results**: Mock AI analysis with confidence levels and recommendations
-- **Doctor Dashboard**: Patient management with video call integration
-- **Patient Dashboard**: Health records with search and pagination
-- **Police Dashboard**: Emergency alerts and alert history for police officers
+- **Dashboards**: Role-specific dashboards for patients, doctors, and police with emergency alerts and alert history
 - **Real-time Chat**: AI assistant and doctor messaging interface
 - **Google Meet Integration**: One-click video consultations
 - **Medical Records**: Complete patient history with filtering
+- **Emergency SOS and Maps**: Patients can send SOS alerts and access maps for nearest hospitals; doctors and police receive SOS alerts
 
 ### Advanced Features
 - **PWA Support**: Installable app with offline capabilities
