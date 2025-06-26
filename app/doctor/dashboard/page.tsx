@@ -10,6 +10,7 @@ import { DoctorLayout } from "@/components/doctor/doctor-layout"
 import { mockDoctorData } from "@/lib/mock-data"
 import { useLanguage } from "@/components/language/language-provider"
 import { GoogleMeetButton } from "@/components/common/google-meet-button"
+import { DoctorEmergencyAlerts } from "@/components/doctor/emergency-alerts"
 
 export default function DoctorDashboard() {
   const { t } = useLanguage()
@@ -55,6 +56,9 @@ export default function DoctorDashboard() {
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2">{t("doctorDashboardSubtitle")}</p>
         </div>
+
+        {/* Emergency Alerts */}
+        <DoctorEmergencyAlerts />
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

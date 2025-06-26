@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Home, FileText, MessageSquare, Calendar, LogOut, Plus } from "lucide-react"
+import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
@@ -12,6 +12,7 @@ import { PWAInstallBanner } from "@/components/pwa/pwa-install-banner"
 import { OfflineIndicator } from "@/components/pwa/offline-indicator"
 import { useEffect } from "react"
 import { Logo } from "@/components/common/logo"
+import { EmergencySOSButton } from "@/components/emergency/emergency-sos-button"
 
 interface PatientLayoutProps {
   children: ReactNode
@@ -34,8 +35,11 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     { name: t("dashboard"), href: "/patient/dashboard", icon: Home },
     { name: t("reportSymptoms"), href: "/patient/symptoms", icon: Plus },
     { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
-    { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
-    { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
+    { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
+    { name: t("AI Prescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
+    { name: t("Near By Hospitals"), href: "/patient/hospitals", icon: MapPin },
+    { name: t("Chat"), href: "/patient/chat", icon: MessageSquare },
+    { name: t("Appointments"), href: "/patient/appointments", icon: Calendar },
   ]
 
   const handleLogout = () => {
@@ -111,6 +115,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
       {/* Main Content */}
       <div className="ml-64">
         <main className="p-8">{children}</main>
+        <EmergencySOSButton />
       </div>
     </div>
   )

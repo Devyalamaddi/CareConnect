@@ -1,15 +1,27 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Search, Filter, Download, Eye, Calendar, FileText, Activity, Pill, TestTube } from "lucide-react"
+import { Search, Filter, Download, Eye, Calendar, FileText, Activity, Pill, TestTube, Upload, X } from "lucide-react"
 import { PatientLayout } from "@/components/patient/patient-layout"
 import { mockPatientData } from "@/lib/mock-data"
 import { useLanguage } from "@/components/language/language-provider"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 
 export default function PatientRecords() {
   const { t } = useLanguage()
@@ -17,6 +29,71 @@ export default function PatientRecords() {
   const [filterType, setFilterType] = useState("all")
   const [currentPage, setCurrentPage] = useState(1)
   const recordsPerPage = 5
+
+  const [showUploadModal, setShowUploadModal] = useState(false)
+  const [uploadedEHRFiles, setUploadedEHRFiles] = useState<File[]>([])
+  const [ehrMetadata, setEhrMetadata] = useState({
+    recordType: "",
+    recordDate: "",
+    provider: "",
+    department: "",
+    description: "",
+  })
+  const [fhirPreview, setFhirPreview] = useState<any>(null)
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    setUploadedEHRFiles((prev) => [...prev, ...files])
+
+    // TODO: Parse FHIR files and generate preview
+    // TODO: Validate file formats and structure
+    if (files.length > 0) {
+      // Mock FHIR preview
+      setFhirPreview({
+        resourceType: "Bundle",
+        id: "example-ehr-bundle",
+        type: "document",
+        timestamp: new Date().toISOString(),
+        entry: [
+          {
+            resource: {
+              resourceType: "Patient",
+              id: "patient-1",
+              name: [{ family: "Doe", given: ["John"] }],
+            },
+          },
+        ],
+      })
+    }
+  }
+
+  const removeEHRFile = (index: number) => {
+    setUploadedEHRFiles((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const handleEHRUpload = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // TODO: Upload files to secure cloud storage
+    // TODO: Convert to FHIR format if needed
+    // TODO: Store metadata in database
+    // TODO: Encrypt sensitive data
+    // TODO: Generate audit trail
+
+    console.log("Uploading EHR files:", uploadedEHRFiles, ehrMetadata)
+
+    // Reset form
+    setUploadedEHRFiles([])
+    setEhrMetadata({
+      recordType: "",
+      recordDate: "",
+      provider: "",
+      department: "",
+      description: "",
+    })
+    setFhirPreview(null)
+    setShowUploadModal(false)
+  }
 
   // TODO: Fetch records from backend API
   // TODO: Implement real-time search with debouncing
@@ -95,6 +172,152 @@ export default function PatientRecords() {
                   <SelectItem value="visit">{t("visits")}</SelectItem>
                 </SelectContent>
               </Select>
+              {/* EHR Upload Modal */}
+              <Dialog open={showUploadModal} onOpenChange={setShowUploadModal}>
+                <DialogTrigger asChild>
+                  <Button className="ml-4">
+                    <Upload className="h-4 w-4 mr-2" />
+                    {t("uploadEHR")}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>{t("uploadEHRTitle")}</DialogTitle>
+                    <DialogDescription>{t("uploadEHRDesc")}</DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleEHRUpload} className="space-y-6">
+                    {/* File Upload Section */}
+                    <div className="space-y-4">
+                      <Label>{t("selectEHRFiles")}</Label>
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
+                        <div className="text-center">
+                          <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                          <p className="text-gray-600 mb-2">{t("dragDropEHR")}</p>
+                          <p className="text-sm text-gray-500 mb-4">
+                            {t("supportedFormats")}: PDF, XML, JSON, HL7 FHIR
+                          </p>
+                          <input
+                            type="file"
+                            multiple
+                            accept=".pdf,.xml,.json,.hl7"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            id="ehr-upload"
+                          />
+                          <Label htmlFor="ehr-upload">
+                            <Button type="button" variant="outline" className="cursor-pointer">
+                              {t("selectFiles")}
+                            </Button>
+                          </Label>
+                        </div>
+                      </div>
+
+                      {/* Uploaded Files Preview */}
+                      {uploadedEHRFiles.length > 0 && (
+                        <div className="space-y-2">
+                          <Label>{t("uploadedFiles")}:</Label>
+                          {uploadedEHRFiles.map((file, index) => (
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center space-x-3">
+                                <FileText className="h-5 w-5 text-blue-500" />
+                                <div>
+                                  <p className="font-medium">{file.name}</p>
+                                  <p className="text-sm text-gray-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                </div>
+                              </div>
+                              <Button type="button" variant="ghost" size="sm" onClick={() => removeEHRFile(index)}>
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Metadata Form */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="recordType">{t("recordType")}</Label>
+                        <Select
+                          value={ehrMetadata.recordType}
+                          onValueChange={(value) => setEhrMetadata((prev) => ({ ...prev, recordType: value }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder={t("selectRecordType")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="lab-results">{t("labResults")}</SelectItem>
+                            <SelectItem value="imaging">{t("imaging")}</SelectItem>
+                            <SelectItem value="prescription">{t("prescription")}</SelectItem>
+                            <SelectItem value="discharge-summary">{t("dischargeSummary")}</SelectItem>
+                            <SelectItem value="consultation">{t("consultation")}</SelectItem>
+                            <SelectItem value="other">{t("other")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="recordDate">{t("recordDate")}</Label>
+                        <Input
+                          id="recordDate"
+                          type="date"
+                          value={ehrMetadata.recordDate}
+                          onChange={(e) => setEhrMetadata((prev) => ({ ...prev, recordDate: e.target.value }))}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="provider">{t("healthcareProvider")}</Label>
+                        <Input
+                          id="provider"
+                          placeholder={t("providerName")}
+                          value={ehrMetadata.provider}
+                          onChange={(e) => setEhrMetadata((prev) => ({ ...prev, provider: e.target.value }))}
+                        />
+                      </div>
+
+                      <div>
+                        <Label htmlFor="department">{t("department")}</Label>
+                        <Input
+                          id="department"
+                          placeholder={t("departmentName")}
+                          value={ehrMetadata.department}
+                          onChange={(e) => setEhrMetadata((prev) => ({ ...prev, department: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="description">{t("description")}</Label>
+                      <Textarea
+                        id="description"
+                        placeholder={t("recordDescription")}
+                        value={ehrMetadata.description}
+                        onChange={(e) => setEhrMetadata((prev) => ({ ...prev, description: e.target.value }))}
+                      />
+                    </div>
+
+                    {/* FHIR Preview */}
+                    {fhirPreview && (
+                      <div className="space-y-2">
+                        <Label>{t("fhirPreview")}:</Label>
+                        <div className="bg-gray-100 p-4 rounded-lg max-h-40 overflow-y-auto">
+                          <pre className="text-sm">{JSON.stringify(fhirPreview, null, 2)}</pre>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex justify-end space-x-2">
+                      <Button type="button" variant="outline" onClick={() => setShowUploadModal(false)}>
+                        {t("cancel")}
+                      </Button>
+                      <Button type="submit" disabled={uploadedEHRFiles.length === 0}>
+                        {t("uploadEHR")}
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
           </CardContent>
         </Card>
