@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -12,10 +12,31 @@ import { useLanguage } from "@/components/language/language-provider"
 import { GoogleMeetButton } from "@/components/common/google-meet-button"
 import { DoctorEmergencyAlerts } from "@/components/doctor/emergency-alerts"
 
+
 export default function DoctorDashboard() {
   const { t } = useLanguage()
   const [searchTerm, setSearchTerm] = useState("")
   const [doctor] = useState(mockDoctorData.doctors[0])
+  const [showEmergencyAlert, setShowEmergencyAlert] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowEmergencyAlert(true)
+      // Play alert sound
+      const context = new AudioContext()
+      const oscillator = context.createOscillator()
+      oscillator.type = "sine"
+      oscillator.frequency.setValueAtTime(1000, context.currentTime) // 1000 Hz
+      oscillator.connect(context.destination)
+      oscillator.start()
+      setTimeout(() => {
+        oscillator.stop()
+        context.close()
+      }, 1000) // Play sound for 1 second
+    }, 3000)
+
+    return () => clearTimeout(timer)
+  }, [])
 
   // TODO: Fetch real patient data from backend
   // TODO: Implement real-time patient status updates
@@ -58,7 +79,7 @@ export default function DoctorDashboard() {
         </div>
 
         {/* Emergency Alerts */}
-        <DoctorEmergencyAlerts />
+        {showEmergencyAlert && <DoctorEmergencyAlerts />}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

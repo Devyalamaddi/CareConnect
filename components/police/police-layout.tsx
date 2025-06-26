@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill } from "lucide-react"
+import { Home, FileText, MessageSquare, Calendar, LogOut, Shield } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
@@ -12,34 +12,27 @@ import { PWAInstallBanner } from "@/components/pwa/pwa-install-banner"
 import { OfflineIndicator } from "@/components/pwa/offline-indicator"
 import { useEffect } from "react"
 import { Logo } from "@/components/common/logo"
-import { EmergencySOSButton } from "@/components/emergency/emergency-sos-button"
 
-interface PatientLayoutProps {
+interface PoliceLayoutProps {
   children: ReactNode
 }
 
-export function PatientLayout({ children }: PatientLayoutProps) {
+export function PoliceLayout({ children }: PoliceLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { t } = useLanguage()
 
-  // Ensure we're in patient context
+  // Ensure we're in police context
   useEffect(() => {
-    if (!pathname.startsWith("/patient")) {
-      // If not in patient routes, redirect to patient dashboard
-      router.push("/patient/dashboard")
+    if (!pathname.startsWith("/police")) {
+      // If not in police routes, redirect to police dashboard
+      router.push("/police/dashboard")
     }
   }, [pathname, router])
 
   const navigation = [
-    { name: t("dashboard"), href: "/patient/dashboard", icon: Home },
-    { name: t("reportSymptoms"), href: "/patient/symptoms", icon: Plus },
-    { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
-    { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
-    { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
-    { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
-    { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
-    { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
+    { name: t("dashboard"), href: "/police/dashboard", icon: Home },
+    { name: t("alertHistory"), href: "/police/alert-history", icon: FileText },
   ]
 
   const handleLogout = () => {
@@ -67,11 +60,11 @@ export function PatientLayout({ children }: PatientLayoutProps) {
           <div className="px-6 py-4 bg-blue-25 dark:bg-blue-900/10 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-semibold text-sm">JD</span>
+                <Shield className="h-6 w-6 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">John Doe</p>
-                <p className="text-xs text-blue-600 dark:text-blue-400">{t("patient")}</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Police Officer</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">{t("police")}</p>
               </div>
             </div>
           </div>
@@ -114,8 +107,9 @@ export function PatientLayout({ children }: PatientLayoutProps) {
 
       {/* Main Content */}
       <div className="ml-64">
-        <main className="p-8">{children}</main>
-        <EmergencySOSButton />
+        <main className="p-8" style={{ minHeight: "88vh" }}>
+          {children}
+        </main>
       </div>
     </div>
   )

@@ -5,11 +5,12 @@ A comprehensive healthcare application prototype featuring AI-powered diagnosis,
 ## Features
 
 ### Core Features
-- **Role-Based Authentication**: Separate login/signup flows for patients and doctors
+- **Role-Based Authentication**: Separate login/signup flows for patients, doctors, and police
 - **Patient Symptom Submission**: Comprehensive form with image upload and validation
 - **AI Diagnosis Results**: Mock AI analysis with confidence levels and recommendations
 - **Doctor Dashboard**: Patient management with video call integration
 - **Patient Dashboard**: Health records with search and pagination
+- **Police Dashboard**: Emergency alerts and alert history for police officers
 - **Real-time Chat**: AI assistant and doctor messaging interface
 - **Google Meet Integration**: One-click video consultations
 - **Medical Records**: Complete patient history with filtering

@@ -15,7 +15,7 @@ import { LanguageToggle } from "@/components/language/language-toggle"
 import { Logo } from "@/components/common/logo"
 
 export default function HomePage() {
-  const [userType, setUserType] = useState<"patient" | "doctor">("patient")
+  const [userType, setUserType] = useState<"patient" | "doctor" | "police">("patient")
   const [authMode, setAuthMode] = useState<"login" | "signup">("login")
   const router = useRouter()
   const { t } = useLanguage()
@@ -29,8 +29,10 @@ export default function HomePage() {
     // Mock authentication - redirect based on user type
     if (userType === "patient") {
       router.push("/patient/dashboard")
-    } else {
+    } else if (userType === "doctor") {
       router.push("/doctor/dashboard")
+    } else if (userType === "police") {
+      router.push("/police/dashboard")
     }
   }
 
@@ -107,6 +109,14 @@ export default function HomePage() {
                 >
                   <UserCheck className="h-4 w-4 mr-2" />
                   {t("doctor")}
+                </Button>
+                <Button
+                  variant={userType === "police" ? "default" : "outline"}
+                  className="flex-1"
+                  onClick={() => setUserType("police")}
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  {t("police")}
                 </Button>
               </div>
 
