@@ -111,17 +111,20 @@ A comprehensive healthcare application prototype featuring AI-powered diagnosis,
 - **Medical Records**: Browse complete health history with search/filter
 - **Chat Interface**: Communicate with AI assistant and doctors
 - **Appointments**: Manage upcoming consultations
+- **Emergency SOS**: Send SOS alerts and access maps for nearest hospitals
 
 ### Doctor Features
 - **Patient Management**: View patient queue with priority levels
 - **Video Consultations**: Start Google Meet calls with patients
 - **Schedule Management**: Track daily appointments and tasks
 - **Patient Records**: Access comprehensive patient information
+- **Emergency Alerts**: Receive SOS alerts from patients and police
 
 ### PWA Features
 - **Install App**: Use the install banner for native app experience
 - **Offline Mode**: Toggle offline simulation to test caching
 - **Push Notifications**: Receive appointment and health reminders
+- **Emergency Alerts**: Receive SOS alerts from patients and doctors
 
 ## Development Features
 
