@@ -22,9 +22,9 @@ export const translations = {
     patient: "Patient",
     doctor: "Doctor",
     login: "Login",
-    signup: "Sign Up",
+    signUp: "Sign Up",
     loginAs: "Login as",
-    signupAs: "Sign up as",
+    signUpAs: "Sign up as",
     email: "Email",
     emailPlaceholder: "Enter your email",
     password: "Password",
@@ -33,6 +33,14 @@ export const translations = {
     fullNamePlaceholder: "Enter your full name",
     medicalLicense: "Medical License",
     medicalLicensePlaceholder: "Enter your license number",
+    selectYourRole: "Select Your Role",
+    welcomeBack: "Welcome Back",
+    signIn: "Sign In",
+    signInToAccessDashboard: "Sign in to access your healthcare dashboard",
+    signInAs: "Sign In as",
+    createAccountFor: "Create {userType} Account",
+    joinFutureHealthcare: "Join the future of healthcare",
+    createAccount: "Create Account",
 
     // Navigation
     dashboard: "Dashboard",
@@ -430,15 +438,6 @@ export const translations = {
     saveForLater: "Save for Later",
     interactions: "Drug Interactions",
 
-
-    // Emergency/Police
-    activeEmergencies: "Active Emergencies",
-    immediateAttentionRequired: "Immediate Attention Required",
-    details: "Details",
-    respond: "Respond",
-    alertHistory: "Alert History",
-    downloadOfflineMaps: "Download Offline Maps",
-
   },
   hi: {
     // App Name
@@ -457,24 +456,15 @@ export const translations = {
     instantConnect: "तुरंत कनेक्ट",
     instantConnectDesc: "कभी भी, कहीं भी डॉक्टरों के साथ वीडियो चैट करें",
 
-    // Emergency/Police
-    activeEmergencies: "सक्रिय आपात स्थितियाँ",
-    immediateAttentionRequired: "तत्काल ध्यान आवश्यक",
-    details: "विवरण",
-    respond: "प्रतिक्रिया दें",
-    alertHistory: "अलर्ट इतिहास",
-    downloadOfflineMaps: "ऑफलाइन मानचित्र डाउनलोड करें",
-
-
     // Auth
     getStarted: "शुरू करें",
     chooseUserType: "जारी रखने के लिए अपना खाता प्रकार चुनें",
     patient: "मरीज़",
     doctor: "डॉक्टर",
     login: "लॉगिन",
-    signup: "साइन अप",
+    signUp: "साइन अप करें",
     loginAs: "के रूप में लॉगिन",
-    signupAs: "के रूप में साइन अप",
+    signUpAs: "के रूप में साइन अप",
     email: "ईमेल",
     emailPlaceholder: "अपना ईमेल दर्ज करें",
     password: "पासवर्ड",
@@ -483,6 +473,14 @@ export const translations = {
     fullNamePlaceholder: "अपना पूरा नाम दर्ज करें",
     medicalLicense: "मेडिकल लाइसेंस",
     medicalLicensePlaceholder: "अपना लाइसेंस नंबर दर्ज करें",
+    selectYourRole: "अपनी भूमिका चुनें",
+    welcomeBack: "वापसी पर स्वागत है",
+    signIn: "साइन इन करें",
+    signInToAccessDashboard: "अपने स्वास्थ्य डैशबोर्ड तक पहुँचने के लिए साइन इन करें",
+    signInAs: "के रूप में साइन इन करें",
+    createAccountFor: "{userType} खाता बनाएं",
+    joinFutureHealthcare: "हेल्थकेयर के भविष्य से जुड़ें",
+    createAccount: "खाता बनाएं",
 
     // Navigation
     dashboard: "डैशबोर्ड",
@@ -876,7 +874,7 @@ export const translations = {
     importantDisclaimer: "महत्वपूर्ण अस्वीकरण",
     aiDisclaimerFull: "ये केवल एआई-जनित सुझाव हैं। कोई भी दवा लेने से पहले हमेशा एक योग्य स्वास्थ्य सेवा पेशेवर से परामर्श करें।",
     consultDoctor: "डॉक्टर से सलाह लें",
-    saveForLater: "बाद के लिए सहेजें",
-    interactions: "दवा पारस्परिक क्रिया",
+    saveForLater: "Save for Later",
+    interactions: "Drug Interactions",
   },
 }

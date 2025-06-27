@@ -9,6 +9,7 @@ import { User, UserCheck, Shield, Activity, Brain, Heart, Stethoscope, Plus } fr
 import { Logo } from "@/components/common/logo"
 import { LanguageToggle } from "@/components/language/language-toggle"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/components/language/language-provider"
 
 export default function AuthPage() {
   const [userType, setUserType] = useState("patient")
@@ -16,11 +17,12 @@ export default function AuthPage() {
   const [isLoaded, setIsLoaded] = useState(false)
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const router = useRouter()
+  const { t } = useLanguage()
 
   useEffect(() => {
     setIsLoaded(true)
     
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       setMousePos({
         x: (e.clientX / window.innerWidth) * 100,
         y: (e.clientY / window.innerHeight) * 100
@@ -39,24 +41,24 @@ export default function AuthPage() {
     { 
       key: "patient", 
       icon: User, 
-      label: "Patient",
-      description: "Access your health records & AI insights",
+      label: t("patient"),
+      description: t("patientRoleDesc"),
       gradient: "from-blue-500 via-blue-600 to-indigo-600",
       shadowColor: "shadow-blue-500/25"
     },
     { 
       key: "doctor", 
       icon: UserCheck, 
-      label: "Doctor",
-      description: "AI-powered patient management",
+      label: t("doctor"),
+      description: t("doctorRoleDesc"),
       gradient: "from-emerald-500 via-green-600 to-teal-600",
       shadowColor: "shadow-emerald-500/25"
     },
     { 
       key: "police", 
       icon: Shield, 
-      label: "Police",
-      description: "Emergency medical access",
+      label: t("police"),
+      description: t("policeRoleDesc"),
       gradient: "from-red-500 via-rose-600 to-pink-600",
       shadowColor: "shadow-red-500/25"
     },
@@ -129,7 +131,7 @@ export default function AuthPage() {
           {/* User Type Selection */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white text-center mb-6">
-              Select Your Role
+              {t("selectYourRole")}
             </h2>
             
             <div className="flex justify-center items-center gap-8 max-w-2xl mx-auto mb-10">
@@ -243,12 +245,12 @@ export default function AuthPage() {
             <Card className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border-gray-200 dark:border-slate-700 shadow-2xl">
               <CardHeader className="text-center pb-6">
                 <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {authMode === 'login' ? 'Welcome Back' : 'Create Account'}
+                  {authMode === 'login' ? t('welcomeBack') : t('createAccount')}
                 </CardTitle>
                 <CardDescription className="text-gray-600 dark:text-gray-400">
                   {authMode === 'login' 
-                    ? 'Sign in to access your healthcare dashboard' 
-                    : 'Join the future of healthcare'
+                    ? t('signInToAccessDashboard')
+                    : t('joinFutureHealthcare')
                   }
                 </CardDescription>
               </CardHeader>
@@ -260,13 +262,13 @@ export default function AuthPage() {
                       value="login" 
                       className="text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-slate-600 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm transition-all duration-200"
                     >
-                      Sign In
+                      {t('signIn')}
                     </TabsTrigger>
                     <TabsTrigger 
                       value="signup"
                       className="text-sm font-medium data-[state=active]:bg-white dark:data-[state=active]:bg-slate-600 data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:shadow-sm transition-all duration-200"
                     >
-                      Sign Up
+                      {t('signUp')}
                     </TabsTrigger>
                   </TabsList>
 
@@ -275,7 +277,7 @@ export default function AuthPage() {
                       <div className="space-y-5">
                         <div className="space-y-2">
                           <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email Address
+                            {t('email')}
                           </Label>
                           <Input 
                             id="email" 
@@ -287,7 +289,7 @@ export default function AuthPage() {
                         
                         <div className="space-y-2">
                           <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Password
+                            {t('password')}
                           </Label>
                           <Input 
                             id="password" 
@@ -301,7 +303,7 @@ export default function AuthPage() {
                           onClick={handleAuth}
                           className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                         >
-                          Sign In as {userType.charAt(0).toUpperCase() + userType.slice(1)}
+                          {t('signInAs')} {t(userType)}
                         </Button>
                       </div>
                     </TabsContent>
@@ -310,7 +312,7 @@ export default function AuthPage() {
                       <div className="space-y-5">
                         <div className="space-y-2">
                           <Label htmlFor="name" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Full Name
+                            {t('fullName')}
                           </Label>
                           <Input 
                             id="name" 
@@ -322,7 +324,7 @@ export default function AuthPage() {
                         
                         <div className="space-y-2">
                           <Label htmlFor="signup-email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Email Address
+                            {t('email')}
                           </Label>
                           <Input 
                             id="signup-email" 
@@ -334,7 +336,7 @@ export default function AuthPage() {
                         
                         <div className="space-y-2">
                           <Label htmlFor="signup-password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            Password
+                            {t('password')}
                           </Label>
                           <Input 
                             id="signup-password" 
@@ -347,7 +349,7 @@ export default function AuthPage() {
                         {userType === "doctor" && (
                           <div className="space-y-2">
                             <Label htmlFor="license" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                              Medical License Number
+                              {t('medicalLicense')}
                             </Label>
                             <Input 
                               id="license" 
@@ -362,7 +364,7 @@ export default function AuthPage() {
                           onClick={handleAuth}
                           className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                         >
-                          Create {userType.charAt(0).toUpperCase() + userType.slice(1)} Account
+                          {t('createAccountFor').replace('{userType}', t(userType))}
                         </Button>
                       </div>
                     </TabsContent>
