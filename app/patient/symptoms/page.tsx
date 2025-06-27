@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Upload, X, AlertCircle, CheckCircle } from "lucide-react"
+import { Upload, X, AlertCircle, CheckCircle, AlertTriangle, Stethoscope } from "lucide-react"
 import { PatientLayout } from "@/components/patient/patient-layout"
 import { useLanguage } from "@/components/language/language-provider"
 import { DiagnosisModal } from "@/components/patient/diagnosis-modal"
@@ -31,6 +31,7 @@ export default function SymptomsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showDiagnosis, setShowDiagnosis] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [triageAdvice, setTriageAdvice] = useState<string | null>(null)
 
   const commonSymptoms = [
     "Headache",
@@ -90,9 +91,16 @@ export default function SymptomsPage() {
     // TODO: Generate real diagnosis using ML model
     // TODO: Store submission in patient records
 
-    // Simulate API call
+    // Simulate triage advice (replace with AI logic)
+    let advice = "self-treat"
+    if (formData.severity === "severe" || selectedSymptoms.includes("Chest Pain") || selectedSymptoms.includes("Shortness of Breath")) {
+      advice = "go to ER"
+    } else if (formData.severity === "moderate") {
+      advice = "consult GP"
+    }
     setTimeout(() => {
       setIsSubmitting(false)
+      setTriageAdvice(advice)
       setShowDiagnosis(true)
     }, 3000)
   }
@@ -313,6 +321,30 @@ export default function SymptomsPage() {
                 <p className="text-gray-600">{t("aiAnalysisInProgress")}</p>
                 <Progress value={66} className="w-full max-w-md mx-auto" />
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Triage Advice Card */}
+        {triageAdvice && (
+          <Card className="border-2 border-blue-400 bg-blue-50 dark:bg-blue-900/20 my-4">
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Stethoscope className="h-6 w-6 text-blue-500" />
+              <CardTitle>Triage Advice</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-lg font-semibold">
+                {triageAdvice === "self-treat" && (
+                  <span className="text-green-700">Self-treat at home. Monitor your symptoms.</span>
+                )}
+                {triageAdvice === "consult GP" && (
+                  <span className="text-yellow-700">Consult your general practitioner soon.</span>
+                )}
+                {triageAdvice === "go to ER" && (
+                  <span className="text-red-700">Go to the emergency room immediately!</span>
+                )}
+              </div>
+              {/* <div className="text-xs text-gray-500 mt-2">// TODO: Integrate symptom analysis backend for real triage advice</div> */}
             </CardContent>
           </Card>
         )}

@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, FileText, MessageSquare, Plus, Activity, Heart, Thermometer, Weight } from "lucide-react"
+import { Calendar, FileText, MessageSquare, Plus, Activity, Heart, Thermometer, Weight, AlarmClock } from "lucide-react"
 import { PatientLayout } from "@/components/patient/patient-layout"
 import { mockPatientData } from "@/lib/mock-data"
 import { useLanguage } from "@/components/language/language-provider"
@@ -73,7 +73,7 @@ export default function PatientDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <Link href="/patient/symptoms">
               <CardHeader>
@@ -82,6 +82,30 @@ export default function PatientDashboard() {
                   <span>{t("reportSymptoms")}</span>
                 </CardTitle>
                 <CardDescription>{t("reportSymptomsDesc")}</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Link href="/patient/med-reminder">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <AlarmClock className="h-5 w-5 text-blue-500" />
+                  <span>{t("medReminder")}</span>
+                </CardTitle>
+                <CardDescription>{t("medReminderDesc")}</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Link href="/patient/postop-followup">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Activity className="h-5 w-5 text-pink-500" />
+                  <span>{t("postOpFollowup")}</span>
+                </CardTitle>
+                <CardDescription>{t("postOpFollowupDesc")}</CardDescription>
               </CardHeader>
             </Link>
           </Card>

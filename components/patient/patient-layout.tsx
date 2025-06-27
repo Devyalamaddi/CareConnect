@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill } from "lucide-react"
+import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
@@ -34,6 +34,8 @@ export function PatientLayout({ children }: PatientLayoutProps) {
   const navigation = [
     { name: t("dashboard"), href: "/patient/dashboard", icon: Home },
     { name: t("reportSymptoms"), href: "/patient/symptoms", icon: Plus },
+    { name: t("medReminder"), href: "/patient/med-reminder", icon: AlarmClock },
+    { name: t("postOpFollowup"), href: "/patient/postop-followup", icon: Activity },
     { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
     { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
     { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },

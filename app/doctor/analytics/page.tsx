@@ -10,12 +10,12 @@ import {
   Users,
   Calendar,
   Clock,
-  DollarSign,
   Activity,
   Heart,
   Target,
   BarChart3,
   PieChart,
+  IndianRupee,
 } from "lucide-react"
 import { DoctorLayout } from "@/components/doctor/doctor-layout"
 import { useLanguage } from "@/components/language/language-provider"
@@ -150,10 +150,10 @@ export default function DoctorAnalytics() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-yellow-500" />
+              <IndianRupee className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${mockAnalytics.overview.revenue.toLocaleString()}</div>
+              <div className="text-2xl font-bold">₹{mockAnalytics.overview.revenue.toLocaleString()}</div>
               <p className="text-xs text-green-600">+15.3% from last month</p>
             </CardContent>
           </Card>
@@ -379,10 +379,10 @@ export default function DoctorAnalytics() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Monthly Revenue</CardTitle>
-                  <DollarSign className="h-4 w-4 text-green-500" />
+                  <IndianRupee className="h-4 w-4 text-green-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">${mockAnalytics.overview.revenue.toLocaleString()}</div>
+                  <div className="text-2xl font-bold">₹{mockAnalytics.overview.revenue.toLocaleString()}</div>
                   <p className="text-xs text-green-600">+15.3% from last month</p>
                 </CardContent>
               </Card>
@@ -390,11 +390,11 @@ export default function DoctorAnalytics() {
               <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Avg. per Patient</CardTitle>
-                  <DollarSign className="h-4 w-4 text-blue-500" />
+                  <IndianRupee className="h-4 w-4 text-blue-500" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    ${Math.round(mockAnalytics.overview.revenue / mockAnalytics.overview.totalPatients)}
+                  ₹{Math.round(mockAnalytics.overview.revenue / mockAnalytics.overview.totalPatients)}
                   </div>
                   <p className="text-xs text-green-600">+8.7% from last month</p>
                 </CardContent>
@@ -418,7 +418,7 @@ export default function DoctorAnalytics() {
               </CardHeader>
               <CardContent>
                 <div className="text-center py-12">
-                  <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <IndianRupee className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Financial Analytics</h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     Detailed revenue analysis and financial performance metrics

@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
 import { LanguageToggle } from "@/components/language/language-toggle"
 import { Logo } from "@/components/common/logo"
+import CTAButton from "@/components/CTAButton"
 
 export default function HomePage() {
   const [userType, setUserType] = useState<"patient" | "doctor" | "police">("patient")
@@ -86,91 +87,7 @@ export default function HomePage() {
           </div>
 
           {/* Auth Section */}
-          <Card className="max-w-md mx-auto">
-            <CardHeader>
-              <CardTitle className="text-center">{t("getStarted")}</CardTitle>
-              <CardDescription className="text-center">{t("chooseUserType")}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* User Type Toggle */}
-              <div className="flex space-x-2 mb-6">
-                <Button
-                  variant={userType === "patient" ? "default" : "outline"}
-                  className="flex-1"
-                  onClick={() => setUserType("patient")}
-                >
-                  <User className="h-4 w-4 mr-2" />
-                  {t("patient")}
-                </Button>
-                <Button
-                  variant={userType === "doctor" ? "default" : "outline"}
-                  className="flex-1"
-                  onClick={() => setUserType("doctor")}
-                >
-                  <UserCheck className="h-4 w-4 mr-2" />
-                  {t("doctor")}
-                </Button>
-                <Button
-                  variant={userType === "police" ? "default" : "outline"}
-                  className="flex-1"
-                  onClick={() => setUserType("police")}
-                >
-                  <Shield className="h-4 w-4 mr-2" />
-                  {t("police")}
-                </Button>
-              </div>
-
-              {/* Auth Tabs */}
-              <Tabs value={authMode} onValueChange={(value) => setAuthMode(value as "login" | "signup")}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="login">{t("login")}</TabsTrigger>
-                  <TabsTrigger value="signup">{t("signup")}</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="login">
-                  <form onSubmit={handleAuth} className="space-y-4">
-                    <div>
-                      <Label htmlFor="email">{t("email")}</Label>
-                      <Input id="email" type="email" placeholder={t("emailPlaceholder")} required />
-                    </div>
-                    <div>
-                      <Label htmlFor="password">{t("password")}</Label>
-                      <Input id="password" type="password" placeholder={t("passwordPlaceholder")} required />
-                    </div>
-                    <Button type="submit" className="w-full">
-                      {t("loginAs")} {userType === "patient" ? t("patient") : t("doctor")}
-                    </Button>
-                  </form>
-                </TabsContent>
-
-                <TabsContent value="signup">
-                  <form onSubmit={handleAuth} className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">{t("fullName")}</Label>
-                      <Input id="name" type="text" placeholder={t("fullNamePlaceholder")} required />
-                    </div>
-                    <div>
-                      <Label htmlFor="signup-email">{t("email")}</Label>
-                      <Input id="signup-email" type="email" placeholder={t("emailPlaceholder")} required />
-                    </div>
-                    <div>
-                      <Label htmlFor="signup-password">{t("password")}</Label>
-                      <Input id="signup-password" type="password" placeholder={t("passwordPlaceholder")} required />
-                    </div>
-                    {userType === "doctor" && (
-                      <div>
-                        <Label htmlFor="license">{t("medicalLicense")}</Label>
-                        <Input id="license" type="text" placeholder={t("medicalLicensePlaceholder")} required />
-                      </div>
-                    )}
-                    <Button type="submit" className="w-full">
-                      {t("signupAs")} {userType === "patient" ? t("patient") : t("doctor")}
-                    </Button>
-                  </form>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
+          <CTAButton />
         </div>
       </div>
     </div>
