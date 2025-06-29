@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button"
 import { PatientLayout } from "@/components/patient/patient-layout"
 import { Label } from "@/components/ui/label"
-import { Activity } from "lucide-react"
+import { Activity, PhoneCall, AlertCircle } from "lucide-react"
 
 const metrics = [
   { key: "pain", label: "Pain Level", emojis: ["😀", "🙂", "😐", "😣", "😭"] },
@@ -18,19 +18,56 @@ export default function PostOpFollowupPage() {
   const [history, setHistory] = useState<any[]>([])
   const [escalate, setEscalate] = useState(false)
 
+  // Voice AI call state
+  const [phoneNumber, setPhoneNumber] = useState("+918019227239")
+  const [patientName, setPatientName] = useState("Demo Patient")
+  const [surgeryType, setSurgeryType] = useState("General Surgery")
+  const [daysPostOp, setDaysPostOp] = useState("3")
+  const [isCallInitiating, setIsCallInitiating] = useState(false)
+  const [callStatus, setCallStatus] = useState<string | null>(null)
+  const [callError, setCallError] = useState<string | null>(null)
+
+  const handleVoiceAICall = async () => {
+    setIsCallInitiating(true)
+    setCallStatus("Initiating post-op follow-up call...")
+    setCallError(null)
+    try {
+      const response = await fetch("/api/postop-followup/voice-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber,
+          patientName,
+          surgeryType,
+          daysPostOp
+        })
+      })
+      const data = await response.json()
+      if (data.success) {
+        setCallStatus("✅ Post-op follow-up call initiated successfully!")
+        setTimeout(() => setCallStatus(null), 5000)
+      } else {
+        setCallError(data.error || "Failed to initiate call")
+        setTimeout(() => setCallError(null), 5000)
+      }
+    } catch (err) {
+      setCallError("Error connecting to voice AI service")
+      setTimeout(() => setCallError(null), 5000)
+    } finally {
+      setIsCallInitiating(false)
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const entry = { ...form, date: new Date().toLocaleString() }
     setHistory([entry, ...history])
-    // Escalate if pain or nausea is high, or sleep is very poor
     if (form.pain === "😭" || form.nausea === "🤮" || form.sleep === "😵") {
       setEscalate(true)
-      // TODO: Trigger escalation alert to care team
     } else {
       setEscalate(false)
     }
     setForm({ pain: "", nausea: "", sleep: "" })
-    // TODO: Save check-in to backend
   }
 
   return (
@@ -44,6 +81,96 @@ export default function PostOpFollowupPage() {
             Please complete your daily recovery check-in. If your symptoms worsen, your care team will be alerted.
           </p>
         </div>
+
+        {/* Voice AI Call Section */}
+        <Card className="border-2 border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <PhoneCall className="h-5 w-5 text-blue-600" />
+              <span>Voice AI Post-Op Follow-Up</span>
+            </CardTitle>
+            <CardDescription>
+              Get a post-operative follow-up call from our AI assistant
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="phoneNumber">Phone Number (with country code)</Label>
+              <input
+                id="phoneNumber"
+                type="tel"
+                className="w-full border rounded px-3 py-2 mt-1"
+                value={phoneNumber}
+                onChange={e => setPhoneNumber(e.target.value)}
+                placeholder="+918019227239"
+              />
+            </div>
+            <div>
+              <Label htmlFor="patientName">Patient Name</Label>
+              <input
+                id="patientName"
+                type="text"
+                className="w-full border rounded px-3 py-2 mt-1"
+                value={patientName}
+                onChange={e => setPatientName(e.target.value)}
+                placeholder="Patient Name"
+              />
+            </div>
+            <div>
+              <Label htmlFor="surgeryType">Surgery Type</Label>
+              <input
+                id="surgeryType"
+                type="text"
+                className="w-full border rounded px-3 py-2 mt-1"
+                value={surgeryType}
+                onChange={e => setSurgeryType(e.target.value)}
+                placeholder="General Surgery"
+              />
+            </div>
+            <div>
+              <Label htmlFor="daysPostOp">Days Post-Op</Label>
+              <input
+                id="daysPostOp"
+                type="number"
+                className="w-full border rounded px-3 py-2 mt-1"
+                value={daysPostOp}
+                onChange={e => setDaysPostOp(e.target.value)}
+                placeholder="3"
+                min={0}
+              />
+            </div>
+            <Button
+              type="button"
+              onClick={handleVoiceAICall}
+              disabled={isCallInitiating}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+            >
+              {isCallInitiating ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Initiating Voice AI Call...
+                </>
+              ) : (
+                <>
+                  <PhoneCall className="h-4 w-4 mr-2" />
+                  Start Voice AI Post-Op Follow-Up
+                </>
+              )}
+            </Button>
+            {callStatus && (
+              <div className="mt-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-300">
+                <p className="text-sm text-blue-800 dark:text-blue-200">{callStatus}</p>
+              </div>
+            )}
+            {callError && (
+              <div className="mt-4 p-3 rounded-lg bg-red-100 border border-red-300">
+                <p className="text-sm text-red-800 flex items-center"><AlertCircle className="h-4 w-4 mr-2" />{callError}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Check-In Form */}
         <Card className="shadow-md border-blue-200">
           <CardHeader>
             <CardTitle className="text-lg">Today's Check-In</CardTitle>

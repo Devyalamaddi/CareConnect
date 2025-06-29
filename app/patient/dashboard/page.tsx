@@ -79,7 +79,7 @@ export default function PatientDashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <Plus className="h-5 w-5" />
-                  <span>{t("reportSymptoms")}</span>
+                  <span>{t("symptomScreening")}</span>
                 </CardTitle>
                 <CardDescription>{t("reportSymptomsDesc")}</CardDescription>
               </CardHeader>
@@ -123,7 +123,7 @@ export default function PatientDashboard() {
           </Card>
 
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-            <Link href="/chat">
+            <Link href="/patient/chat">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
                   <MessageSquare className="h-5 w-5" />

@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Upload, X, AlertCircle, CheckCircle, AlertTriangle, Stethoscope } from "lucide-react"
+import { Upload, X, AlertCircle, CheckCircle, AlertTriangle, Stethoscope, Phone, PhoneCall } from "lucide-react"
 import { PatientLayout } from "@/components/patient/patient-layout"
 import { useLanguage } from "@/components/language/language-provider"
 import { DiagnosisModal } from "@/components/patient/diagnosis-modal"
@@ -25,13 +25,16 @@ export default function SymptomsPage() {
     duration: "",
     bodyPart: "",
     additionalInfo: "",
+    phoneNumber: "+918019227239", // Default phone number
   })
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
   const [uploadedImages, setUploadedImages] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isCallInitiating, setIsCallInitiating] = useState(false)
   const [showDiagnosis, setShowDiagnosis] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [triageAdvice, setTriageAdvice] = useState<string | null>(null)
+  const [callStatus, setCallStatus] = useState<string | null>(null)
 
   const commonSymptoms = [
     "Headache",
@@ -105,13 +108,109 @@ export default function SymptomsPage() {
     }, 3000)
   }
 
+  const initiateVoiceAICall = async () => {
+    if (!formData.phoneNumber.trim()) {
+      setErrors(prev => ({ ...prev, phoneNumber: "Phone number is required" }))
+      return
+    }
+
+    setIsCallInitiating(true)
+    setCallStatus("Initiating voice AI call...")
+
+    try {
+      const response = await fetch('/api/symptoms/voice-call', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phoneNumber: formData.phoneNumber,
+          patientName: "Demo Patient" // TODO: Get from user context
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setCallStatus("✅ Voice AI call initiated successfully!")
+        setTimeout(() => setCallStatus(null), 5000)
+      } else {
+        setCallStatus(`❌ Failed to initiate call: ${data.error}`)
+        setTimeout(() => setCallStatus(null), 5000)
+      }
+    } catch (error) {
+      console.error('Error initiating voice AI call:', error)
+      setCallStatus("❌ Error connecting to voice AI service")
+      setTimeout(() => setCallStatus(null), 5000)
+    } finally {
+      setIsCallInitiating(false)
+    }
+  }
+
   return (
     <PatientLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t("reportSymptoms")}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t("symptomScreening")}</h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2">{t("symptomsFormDesc")}</p>
         </div>
+
+        {/* Voice AI Call Section */}
+        <Card className="border-2 border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <PhoneCall className="h-5 w-5 text-blue-600" />
+                <span>Voice AI Symptom Screening</span>
+              </CardTitle>
+              <CardDescription>
+                Get instant symptom assessment through our AI voice assistant
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="phoneNumber">Phone Number (with country code)</Label>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  placeholder="+918019227239"
+                  value={formData.phoneNumber}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))}
+                  className={errors.phoneNumber ? "border-red-500" : ""}
+                />
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <AlertCircle className="h-4 w-4 mr-1" />
+                    {errors.phoneNumber}
+                  </p>
+                )}
+              </div>
+              
+              <Button
+                type="button"
+                onClick={initiateVoiceAICall}
+                disabled={isCallInitiating}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                {isCallInitiating ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Initiating Voice AI Call...
+                  </>
+                ) : (
+                  <>
+                    <PhoneCall className="h-4 w-4 mr-2" />
+                    Start Voice AI Symptom Screening
+                  </>
+                )}
+              </Button>
+
+              {callStatus && (
+                <div className="mt-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-300">
+                  <p className="text-sm text-blue-800 dark:text-blue-200">{callStatus}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Common Symptoms */}
@@ -289,6 +388,8 @@ export default function SymptomsPage() {
               />
             </CardContent>
           </Card>
+
+          
 
           {/* Submit Button */}
           <div className="flex justify-end space-x-4">

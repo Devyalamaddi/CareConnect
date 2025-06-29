@@ -26,6 +26,9 @@ export default function MedReminderPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const { toast } = useToast()
+  const [isCallInitiating, setIsCallInitiating] = useState(false)
+  const [callStatus, setCallStatus] = useState<string | null>(null)
+  const [callError, setCallError] = useState<string | null>(null)
 
   const handleAddOrEdit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -68,11 +71,70 @@ export default function MedReminderPage() {
     // TODO: Notify caregiver if missed
   }
 
+  const handleDemoVoiceCall = async () => {
+    setIsCallInitiating(true)
+    setCallStatus("Initiating med-reminder voice call...")
+    setCallError(null)
+    try {
+      const response = await fetch("/api/med-reminder/voice-call", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber: "+918019227239",
+          patientName: "Demo Patient",
+          medicineName: "Paracetamol",
+          dosage: "1 tablet",
+          reminderTime: "20:00"
+        })
+      })
+      const data = await response.json()
+      if (data.success) {
+        setCallStatus("✅ Med-reminder call initiated! (Call will hang up after 10 seconds)")
+        setTimeout(() => setCallStatus(null), 7000)
+      } else {
+        setCallError(data.error || "Failed to initiate call")
+        setTimeout(() => setCallError(null), 7000)
+      }
+    } catch (err) {
+      setCallError("Error connecting to voice AI service")
+      setTimeout(() => setCallError(null), 7000)
+    } finally {
+      setIsCallInitiating(false)
+    }
+  }
+
   // TODO: Integrate SMS/voice backend for reminders
 
   return (
     <PatientLayout>
       <div className="max-w-2xl mx-auto py-8 space-y-6">
+        {/* Demo Voice Call Trigger */}
+        <div className="mb-4">
+          <Button
+            type="button"
+            onClick={handleDemoVoiceCall}
+            disabled={isCallInitiating}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            {isCallInitiating ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                Initiating Demo Voice Reminder Call...
+              </>
+            ) : (
+              <>
+                <AlarmClock className="h-4 w-4 mr-2" />
+                Demo Voice Reminder Call
+              </>
+            )}
+          </Button>
+          {callStatus && (
+            <div className="mt-2 p-2 rounded bg-blue-100 border border-blue-300 text-blue-800 text-sm">{callStatus}</div>
+          )}
+          {callError && (
+            <div className="mt-2 p-2 rounded bg-red-100 border border-red-300 text-red-800 text-sm">{callError}</div>
+          )}
+        </div>
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <AlarmClock className="h-7 w-7 text-blue-500" /> Medication Reminders

@@ -12,6 +12,7 @@ import { Send, Bot, User, Paperclip, Mic, MoreVertical, Phone, Video } from "luc
 import { PatientLayout } from "@/components/patient/patient-layout"
 import { mockChatData } from "@/lib/mock-data"
 import { useLanguage } from "@/components/language/language-provider"
+import { EmergencySOSButton } from "@/components/emergency/emergency-sos-button"
 
 // Simple language detection for Hinglish (Hindi written in English)
 const detectLanguage = (text: string): "en" | "hi" => {
@@ -166,154 +167,160 @@ export default function PatientChatPage() {
 
   return (
     <PatientLayout>
-      <div className="max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
-        {/* Chat Header */}
-        <Card className="mb-4">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Avatar>
-                  <AvatarImage src="/placeholder.svg?height=40&width=40" />
-                  <AvatarFallback>
-                    <Bot className="h-5 w-5" />
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <CardTitle className="text-lg">{t("aiAssistant")}</CardTitle>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm text-gray-600">{t("online")}</span>
-                    <Badge variant="secondary" className="text-xs">
-                      {language === "hi" ? "हिंदी सहायक" : "Multilingual Support"}
-                    </Badge>
+      <div className="relative max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
+        {/* SOS Button at top right */}
+        <div className="absolute top-4 right-4 z-50">
+          <EmergencySOSButton />
+        </div>
+        <div className="max-w-4xl mx-auto h-[calc(100vh-200px)] flex flex-col">
+          {/* Chat Header */}
+          <Card className="mb-4">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Avatar>
+                    <AvatarImage src="/placeholder.svg?height=40&width=40" />
+                    <AvatarFallback>
+                      <Bot className="h-5 w-5" />
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <CardTitle className="text-lg">{t("aiAssistant")}</CardTitle>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      <span className="text-sm text-gray-600">{t("online")}</span>
+                      <Badge variant="secondary" className="text-xs">
+                        {language === "hi" ? "हिंदी सहायक" : "Multilingual Support"}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
+                <div className="flex items-center space-x-2">
+                  <Button variant="outline" size="sm">
+                    <Phone className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <Video className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Button variant="outline" size="sm">
-                  <Phone className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Video className="h-4 w-4" />
-                </Button>
-                <Button variant="outline" size="sm">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-        </Card>
+            </CardHeader>
+          </Card>
 
-        {/* Messages Container */}
-        <Card className="flex-1 flex flex-col">
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
-              <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`flex items-start space-x-2 max-w-[70%] ${
-                    message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
-                  }`}
-                >
-                  <Avatar className="w-8 h-8">
-                    {message.sender === "user" ? (
-                      <AvatarFallback>
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    ) : message.sender === "ai" ? (
+          {/* Messages Container */}
+          <Card className="flex-1 flex flex-col">
+            <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((message) => (
+                <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`flex items-start space-x-2 max-w-[70%] ${
+                      message.sender === "user" ? "flex-row-reverse space-x-reverse" : ""
+                    }`}
+                  >
+                    <Avatar className="w-8 h-8">
+                      {message.sender === "user" ? (
+                        <AvatarFallback>
+                          <User className="h-4 w-4" />
+                        </AvatarFallback>
+                      ) : message.sender === "ai" ? (
+                        <AvatarFallback>
+                          <Bot className="h-4 w-4" />
+                        </AvatarFallback>
+                      ) : (
+                        <AvatarImage src="/placeholder.svg?height=32&width=32" />
+                      )}
+                    </Avatar>
+                    <div
+                      className={`rounded-lg p-3 ${
+                        message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-100 dark:bg-gray-800"
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className={`text-xs ${message.sender === "user" ? "text-blue-100" : "text-gray-500"}`}>
+                          {formatTime(message.timestamp)}
+                        </span>
+                        {message.sender !== "user" && (
+                          <Badge variant="secondary" className="text-xs">
+                            {message.sender === "ai" ? t("ai") : t("doctor")}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Typing Indicator */}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="flex items-start space-x-2 max-w-[70%]">
+                    <Avatar className="w-8 h-8">
                       <AvatarFallback>
                         <Bot className="h-4 w-4" />
                       </AvatarFallback>
-                    ) : (
-                      <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                    )}
-                  </Avatar>
-                  <div
-                    className={`rounded-lg p-3 ${
-                      message.sender === "user" ? "bg-blue-500 text-white" : "bg-gray-100 dark:bg-gray-800"
-                    }`}
-                  >
-                    <p className="text-sm">{message.content}</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className={`text-xs ${message.sender === "user" ? "text-blue-100" : "text-gray-500"}`}>
-                        {formatTime(message.timestamp)}
-                      </span>
-                      {message.sender !== "user" && (
-                        <Badge variant="secondary" className="text-xs">
-                          {message.sender === "ai" ? t("ai") : t("doctor")}
-                        </Badge>
-                      )}
+                    </Avatar>
+                    <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.1s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )}
+              <div ref={messagesEndRef} />
+            </CardContent>
 
-            {/* Typing Indicator */}
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="flex items-start space-x-2 max-w-[70%]">
-                  <Avatar className="w-8 h-8">
-                    <AvatarFallback>
-                      <Bot className="h-4 w-4" />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.1s" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.2s" }}
-                      ></div>
-                    </div>
-                  </div>
+            {/* Message Input */}
+            <div className="border-t p-4">
+              {/* Language Detection Indicator */}
+              {newMessage && (
+                <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
+                  <span>
+                    {detectLanguage(newMessage) === "hi"
+                      ? "🇮🇳 Hindi detected - AI will respond in Hindi"
+                      : "🇺🇸 English detected - AI will respond in English"}
+                  </span>
+                  <span className="text-blue-500">Current UI: {language === "hi" ? "हिंदी" : "English"}</span>
                 </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </CardContent>
+              )}
 
-          {/* Message Input */}
-          <div className="border-t p-4">
-            {/* Language Detection Indicator */}
-            {newMessage && (
-              <div className="mb-2 flex items-center justify-between text-xs text-gray-500">
-                <span>
-                  {detectLanguage(newMessage) === "hi"
-                    ? "🇮🇳 Hindi detected - AI will respond in Hindi"
-                    : "🇺🇸 English detected - AI will respond in English"}
-                </span>
-                <span className="text-blue-500">Current UI: {language === "hi" ? "हिंदी" : "English"}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
-              <Button type="button" variant="outline" size="sm">
-                <Paperclip className="h-4 w-4" />
-              </Button>
-              <Input
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder={
-                  language === "hi"
-                    ? "अपना संदेश टाइप करें... (Hindi ya English mein)"
-                    : "Type your message... (in Hindi or English)"
-                }
-                className="flex-1"
-                disabled={isTyping}
-              />
-              <Button type="button" variant="outline" size="sm">
-                <Mic className="h-4 w-4" />
-              </Button>
-              <Button type="submit" disabled={!newMessage.trim() || isTyping}>
-                <Send className="h-4 w-4" />
-              </Button>
-            </form>
-          </div>
-        </Card>
+              <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+                <Button type="button" variant="outline" size="sm">
+                  <Paperclip className="h-4 w-4" />
+                </Button>
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder={
+                    language === "hi"
+                      ? "अपना संदेश टाइप करें... (Hindi ya English mein)"
+                      : "Type your message... (in Hindi or English)"
+                  }
+                  className="flex-1"
+                  disabled={isTyping}
+                />
+                <Button type="button" variant="outline" size="sm">
+                  <Mic className="h-4 w-4" />
+                </Button>
+                <Button type="submit" disabled={!newMessage.trim() || isTyping}>
+                  <Send className="h-4 w-4" />
+                </Button>
+              </form>
+            </div>
+          </Card>
+        </div>
       </div>
     </PatientLayout>
   )
