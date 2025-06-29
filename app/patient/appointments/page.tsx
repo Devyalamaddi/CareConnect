@@ -67,7 +67,7 @@ function PatientCallSection() {
           required
         /> */}
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Calling...' : 'Call Patient'}
+          {loading ? 'Calling...' : 'Initiate Demo'}
         </button>
       </form>
       

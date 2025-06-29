@@ -57,19 +57,8 @@ function DoctorCallSection() {
     <div className="mb-8 p-4 border rounded bg-white">
       <h2 className="text-lg font-bold mb-2">Doctor Call (Demo)</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2 max-w-sm">
-        <label htmlFor="doctor-phone">Doctor Number</label>
-        <input
-          id="doctor-phone"
-          type="tel"
-          pattern="^\d{10}$"
-          placeholder="8019227239"
-          value={phone}
-          onChange={e => setPhone(e.target.value)}
-          className="border p-2 rounded"
-          required
-        />
         <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? 'Calling...' : 'Call Doctor'}
+          {loading ? 'Calling...' : 'Initiate Demo'}
         </button>
       </form>
       {result && <div className="mt-2 text-sm">{result}</div>}
