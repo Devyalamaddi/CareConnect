@@ -204,11 +204,7 @@ export default function SymptomsPage() {
                 )}
               </Button>
 
-              {callStatus && (
-                <div className="mt-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-300">
-                  <p className="text-sm text-blue-800 dark:text-blue-200">{callStatus}</p>
-                </div>
-              )}
+              
             </CardContent>
           </Card>
 

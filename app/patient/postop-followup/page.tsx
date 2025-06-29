@@ -157,16 +157,7 @@ export default function PostOpFollowupPage() {
                 </>
               )}
             </Button>
-            {callStatus && (
-              <div className="mt-4 p-3 rounded-lg bg-blue-100 dark:bg-blue-900/30 border border-blue-300">
-                <p className="text-sm text-blue-800 dark:text-blue-200">{callStatus}</p>
-              </div>
-            )}
-            {callError && (
-              <div className="mt-4 p-3 rounded-lg bg-red-100 border border-red-300">
-                <p className="text-sm text-red-800 flex items-center"><AlertCircle className="h-4 w-4 mr-2" />{callError}</p>
-              </div>
-            )}
+            
           </CardContent>
         </Card>
 

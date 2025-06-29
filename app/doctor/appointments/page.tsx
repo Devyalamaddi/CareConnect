@@ -61,7 +61,6 @@ function DoctorCallSection() {
           {loading ? 'Calling...' : 'Initiate Demo'}
         </button>
       </form>
-      {result && <div className="mt-2 text-sm">{result}</div>}
     </div>
   );
 }

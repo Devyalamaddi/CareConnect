@@ -74,6 +74,7 @@ export default function RecipeSuggestions({ className }: RecipeSuggestionsProps)
 7. Output must be structured for rendering in frontend UI.
 8. **AVOID chicken-related recipes unless the health condition specifically indicates protein deficiency**.
 9. Focus on vegetarian options, lentils, pulses, and Indian spices.
+10. Youtube link doesn't need to be an exact video link, it might be an link such that user when clicked sees the respectiev recipe search results(ie. search_query)
 
 Here is the input you will get:
 Health Condition: ${disease}

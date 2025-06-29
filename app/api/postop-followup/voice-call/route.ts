@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+const PY_BACKEND_URL = process.env.PY_BACKEND_URL || 'http://localhost:5000';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -17,59 +19,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Call the Python script to initiate the post-op follow-up call
-    const { spawn } = require('child_process')
-    
-    return new Promise((resolve) => {
-      const pythonProcess = spawn('python', ['call_postop_followup.py'], {
-        env: {
-          ...process.env,
-          TARGET_PHONE: phoneNumber,
-          PATIENT_NAME: patientName,
-          SURGERY_TYPE: surgeryType,
-          DAYS_POST_OP: daysPostOp
-        }
-      })
-
-      let output = ''
-      let errorOutput = ''
-
-      pythonProcess.stdout.on('data', (data: Buffer) => {
-        output += data.toString()
-      })
-
-      pythonProcess.stderr.on('data', (data: Buffer) => {
-        errorOutput += data.toString()
-      })
-
-      pythonProcess.on('close', (code: number) => {
-        if (code === 0) {
-          resolve(NextResponse.json({
-            success: true,
-            message: 'Post-op follow-up call initiated successfully',
-            output: output,
-            callDetails: {
-              phoneNumber,
-              patientName,
-              surgeryType,
-              daysPostOp
-            }
-          }))
-        } else {
-          resolve(NextResponse.json({
-            success: false,
-            error: 'Failed to initiate post-op follow-up call',
-            details: errorOutput || output
-          }, { status: 500 }))
-        }
-      })
-    })
-
+    const res = await fetch(`${PY_BACKEND_URL}/call-postop-followup`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    return NextResponse.json(data);
   } catch (error) {
-    console.error('Error initiating post-op follow-up call:', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('API error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 } 

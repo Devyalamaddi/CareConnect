@@ -128,12 +128,7 @@ export default function MedReminderPage() {
               </>
             )}
           </Button>
-          {callStatus && (
-            <div className="mt-2 p-2 rounded bg-blue-100 border border-blue-300 text-blue-800 text-sm">{callStatus}</div>
-          )}
-          {callError && (
-            <div className="mt-2 p-2 rounded bg-red-100 border border-red-300 text-red-800 text-sm">{callError}</div>
-          )}
+          
         </div>
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
