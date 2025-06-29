@@ -24,6 +24,57 @@ import { mockAppointmentData } from "@/lib/mock-data"
 import { useLanguage } from "@/components/language/language-provider"
 import { GoogleMeetButton } from "@/components/common/google-meet-button"
 
+function PatientCallSection() {
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch('/api/appointments/call-patient', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: "+918019227239" })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setResult('Call initiated successfully!');
+      } else {
+        setResult(data.error || 'Failed to initiate call.');
+      }
+    } catch (err) {
+      setResult('Error contacting server.');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="mb-8 p-4 border rounded bg-white">
+      <h2 className="text-lg font-bold mb-2">Patient Call (Demo)</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 max-w-sm">
+        {/* <label htmlFor="patient-phone">Patient Number</label>
+        <input
+          id="patient-phone"
+          type="tel"
+          pattern="^\+91\s?\d{10}$"
+          placeholder="+91 8019227239"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          className="border p-2 rounded"
+          required
+        /> */}
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? 'Calling...' : 'Call Patient'}
+        </button>
+      </form>
+      
+    </div>
+  );
+}
+
 export default function PatientAppointments() {
   const { t } = useLanguage()
   const [searchTerm, setSearchTerm] = useState("")
@@ -124,12 +175,16 @@ export default function PatientAppointments() {
 
   return (
     <PatientLayout>
-      <div className="space-y-6">
+      <div className="space-y-6"> 
+
+        <PatientCallSection/>
+
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t("appointments")}</h1>
             <p className="text-gray-600 dark:text-gray-300 mt-2">{t("appointmentsDesc")}</p>
           </div>
+
           <Dialog open={showBookingModal} onOpenChange={setShowBookingModal}>
             <DialogTrigger asChild>
               <Button>
@@ -248,7 +303,7 @@ export default function PatientAppointments() {
             </DialogContent>
           </Dialog>
         </div>
-
+        
         {/* Search and Filter */}
         <Card>
           <CardContent className="pt-6">
@@ -365,6 +420,7 @@ export default function PatientAppointments() {
             </CardContent>
           </Card>
         )}
+
       </div>
     </PatientLayout>
   )

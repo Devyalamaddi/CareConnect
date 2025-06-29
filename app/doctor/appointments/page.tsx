@@ -24,6 +24,58 @@ import { DoctorLayout } from "@/components/doctor/doctor-layout"
 import { mockAppointmentData } from "@/lib/mock-data"
 import { useLanguage } from "@/components/language/language-provider"
 import { GoogleMeetButton } from "@/components/common/google-meet-button"
+import React from 'react'
+
+function DoctorCallSection() {
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setResult(null);
+    try {
+      const res = await fetch('/api/appointments/call-doctor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: "+918019227239" })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setResult('Call initiated successfully!');
+      } else {
+        setResult(data.error || 'Failed to initiate call.');
+      }
+    } catch (err) {
+      setResult('Error contacting server.');
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="mb-8 p-4 border rounded bg-white">
+      <h2 className="text-lg font-bold mb-2">Doctor Call (Demo)</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-2 max-w-sm">
+        <label htmlFor="doctor-phone">Doctor Number</label>
+        <input
+          id="doctor-phone"
+          type="tel"
+          pattern="^\d{10}$"
+          placeholder="8019227239"
+          value={phone}
+          onChange={e => setPhone(e.target.value)}
+          className="border p-2 rounded"
+          required
+        />
+        <button type="submit" className="btn btn-primary" disabled={loading}>
+          {loading ? 'Calling...' : 'Call Doctor'}
+        </button>
+      </form>
+      {result && <div className="mt-2 text-sm">{result}</div>}
+    </div>
+  );
+}
 
 export default function DoctorAppointments() {
   const { t } = useLanguage()
@@ -94,326 +146,329 @@ export default function DoctorAppointments() {
   }
 
   return (
-    <DoctorLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t("appointments")}</h1>
-          <p className="text-gray-600 dark:text-gray-300 mt-2">{t("doctorAppointmentsDesc")}</p>
-        </div>
+    <>
+      <DoctorLayout>
+      <DoctorCallSection />
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t("appointments")}</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">{t("doctorAppointmentsDesc")}</p>
+          </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t("todayAppointments")}</CardTitle>
+                <Calendar className="h-4 w-4 text-blue-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{todayAppointments.length}</div>
+                <p className="text-xs text-muted-foreground">
+                  {todayAppointments.filter((apt) => apt.status === "completed").length} {t("completed")}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t("pendingRequests")}</CardTitle>
+                <AlertCircle className="h-4 w-4 text-yellow-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{pendingAppointments.length}</div>
+                <p className="text-xs text-muted-foreground">{t("requiresApproval")}</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t("upcomingAppointments")}</CardTitle>
+                <Clock className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{upcomingAppointments.length}</div>
+                <p className="text-xs text-muted-foreground">{t("thisWeek")}</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{t("videoConsultations")}</CardTitle>
+                <Video className="h-4 w-4 text-purple-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{appointments.filter((apt) => apt.type === "video").length}</div>
+                <p className="text-xs text-muted-foreground">{t("totalScheduled")}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Search and Filter */}
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("todayAppointments")}</CardTitle>
-              <Calendar className="h-4 w-4 text-blue-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{todayAppointments.length}</div>
-              <p className="text-xs text-muted-foreground">
-                {todayAppointments.filter((apt) => apt.status === "completed").length} {t("completed")}
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("pendingRequests")}</CardTitle>
-              <AlertCircle className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{pendingAppointments.length}</div>
-              <p className="text-xs text-muted-foreground">{t("requiresApproval")}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("upcomingAppointments")}</CardTitle>
-              <Clock className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{upcomingAppointments.length}</div>
-              <p className="text-xs text-muted-foreground">{t("thisWeek")}</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("videoConsultations")}</CardTitle>
-              <Video className="h-4 w-4 text-purple-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{appointments.filter((apt) => apt.type === "video").length}</div>
-              <p className="text-xs text-muted-foreground">{t("totalScheduled")}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Search and Filter */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  <Input
+                    placeholder={t("searchAppointments")}
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="w-full md:w-48">
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder={t("filterByStatus")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">{t("allAppointments")}</SelectItem>
+                    <SelectItem value="confirmed">{t("confirmed")}</SelectItem>
+                    <SelectItem value="pending">{t("pending")}</SelectItem>
+                    <SelectItem value="completed">{t("completed")}</SelectItem>
+                    <SelectItem value="cancelled">{t("cancelled")}</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Input
-                  placeholder={t("searchAppointments")}
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  type="date"
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full md:w-48"
                 />
               </div>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="w-full md:w-48">
-                  <Filter className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder={t("filterByStatus")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">{t("allAppointments")}</SelectItem>
-                  <SelectItem value="confirmed">{t("confirmed")}</SelectItem>
-                  <SelectItem value="pending">{t("pending")}</SelectItem>
-                  <SelectItem value="completed">{t("completed")}</SelectItem>
-                  <SelectItem value="cancelled">{t("cancelled")}</SelectItem>
-                </SelectContent>
-              </Select>
-              <Input
-                type="date"
-                value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
-                className="w-full md:w-48"
-              />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Appointment Tabs */}
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="all">{t("allAppointments")}</TabsTrigger>
-            <TabsTrigger value="pending">{t("pendingRequests")}</TabsTrigger>
-            <TabsTrigger value="today">{t("today")}</TabsTrigger>
-            <TabsTrigger value="upcoming">{t("upcoming")}</TabsTrigger>
-          </TabsList>
+          {/* Appointment Tabs */}
+          <Tabs defaultValue="all" className="space-y-4">
+            <TabsList>
+              <TabsTrigger value="all">{t("allAppointments")}</TabsTrigger>
+              <TabsTrigger value="pending">{t("pendingRequests")}</TabsTrigger>
+              <TabsTrigger value="today">{t("today")}</TabsTrigger>
+              <TabsTrigger value="upcoming">{t("upcoming")}</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="all" className="space-y-4">
-            {filteredAppointments.map((appointment) => (
-              <Card key={appointment.id} className="hover:shadow-lg transition-shadow">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <User className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="text-lg font-semibold">{appointment.patient}</h3>
-                          <Badge className={getStatusColor(appointment.status)}>{t(appointment.status)}</Badge>
+            <TabsContent value="all" className="space-y-4">
+              {filteredAppointments.map((appointment) => (
+                <Card key={appointment.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4 flex-1">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                          <User className="h-6 w-6 text-blue-600" />
                         </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                          <div className="flex items-center space-x-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>{appointment.date}</span>
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <h3 className="text-lg font-semibold">{appointment.patient}</h3>
+                            <Badge className={getStatusColor(appointment.status)}>{t(appointment.status)}</Badge>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            <Clock className="h-4 w-4" />
-                            <span>{appointment.time}</span>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="h-4 w-4" />
+                              <span>{appointment.date}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{appointment.time}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              {getTypeIcon(appointment.type)}
+                              <span className="capitalize">{t(appointment.type.replace("-", ""))}</span>
+                            </div>
                           </div>
-                          <div className="flex items-center space-x-1">
-                            {getTypeIcon(appointment.type)}
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <strong>{t("reason")}:</strong> {appointment.reason}
+                          </p>
+                          {appointment.notes && (
+                            <p className="text-sm text-gray-500">
+                              <strong>{t("notes")}:</strong> {appointment.notes}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        {appointment.status === "pending" && (
+                          <>
+                            <Button size="sm" onClick={() => handleAppointmentAction(appointment.id, "approve")}>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              {t("approve")}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleAppointmentAction(appointment.id, "reschedule")}
+                            >
+                              {t("reschedule")}
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleAppointmentAction(appointment.id, "cancel")}
+                            >
+                              <XCircle className="h-4 w-4 mr-2" />
+                              {t("decline")}
+                            </Button>
+                          </>
+                        )}
+                        {appointment.status === "confirmed" && appointment.type === "video" && (
+                          <GoogleMeetButton
+                            patientName={appointment.patient}
+                            onStartCall={() => handleStartConsultation(appointment.id)}
+                            size="sm"
+                          />
+                        )}
+                        {appointment.status === "confirmed" && appointment.type === "phone" && (
+                          <Button variant="outline" size="sm" onClick={() => handleStartConsultation(appointment.id)}>
+                            <Phone className="h-4 w-4 mr-2" />
+                            {t("call")}
+                          </Button>
+                        )}
+                        <Button variant="ghost" size="sm">
+                          {t("viewPatientRecord")}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </TabsContent>
+
+            <TabsContent value="pending" className="space-y-4">
+              {pendingAppointments.map((appointment) => (
+                <Card key={appointment.id} className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4 flex-1">
+                        <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                          <AlertCircle className="h-6 w-6 text-yellow-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-2">{appointment.patient}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <span>
+                              {appointment.date} at {appointment.time}
+                            </span>
                             <span className="capitalize">{t(appointment.type.replace("-", ""))}</span>
                           </div>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                          <strong>{t("reason")}:</strong> {appointment.reason}
-                        </p>
-                        {appointment.notes && (
-                          <p className="text-sm text-gray-500">
-                            <strong>{t("notes")}:</strong> {appointment.notes}
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            <strong>{t("reason")}:</strong> {appointment.reason}
                           </p>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Button size="sm" onClick={() => handleAppointmentAction(appointment.id, "approve")}>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          {t("approve")}
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => handleAppointmentAction(appointment.id, "cancel")}
+                        >
+                          <XCircle className="h-4 w-4 mr-2" />
+                          {t("decline")}
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </TabsContent>
+
+            <TabsContent value="today" className="space-y-4">
+              {todayAppointments.map((appointment) => (
+                <Card key={appointment.id} className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4 flex-1">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                          <Calendar className="h-6 w-6 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-2">{appointment.patient}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <span>{appointment.time}</span>
+                            <span className="capitalize">{t(appointment.type.replace("-", ""))}</span>
+                            <Badge className={getStatusColor(appointment.status)}>{t(appointment.status)}</Badge>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            <strong>{t("reason")}:</strong> {appointment.reason}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        {appointment.status === "confirmed" && appointment.type === "video" && (
+                          <GoogleMeetButton
+                            patientName={appointment.patient}
+                            onStartCall={() => handleStartConsultation(appointment.id)}
+                            size="sm"
+                          />
+                        )}
+                        {appointment.status === "confirmed" && appointment.type === "phone" && (
+                          <Button variant="outline" size="sm" onClick={() => handleStartConsultation(appointment.id)}>
+                            <Phone className="h-4 w-4 mr-2" />
+                            {t("call")}
+                          </Button>
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-col space-y-2">
-                      {appointment.status === "pending" && (
-                        <>
-                          <Button size="sm" onClick={() => handleAppointmentAction(appointment.id, "approve")}>
-                            <CheckCircle className="h-4 w-4 mr-2" />
-                            {t("approve")}
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleAppointmentAction(appointment.id, "reschedule")}
-                          >
-                            {t("reschedule")}
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleAppointmentAction(appointment.id, "cancel")}
-                          >
-                            <XCircle className="h-4 w-4 mr-2" />
-                            {t("decline")}
-                          </Button>
-                        </>
-                      )}
-                      {appointment.status === "confirmed" && appointment.type === "video" && (
-                        <GoogleMeetButton
-                          patientName={appointment.patient}
-                          onStartCall={() => handleStartConsultation(appointment.id)}
-                          size="sm"
-                        />
-                      )}
-                      {appointment.status === "confirmed" && appointment.type === "phone" && (
-                        <Button variant="outline" size="sm" onClick={() => handleStartConsultation(appointment.id)}>
-                          <Phone className="h-4 w-4 mr-2" />
-                          {t("call")}
+                  </CardContent>
+                </Card>
+              ))}
+            </TabsContent>
+
+            <TabsContent value="upcoming" className="space-y-4">
+              {upcomingAppointments.map((appointment) => (
+                <Card key={appointment.id}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start space-x-4 flex-1">
+                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                          <Clock className="h-6 w-6 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold mb-2">{appointment.patient}</h3>
+                          <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
+                            <span>
+                              {appointment.date} at {appointment.time}
+                            </span>
+                            <span className="capitalize">{t(appointment.type.replace("-", ""))}</span>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">
+                            <strong>{t("reason")}:</strong> {appointment.reason}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex flex-col space-y-2">
+                        <Button variant="outline" size="sm">
+                          {t("reschedule")}
                         </Button>
-                      )}
-                      <Button variant="ghost" size="sm">
-                        {t("viewPatientRecord")}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-
-          <TabsContent value="pending" className="space-y-4">
-            {pendingAppointments.map((appointment) => (
-              <Card key={appointment.id} className="border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <AlertCircle className="h-6 w-6 text-yellow-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">{appointment.patient}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                          <span>
-                            {appointment.date} at {appointment.time}
-                          </span>
-                          <span className="capitalize">{t(appointment.type.replace("-", ""))}</span>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          <strong>{t("reason")}:</strong> {appointment.reason}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button size="sm" onClick={() => handleAppointmentAction(appointment.id, "approve")}>
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        {t("approve")}
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleAppointmentAction(appointment.id, "cancel")}
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        {t("decline")}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-
-          <TabsContent value="today" className="space-y-4">
-            {todayAppointments.map((appointment) => (
-              <Card key={appointment.id} className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <Calendar className="h-6 w-6 text-blue-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">{appointment.patient}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                          <span>{appointment.time}</span>
-                          <span className="capitalize">{t(appointment.type.replace("-", ""))}</span>
-                          <Badge className={getStatusColor(appointment.status)}>{t(appointment.status)}</Badge>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          <strong>{t("reason")}:</strong> {appointment.reason}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-col space-y-2">
-                      {appointment.status === "confirmed" && appointment.type === "video" && (
-                        <GoogleMeetButton
-                          patientName={appointment.patient}
-                          onStartCall={() => handleStartConsultation(appointment.id)}
-                          size="sm"
-                        />
-                      )}
-                      {appointment.status === "confirmed" && appointment.type === "phone" && (
-                        <Button variant="outline" size="sm" onClick={() => handleStartConsultation(appointment.id)}>
-                          <Phone className="h-4 w-4 mr-2" />
-                          {t("call")}
+                        <Button variant="ghost" size="sm">
+                          {t("viewPatientRecord")}
                         </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-
-          <TabsContent value="upcoming" className="space-y-4">
-            {upcomingAppointments.map((appointment) => (
-              <Card key={appointment.id}>
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <Clock className="h-6 w-6 text-green-600" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold mb-2">{appointment.patient}</h3>
-                        <div className="flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-300 mb-2">
-                          <span>
-                            {appointment.date} at {appointment.time}
-                          </span>
-                          <span className="capitalize">{t(appointment.type.replace("-", ""))}</span>
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">
-                          <strong>{t("reason")}:</strong> {appointment.reason}
-                        </p>
                       </div>
                     </div>
-                    <div className="flex flex-col space-y-2">
-                      <Button variant="outline" size="sm">
-                        {t("reschedule")}
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        {t("viewPatientRecord")}
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </TabsContent>
-        </Tabs>
+                  </CardContent>
+                </Card>
+              ))}
+            </TabsContent>
+          </Tabs>
 
-        {/* Empty State */}
-        {filteredAppointments.length === 0 && (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center py-12">
-                <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t("noAppointmentsFound")}</h3>
-                <p className="text-gray-600 dark:text-gray-300">{t("noAppointmentsFoundDesc")}</p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    </DoctorLayout>
+          {/* Empty State */}
+          {filteredAppointments.length === 0 && (
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center py-12">
+                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t("noAppointmentsFound")}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{t("noAppointmentsFoundDesc")}</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </DoctorLayout>
+    </>
   )
 }

@@ -2,5 +2,7 @@
   "symptom_screener": 2456,
   "med_reminder": 2457,
   "postop_followup": 2458,
-  "healthbot": 2461
+  "healthbot": 2461,
+  "appointments": 2729,
+  "doctor_approval": 2730
 }
