@@ -167,7 +167,7 @@ export default function SymptomsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
+              {/* <div>
                 <Label htmlFor="phoneNumber">Phone Number (with country code)</Label>
                 <Input
                   id="phoneNumber"
@@ -183,7 +183,7 @@ export default function SymptomsPage() {
                     {errors.phoneNumber}
                   </p>
                 )}
-              </div>
+              </div> */}
               
               <Button
                 type="button"

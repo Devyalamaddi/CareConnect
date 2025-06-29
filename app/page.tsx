@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Stethoscope, User, UserCheck, Shield, Zap } from "lucide-react"
+import { Stethoscope, User, UserCheck, Shield, Zap, Tablet, TabletsIcon, AlarmCheck, PhoneCall } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
 import { LanguageToggle } from "@/components/language/language-toggle"
@@ -66,7 +66,7 @@ export default function HomePage() {
 
               <Card>
                 <CardHeader>
-                  <Shield className="h-12 w-12 text-green-600 mx-auto mb-2" />
+                  <AlarmCheck className="h-12 w-12 text-green-600 mx-auto mb-2" />
                   <CardTitle>{t("medReminderCompanion")}</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -76,7 +76,7 @@ export default function HomePage() {
 
               <Card>
                 <CardHeader>
-                  <Zap className="h-12 w-12 text-purple-600 mx-auto mb-2" />
+                  <PhoneCall className="h-12 w-12 text-purple-600 mx-auto mb-2" />
                   <CardTitle>{t("postOpFollowup")}</CardTitle>
                 </CardHeader>
                 <CardContent>

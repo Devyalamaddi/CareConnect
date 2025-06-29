@@ -94,7 +94,7 @@ export default function PostOpFollowupPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
+            {/* <div>
               <Label htmlFor="phoneNumber">Phone Number (with country code)</Label>
               <input
                 id="phoneNumber"
@@ -138,7 +138,7 @@ export default function PostOpFollowupPage() {
                 placeholder="3"
                 min={0}
               />
-            </div>
+            </div> */}
             <Button
               type="button"
               onClick={handleVoiceAICall}
