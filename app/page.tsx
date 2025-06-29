@@ -57,30 +57,30 @@ export default function HomePage() {
               <Card>
                 <CardHeader>
                   <Stethoscope className="h-12 w-12 text-blue-600 mx-auto mb-2" />
-                  <CardTitle>{t("aiDiagnosis")}</CardTitle>
+                  <CardTitle>{t("symptomScreener")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300">{t("aiDiagnosisDesc")}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{t("symptomScreenerDesc")}</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
                   <Shield className="h-12 w-12 text-green-600 mx-auto mb-2" />
-                  <CardTitle>{t("secureRecords")}</CardTitle>
+                  <CardTitle>{t("medReminderCompanion")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300">{t("secureRecordsDesc")}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{t("medReminderCompanionDesc")}</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
                   <Zap className="h-12 w-12 text-purple-600 mx-auto mb-2" />
-                  <CardTitle>{t("instantConnect")}</CardTitle>
+                  <CardTitle>{t("postOpFollowup")}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600 dark:text-gray-300">{t("instantConnectDesc")}</p>
+                  <p className="text-gray-600 dark:text-gray-300">{t("postOpFollowupDesc")}</p>
                 </CardContent>
               </Card>
             </div>

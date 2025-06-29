@@ -5,9 +5,13 @@ import { useLanguage } from "./language-provider"
 
 export function LanguageToggle() {
   const { language, setLanguage } = useLanguage()
+  const storeLang = (value: "en" | "hi") => {
+    setLanguage(value)
+    localStorage.setItem("language", value)
+  }
 
   return (
-    <Select value={language} onValueChange={(value: "en" | "hi") => setLanguage(value)} >
+    <Select value={language} onValueChange={(value: "en" | "hi") => storeLang(value)} >
       <SelectTrigger className="w-24 ml-32">
         {/* <Globe className="h-3 w-3 mr-1" /> */}
         <SelectValue />

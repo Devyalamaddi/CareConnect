@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock } from "lucide-react"
+import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock, SoupIcon } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
@@ -31,16 +31,31 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     }
   }, [pathname, router])
 
+  // Inject OmniDimension web widget script
+  useEffect(() => {
+    if (!document.getElementById("omnidimension-web-widget")) {
+      const script = document.createElement("script")
+      script.id = "omnidimension-web-widget"
+      script.async = true
+      script.src = "https://backend.omnidim.io/web_widget.js?secret_key=cd450cf03c13c33c47b849ea89dbd5cc"
+      document.body.appendChild(script)
+      return () => {
+        if (script.parentNode) script.parentNode.removeChild(script)
+      }
+    }
+  }, [])
+
   const navigation = [
     { name: t("dashboard"), href: "/patient/dashboard", icon: Home },
-    { name: t("reportSymptoms"), href: "/patient/symptoms", icon: Plus },
+    { name: t("symptomScreening"), href: "/patient/symptoms", icon: Plus },
     { name: t("medReminder"), href: "/patient/med-reminder", icon: AlarmClock },
     { name: t("postOpFollowup"), href: "/patient/postop-followup", icon: Activity },
+    { name: t("recipes"), href: "/patient/recipes", icon: SoupIcon },
+    { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
     { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
     { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
     { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
-    { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
-    { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
+    // { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
     { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
   ]
 
