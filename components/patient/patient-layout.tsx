@@ -130,22 +130,20 @@ export function PatientLayout({ children }: PatientLayoutProps) {
         className={`fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out ${
           isMobile 
             ? (isMobileSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full w-64')
-            : (isSidebarExpanded ? 'w-64' : 'w-16')
+            : 'w-64'
         }`}
         style={{ top: '64px' }} // Account for sticky header height
-        onMouseEnter={() => !isMobile && setIsSidebarExpanded(true)}
-        onMouseLeave={() => !isMobile && setIsSidebarExpanded(false)}
       >
         <div className="flex flex-col h-full">
           {/* User Info */}
           <div className={`py-4 bg-blue-25 dark:bg-blue-900/10 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-            isMobile || isSidebarExpanded ? 'px-6' : 'px-2'
+            isMobile ? 'px-6' : 'px-6'
           }`}>
-            <div className={`flex items-center ${isMobile || isSidebarExpanded ? 'space-x-3' : 'justify-center'}`}>
+            <div className={`flex items-center ${isMobile ? 'space-x-3' : 'space-x-3'}`}>
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-blue-600 font-semibold text-sm">JD</span>
               </div>
-              {(isMobile || isSidebarExpanded) && (
+              {(isMobile || true) && (
                 <div>
                   <p className="text-sm font-medium text-gray-900 dark:text-white">John Doe</p>
                   <p className="text-xs text-blue-600 dark:text-blue-400">{t("patient")}</p>
@@ -156,7 +154,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
 
           {/* Navigation */}
           <nav className={`flex-1 py-6 space-y-2 transition-all duration-300 ${
-            isMobile || isSidebarExpanded ? 'px-4' : 'px-2'
+            isMobile ? 'px-4' : 'px-4'
           }`}>
             {navigation.map((item) => {
               const isActive = pathname === item.href
@@ -166,13 +164,11 @@ export function PatientLayout({ children }: PatientLayoutProps) {
                     variant={isActive ? "default" : "ghost"}
                     className={`w-full transition-all duration-300 ${
                       isActive ? "bg-blue-600 text-white" : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                    } ${
-                      isMobile || isSidebarExpanded ? "justify-start" : "justify-center"
-                    }`}
-                    title={isMobile || isSidebarExpanded ? undefined : item.name}
+                    } justify-start`}
+                    title={undefined}
                   >
                     <item.icon className="h-4 w-4" />
-                    {(isMobile || isSidebarExpanded) && <span className="ml-3">{item.name}</span>}
+                    <span className="ml-3">{item.name}</span>
                   </Button>
                 </Link>
               )
@@ -181,30 +177,18 @@ export function PatientLayout({ children }: PatientLayoutProps) {
 
           {/* User Actions */}
           <div className={`border-t border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-            isMobile || isSidebarExpanded ? 'p-4' : 'p-2'
+            isMobile ? 'p-4' : 'p-4'
           }`}>
-            <div className={`flex items-center ${isMobile || isSidebarExpanded ? 'justify-between mb-4' : 'justify-center'}`}>
-              {isMobile || isSidebarExpanded ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="border-red-200 text-red-600 hover:bg-red-50 w-full"
-                >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  {t("logout")}
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleLogout}
-                  className="border-red-200 text-red-600 hover:bg-red-50"
-                  title={t("logout")}
-                >
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              )}
+            <div className={`flex items-center ${isMobile ? 'justify-between mb-4' : 'justify-between mb-4'}`}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="border-red-200 text-red-600 hover:bg-red-50 w-full"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                {t("logout")}
+              </Button>
             </div>
           </div>
         </div>
@@ -212,7 +196,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
 
       {/* Main Content */}
       <div className={`transition-all duration-300 ease-in-out ${
-        isMobile ? 'ml-0' : (isSidebarExpanded ? 'ml-64' : 'ml-16')
+        isMobile ? 'ml-0' : 'ml-64'
       }`} style={{ marginTop: '64px' }}> {/* Account for sticky header */}
         <main className="p-8">{children}</main>
         <EmergencySOSButton />
