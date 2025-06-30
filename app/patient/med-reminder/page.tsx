@@ -80,7 +80,7 @@ export default function MedReminderPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phoneNumber: "+918019227239",
+          phoneNumber: "+917981367685",
           patientName: "Demo Patient",
           medicineName: "Paracetamol",
           dosage: "1 tablet",

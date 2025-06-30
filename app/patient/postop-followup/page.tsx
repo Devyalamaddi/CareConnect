@@ -19,7 +19,7 @@ export default function PostOpFollowupPage() {
   const [escalate, setEscalate] = useState(false)
 
   // Voice AI call state
-  const [phoneNumber, setPhoneNumber] = useState("+918019227239")
+  const [phoneNumber, setPhoneNumber] = useState("+917981367685")
   const [patientName, setPatientName] = useState("Demo Patient")
   const [surgeryType, setSurgeryType] = useState("General Surgery")
   const [daysPostOp, setDaysPostOp] = useState("3")
@@ -102,7 +102,7 @@ export default function PostOpFollowupPage() {
                 className="w-full border rounded px-3 py-2 mt-1"
                 value={phoneNumber}
                 onChange={e => setPhoneNumber(e.target.value)}
-                placeholder="+918019227239"
+                placeholder="+917981367685"
               />
             </div>
             <div>

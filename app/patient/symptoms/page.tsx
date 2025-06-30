@@ -25,7 +25,7 @@ export default function SymptomsPage() {
     duration: "",
     bodyPart: "",
     additionalInfo: "",
-    phoneNumber: "+918019227239", // Default phone number
+    phoneNumber: "+917981367685", // Default phone number
   })
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([])
   const [uploadedImages, setUploadedImages] = useState<File[]>([])
@@ -172,7 +172,7 @@ export default function SymptomsPage() {
                 <Input
                   id="phoneNumber"
                   type="tel"
-                  placeholder="+918019227239"
+                  placeholder="+917981367685"
                   value={formData.phoneNumber}
                   onChange={(e) => setFormData((prev) => ({ ...prev, phoneNumber: e.target.value }))}
                   className={errors.phoneNumber ? "border-red-500" : ""}
