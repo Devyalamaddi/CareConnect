@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock, SoupIcon } from "lucide-react"
+import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock, SoupIcon, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
@@ -10,7 +10,7 @@ import { LanguageToggle } from "@/components/language/language-toggle"
 import { NotificationBell } from "@/components/notifications/notification-bell"
 import { PWAInstallBanner } from "@/components/pwa/pwa-install-banner"
 import { OfflineIndicator } from "@/components/pwa/offline-indicator"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Logo } from "@/components/common/logo"
 import { EmergencySOSButton } from "@/components/emergency/emergency-sos-button"
 
@@ -22,6 +22,20 @@ export function PatientLayout({ children }: PatientLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { t } = useLanguage()
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false)
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   // Ensure we're in patient context
   useEffect(() => {
@@ -37,7 +51,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
       const script = document.createElement("script")
       script.id = "omnidimension-web-widget"
       script.async = true
-      script.src = "https://backend.omnidim.io/web_widget.js?secret_key=cd450cf03c13c33c47b849ea89dbd5cc"
+      script.src = "https://backend.omnidim.io/web_widget.js?secret_key=65e1ca056af208664a78c4660fe44972"
       document.body.appendChild(script)
       return () => {
         if (script.parentNode) script.parentNode.removeChild(script)
@@ -63,7 +77,13 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     // TODO: Clear user session and tokens
     // TODO: Call logout API endpoint
     // TODO: Clear local storage/cookies
-    router.push("/")
+    router.push("/auth")
+  }
+
+  const handleNavigationClick = () => {
+    if (isMobile) {
+      setIsMobileSidebarOpen(false)
+    }
   }
 
   return (
@@ -71,40 +91,88 @@ export function PatientLayout({ children }: PatientLayoutProps) {
       <PWAInstallBanner />
       <OfflineIndicator />
 
-      {/* Navigation Sidebar */}
-      <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700">
-        <div className="flex flex-col h-full">
-          {/* Logo */}
-          <div className="flex-col items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700 bg-blue-50 dark:bg-blue-900/20 py-5">
+      {/* Sticky Header with Logo */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between px-6 py-3">
+          <div className="flex items-center space-x-4">
+            {/* Mobile Menu Button */}
+            {isMobile && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+                className="md:hidden"
+              >
+                {isMobileSidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
+            )}
             <Logo size="md" variant="default" className="text-blue-900 dark:text-blue-100" />
-            <LanguageToggle />
+            
           </div>
+          <div className="flex items-center space-x-4">
+            
+            <LanguageToggle />
+            <NotificationBell />
+          </div>
+        </div>
+      </div>
 
+      {/* Mobile Sidebar Overlay */}
+      {isMobile && isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Navigation Sidebar */}
+      <div 
+        className={`fixed inset-y-0 left-0 z-40 bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out ${
+          isMobile 
+            ? (isMobileSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full w-64')
+            : (isSidebarExpanded ? 'w-64' : 'w-16')
+        }`}
+        style={{ top: '64px' }} // Account for sticky header height
+        onMouseEnter={() => !isMobile && setIsSidebarExpanded(true)}
+        onMouseLeave={() => !isMobile && setIsSidebarExpanded(false)}
+      >
+        <div className="flex flex-col h-full">
           {/* User Info */}
-          <div className="px-6 py-4 bg-blue-25 dark:bg-blue-900/10 border-b border-gray-200 dark:border-gray-700">
-            <div className="flex items-center space-x-3">
+          <div className={`py-4 bg-blue-25 dark:bg-blue-900/10 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+            isMobile || isSidebarExpanded ? 'px-6' : 'px-2'
+          }`}>
+            <div className={`flex items-center ${isMobile || isSidebarExpanded ? 'space-x-3' : 'justify-center'}`}>
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-blue-600 font-semibold text-sm">JD</span>
               </div>
-              <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">John Doe</p>
-                <p className="text-xs text-blue-600 dark:text-blue-400">{t("patient")}</p>
-              </div>
+              {(isMobile || isSidebarExpanded) && (
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">John Doe</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">{t("patient")}</p>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className={`flex-1 py-6 space-y-2 transition-all duration-300 ${
+            isMobile || isSidebarExpanded ? 'px-4' : 'px-2'
+          }`}>
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
-                <Link key={item.name} href={item.href}>
+                <Link key={item.name} href={item.href} onClick={handleNavigationClick}>
                   <Button
                     variant={isActive ? "default" : "ghost"}
-                    className={`w-full justify-start ${isActive ? "bg-blue-600 text-white" : "hover:bg-blue-50 dark:hover:bg-blue-900/20"}`}
+                    className={`w-full transition-all duration-300 ${
+                      isActive ? "bg-blue-600 text-white" : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                    } ${
+                      isMobile || isSidebarExpanded ? "justify-start" : "justify-center"
+                    }`}
+                    title={isMobile || isSidebarExpanded ? undefined : item.name}
                   >
-                    <item.icon className="h-4 w-4 mr-3" />
-                    {item.name}
+                    <item.icon className="h-4 w-4" />
+                    {(isMobile || isSidebarExpanded) && <span className="ml-3">{item.name}</span>}
                   </Button>
                 </Link>
               )
@@ -112,25 +180,40 @@ export function PatientLayout({ children }: PatientLayoutProps) {
           </nav>
 
           {/* User Actions */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between mb-4">
-              <NotificationBell />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                className="border-red-200 text-red-600 hover:bg-red-50"
-              >
-                <LogOut className="h-4 w-4 mr-2" />
-                {t("logout")}
-              </Button>
+          <div className={`border-t border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+            isMobile || isSidebarExpanded ? 'p-4' : 'p-2'
+          }`}>
+            <div className={`flex items-center ${isMobile || isSidebarExpanded ? 'justify-between mb-4' : 'justify-center'}`}>
+              {isMobile || isSidebarExpanded ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="border-red-200 text-red-600 hover:bg-red-50 w-full"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {t("logout")}
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="border-red-200 text-red-600 hover:bg-red-50"
+                  title={t("logout")}
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="ml-64">
+      <div className={`transition-all duration-300 ease-in-out ${
+        isMobile ? 'ml-0' : (isSidebarExpanded ? 'ml-64' : 'ml-16')
+      }`} style={{ marginTop: '64px' }}> {/* Account for sticky header */}
         <main className="p-8">{children}</main>
         <EmergencySOSButton />
       </div>

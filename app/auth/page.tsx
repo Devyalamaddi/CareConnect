@@ -74,6 +74,14 @@ export default function AuthPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900">
+      {/* Back Button */}
+      <button
+        onClick={() => router.push("/")}
+        className="absolute top-4 left-4 z-20 flex items-center px-3 py-1.5 rounded-md bg-white/80 dark:bg-slate-800/80 border border-gray-200 dark:border-gray-700 shadow hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+      >
+        <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
+        <span className="font-medium text-gray-700 dark:text-gray-200">Back</span>
+      </button>
       
       {/* Dynamic Background with Mouse Interaction */}
       <div 

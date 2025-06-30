@@ -21,19 +21,9 @@ export function GoogleMeetButton({
   const { t } = useLanguage()
 
   const handleStartCall = () => {
-    // TODO: Integrate with Google Meet API
-    // TODO: Create meeting room with proper permissions
-    // TODO: Send meeting invitation to patient
-    // TODO: Log meeting in patient records
-
-    // Mock Google Meet integration
-    const meetingId = `healthcare-${Date.now()}`
-    const meetingUrl = `https://meet.google.com/${meetingId}`
-
-    // Open Google Meet in new tab
+    // Always open the provided Google Meet link
+    const meetingUrl = "https://meet.google.com/ocw-fmmo-syu"
     window.open(meetingUrl, "_blank")
-
-    // Call parent handler if provided
     onStartCall?.()
   }
 

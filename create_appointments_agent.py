@@ -2,7 +2,7 @@ from omnidimension import Client
 import json
 
 # API key from existing setup
-api_key = "y6sY3KaMTmzUtc5XCi_BJf5BMySgHCD_vI79cIEiEOE"
+api_key = "vk41WvacSEBtDIyywl95m-o545tkoZt5lMtSg4Fcj2M"
 client = Client(api_key)
 
 def create_appointments_agent():

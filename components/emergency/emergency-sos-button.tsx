@@ -129,7 +129,7 @@ export function EmergencySOSButton({ className }: EmergencySOSButtonProps) {
       {/* Floating Action Button */}
       <Button
         onClick={handleSOSClick}
-        className={`hover:scale-105 fixed top-6 right-6 z-50 w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}
+        className={`hover:scale-105 fixed top-20 right-6 z-50 w-16 h-16 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${className}`}
         size="lg"
       >
         <AlertTriangle className="h-8 w-8" />

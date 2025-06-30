@@ -39,7 +39,7 @@ export function PoliceLayout({ children }: PoliceLayoutProps) {
     // TODO: Clear user session and tokens
     // TODO: Call logout API endpoint
     // TODO: Clear local storage/cookies
-    router.push("/")
+    router.push("/auth")
   }
 
   return (

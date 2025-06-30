@@ -73,7 +73,7 @@ export default function PatientDashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <Card className="cursor-pointer hover:shadow-lg transition-shadow">
             <Link href="/patient/symptoms">
               <CardHeader>
@@ -133,7 +133,7 @@ export default function PatientDashboard() {
               </CardHeader>
             </Link>
           </Card>
-        </div>
+        </div> */}
 
         {/* Recent Activity */}
         <Card>

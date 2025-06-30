@@ -1,7 +1,7 @@
 from omnidimension import Client
 
 # Initialize client with API key
-api_key = "y6sY3KaMTmzUtc5XCi_BJf5BMySgHCD_vI79cIEiEOE"
+api_key = "vk41WvacSEBtDIyywl95m-o545tkoZt5lMtSg4Fcj2M"
 client = Client(api_key)
 
 print("🔍 Exploring OmniDimension Client Methods")

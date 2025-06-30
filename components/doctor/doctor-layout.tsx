@@ -43,7 +43,7 @@ export function DoctorLayout({ children }: DoctorLayoutProps) {
     // TODO: Clear doctor session and tokens
     // TODO: Call logout API endpoint
     // TODO: Clear local storage/cookies
-    router.push("/")
+    router.push("/auth")
   }
 
   return (
