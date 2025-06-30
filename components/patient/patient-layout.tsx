@@ -65,12 +65,12 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     { name: t("medReminder"), href: "/patient/med-reminder", icon: AlarmClock },
     { name: t("postOpFollowup"), href: "/patient/postop-followup", icon: Activity },
     { name: t("recipes"), href: "/patient/recipes", icon: SoupIcon },
+    { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
     { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
     { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
     { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
     { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
     // { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
-    { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
   ]
 
   const handleLogout = () => {

@@ -6,7 +6,7 @@ const urlsToCache = [
   "/",
   "/patient/dashboard",
   "/doctor/dashboard",
-  "/chat",
+  "/doctor/chat",
   "/manifest.json",
   "/patient/hospitals",
   "/patient/prescriptions",
