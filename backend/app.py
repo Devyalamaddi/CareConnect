@@ -1,6 +1,18 @@
 from flask import Flask, request, jsonify
 from omnidimension import Client
 import os
+import requests
+import base64
+from dotenv import load_dotenv
+from PIL import Image as PILImage
+from agno.agent import Agent
+from agno.models.google import Gemini
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.media import Image as AgnoImage
+# import hashlib
+# import redis
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -17,6 +29,62 @@ AGENT_IDS = {
     'appointments': 3015,
     'doctor_approval': 3014
 }
+
+# ✅ Optional: Redis for Caching
+# r = redis.Redis(
+#     host='localhost',  # or Redis Cloud host
+#     port=6379,
+#     decode_responses=True
+# )
+# def get_cache_key(image_bytes):
+#     return "gemini:xray:" + hashlib.sha256(image_bytes).hexdigest()
+
+# Set your API Key (from env)
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+if not GEMINI_API_KEY:
+    raise ValueError("⚠️ Please set your Google API Key in GEMINI_API_KEY")
+os.environ["GEMINI_API_KEY"] = GEMINI_API_KEY
+
+medical_agent = Agent(
+    model=Gemini(id="gemini-2.0-flash-exp"),
+    tools=[DuckDuckGoTools()],
+    markdown=True
+)
+
+query = """
+You are a highly skilled medical imaging expert with extensive knowledge in radiology and diagnostic imaging. Analyze the medical image and structure your response as follows:
+
+### 1. Image Type & Region
+- Identify imaging modality (X-ray/MRI/CT/Ultrasound/etc.).
+- Specify anatomical region and positioning.
+- Evaluate image quality and technical adequacy.
+
+### 2. Key Findings
+- Highlight primary observations systematically.
+- Identify potential abnormalities with detailed descriptions.
+- Include measurements and densities where relevant.
+
+### 3. Diagnostic Assessment
+- Provide primary diagnosis with confidence level.
+- List differential diagnoses ranked by likelihood.
+- Support each diagnosis with observed evidence.
+- Highlight critical/urgent findings.
+
+### 4. Patient-Friendly Explanation
+- Simplify findings in clear, non-technical language.
+- Avoid medical jargon or provide easy definitions.
+- Include relatable visual analogies.
+- **Use a kind, empathetic, and supportive tone. Reassure the patient and offer encouragement, especially if findings may be concerning.**
+
+### 5. Research Context
+- Use DuckDuckGo search to find recent medical literature.
+- Search for standard treatment protocols.
+- Provide 2-3 key references supporting the analysis.
+
+**Always include all sections above, even if you are unsure. If you cannot provide a section, write a short, supportive message for the patient in that section.**
+
+Ensure a structured and medically accurate response using clear markdown formatting. Do not include any text outside these sections.
+"""
 
 @app.route('/call-patient', methods=['POST'])
 def call_patient():
@@ -151,6 +219,38 @@ def get_call_logs():
             return jsonify(response)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/analyze-xray', methods=['POST'])
+def analyze_xray():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file uploaded'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    # Save and resize image
+    temp_path = "temp_image.png"
+    file.save(temp_path)
+    image = PILImage.open(temp_path)
+    width, height = image.size
+    aspect_ratio = width / height
+    new_width = 500
+    new_height = int(new_width / aspect_ratio)
+    resized_image = image.resize((new_width, new_height))
+    resized_path = "temp_resized_image.png"
+    resized_image.save(resized_path)
+
+    agno_image = AgnoImage(filepath=resized_path)
+    try:
+        response = medical_agent.run(query, images=[agno_image])
+        result = response.content
+    except Exception as e:
+        result = f"⚠️ Analysis error: {e}"
+    finally:
+        os.remove(temp_path)
+        os.remove(resized_path)
+
+    return jsonify({'gemini': result})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000) 

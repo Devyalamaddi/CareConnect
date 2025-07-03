@@ -37,6 +37,7 @@ export default function SymptomsPage() {
   const [callStatus, setCallStatus] = useState<string | null>(null)
   const [diagnosis, setDiagnosis] = useState<any | null>(null)
   const [diagnosisError, setDiagnosisError] = useState<string | null>(null)
+  const [imageAnalysis, setImageAnalysis] = useState<string | null>(null)
 
   const commonSymptoms = [
     "Headache",
@@ -86,32 +87,50 @@ export default function SymptomsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
     if (!validateForm()) return
-
     setIsSubmitting(true)
     setDiagnosis(null)
     setDiagnosisError(null)
-
+    setImageAnalysis(null)
     try {
-      const response = await fetch('/api/symptoms/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          symptoms: formData.symptoms || selectedSymptoms.join(", "),
-          additionalInfo: formData.additionalInfo,
-        }),
-      })
-      const data = await response.json()
-      if (data.diagnosis) {
-        setDiagnosis(data.diagnosis)
-        setDiagnosisError(null)
+      if (uploadedImages.length > 0) {
+        // Send first image for analysis
+        const formDataToSend = new FormData()
+        formDataToSend.append("file", uploadedImages[0])
+        const response = await fetch('/api/symptoms/analyze', {
+          method: 'POST',
+          body: formDataToSend,
+        })
+        const data = await response.json()
+        if (data.analysis) {
+          setImageAnalysis(data.analysis)
+          setDiagnosisError(null)
+        } else {
+          setImageAnalysis(null)
+          setDiagnosisError(data.error || 'Unknown error')
+        }
       } else {
-        setDiagnosis(null)
-        setDiagnosisError(data.error || 'Unknown error')
+        // Text-based flow
+        const response = await fetch('/api/symptoms/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            symptoms: formData.symptoms || selectedSymptoms.join(", "),
+            additionalInfo: formData.additionalInfo,
+          }),
+        })
+        const data = await response.json()
+        if (data.diagnosis) {
+          setDiagnosis(data.diagnosis)
+          setDiagnosisError(null)
+        } else {
+          setDiagnosis(null)
+          setDiagnosisError(data.error || 'Unknown error')
+        }
       }
     } catch (error) {
       setDiagnosis(null)
+      setImageAnalysis(null)
       setDiagnosisError('Error analyzing symptoms.')
     } finally {
       setIsSubmitting(false)
@@ -458,7 +477,11 @@ export default function SymptomsPage() {
         )}
 
         {/* Diagnosis Modal */}
-        <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} diagnosis={diagnosis} error={diagnosisError} />
+        {imageAnalysis ? (
+          <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} diagnosis={null} error={imageAnalysis} />
+        ) : (
+          <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} diagnosis={diagnosis} error={diagnosisError} />
+        )}
       </div>
     </PatientLayout>
   )

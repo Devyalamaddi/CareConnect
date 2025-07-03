@@ -1,10 +1,8 @@
 flask
-fastapi
-uvicorn
-gunicorn
 omnidimension
 requests
 python-dotenv
-PyPDF2
-reportlab
-pillow
+Pillow
+agno
+google-genai
+duckduckgo-search
