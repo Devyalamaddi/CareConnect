@@ -4,5 +4,6 @@ requests
 python-dotenv
 Pillow
 agno
+gunicorn
 google-genai
 duckduckgo-search
