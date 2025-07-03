@@ -37,7 +37,7 @@ function PatientCallSection() {
       const res = await fetch('/api/appointments/call-patient', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: "+917981367685" })
+        body: JSON.stringify({ phoneNumber: "+918019227239" })
       });
       const data = await res.json();
       if (data.success) {
@@ -60,7 +60,7 @@ function PatientCallSection() {
           id="patient-phone"
           type="tel"
           pattern="^\+91\s?\d{10}$"
-          placeholder="+91 7981367685"
+          placeholder="+91 8019227239"
           value={phone}
           onChange={e => setPhone(e.target.value)}
           className="border p-2 rounded"

@@ -39,7 +39,7 @@ function DoctorCallSection() {
       const res = await fetch('/api/appointments/call-doctor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: "+917981367685" })
+        body: JSON.stringify({ phoneNumber: "+918019227239" })
       });
       const data = await res.json();
       if (data.success) {

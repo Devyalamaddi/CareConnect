@@ -95,6 +95,26 @@ const renderMarkdownToPDF = (doc: any, markdown: string, x: number, y: number, c
   return curY
 }
 
+// Helper to extract a title and description from the Gemini markdown
+function extractTitleAndDescription(markdown: string): { title: string, description: string } {
+  // Try to use the first section heading as title, and first paragraph as description
+  const sectionRegex = /###\s*([\d.\w &-]+)\n([\s\S]*?)(?=\n###|$)/g
+  let match = sectionRegex.exec(markdown)
+  let title = "AI Scan Report"
+  let description = ""
+  if (match) {
+    title = match[1].replace(/^[\d.]+\s*/, "").trim()
+    // Use the first non-empty line as description
+    const lines = match[2].split(/\n|\r/).map(l => l.trim()).filter(Boolean)
+    if (lines.length > 0) {
+      description = lines[0]
+    }
+  }
+  // Fallback if not found
+  if (!description) description = title
+  return { title, description }
+}
+
 const ScanAnalysisPage = () => {
   const [file, setFile] = useState<File | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
@@ -278,8 +298,9 @@ const ScanAnalysisPage = () => {
     if (!gemini) return
     setSaveStatus('saving')
     try {
+      const { title, description } = extractTitleAndDescription(gemini)
       // Compose a diagnosis object (simulate, or use result if available)
-      const diagnosis = { gemini, date: new Date().toISOString() }
+      const diagnosis = { gemini, date: new Date().toISOString(), title, description }
       const res = await fetch('/api/patient/records', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

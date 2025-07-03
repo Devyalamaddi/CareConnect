@@ -22,12 +22,12 @@ client = Client(api_key)
 
 # Agent IDs
 AGENT_IDS = {
-    'symptom_screener': 3020,
-    'med_reminder': 3019,
-    'postop_followup': 3018,
-    'healthbot': 3017,
-    'appointments': 3015,
-    'doctor_approval': 3014
+    'symptom_screener': 3256,
+    'med_reminder': 3257,
+    'postop_followup': 3258,
+    'healthbot': 3259,
+    'appointments': 3261,
+    'doctor_approval': 3262
 }
 
 # ✅ Optional: Redis for Caching
@@ -53,6 +53,8 @@ medical_agent = Agent(
 
 query = """
 You are a highly skilled medical imaging expert with extensive knowledge in radiology and diagnostic imaging. Analyze the medical image and structure your response as follows:
+
+**Make sure to check if the provided image is X-Ray/MRI/CT scan or not, if the provided image is other than these three categories say so, don't do any analysis**
 
 ### 1. Image Type & Region
 - Identify imaging modality (X-ray/MRI/CT/Ultrasound/etc.).
