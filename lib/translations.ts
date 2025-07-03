@@ -64,6 +64,7 @@ export const translations = {
     analytics: "Analytics",
     logout: "Logout",
     police: "Police",
+    goals: "Goals",
 
     // Dashboard
     welcome: "Welcome",
@@ -471,8 +472,7 @@ export const translations = {
     dinner: "Dinner",
     recipes: "Recipes",
     postOpFollowup: "Post-Op Follow-up",
-    postOpFollowupDesc: "Automated check-ins that collect pain scores and escalate if recovery deviates from expected",
-
+    postOpFollowupDesc: "Daily recovery check-in after surgery",
 
     // OmniDim Voice Appointment Booking
     voiceAppointmentBooking: "Voice Appointment Booking",
@@ -530,8 +530,8 @@ export const translations = {
     // App Name
     appName: "केयरकनेक्ट",
     healthcareAI: "केयरकनेक्ट",
-    postOpFollowup: "Post-Op Follow-up",
-    postOpFollowupDesc: "Daily recovery check-in after surgery",
+    postOpFollowup: "पोस्ट-ऑप फॉलो-अप",
+    postOpFollowupDesc: "सर्जरी के बाद दैनिक रिकवरी चेक-इन",
 
 
     // Hero Section
@@ -594,6 +594,7 @@ export const translations = {
     analytics: "एनालिटिक्स",
     logout: "लॉगआउट",
     police: "पुलिस",
+    goals: "लक्ष्य",
 
     // Dashboard
     welcome: "स्वागत",

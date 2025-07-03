@@ -27,6 +27,7 @@ import { toast } from "@/hooks/use-toast"
 
 interface HospitalData {
   id: string
+  type: string
   name: string
   address: string
   phone: string
@@ -43,7 +44,7 @@ interface HospitalData {
   beds?: {
     total: number
     available: number
-  }
+  } | null
   lastUpdated?: string
 }
 
@@ -69,12 +70,14 @@ export default function HospitalsPage() {
   const [showOfflineRoute, setShowOfflineRoute] = useState(false)
   const mapRef = useRef<any>(null)
   const markersRef = useRef<any[]>([])
+  const [filterType, setFilterType] = useState("all")
 
   // Enhanced hospital data with offline capabilities - Telangana Hospitals
   const mockHospitals: HospitalData[] = [
     // HYDERABAD
     {
       id: "1",
+      type: "hospital",
       name: "Apollo Hospitals Hyderabad",
       address: "Jubilee Hills, Hyderabad, Telangana",
       phone: "+91-40-2360-7777",
@@ -90,6 +93,7 @@ export default function HospitalsPage() {
     },
     {
       id: "2",
+      type: "hospital",
       name: "Yashoda Hospitals Secunderabad",
       address: "Alexander Road, Hyderabad, Telangana",
       phone: "+91-40-2771-3333",
@@ -105,6 +109,7 @@ export default function HospitalsPage() {
     },
     {
       id: "3",
+      type: "hospital",
       name: "Rainbow Children's Hospital",
       address: "Banjara Hills, Hyderabad, Telangana",
       phone: "+91-40-4466-9999",
@@ -122,6 +127,7 @@ export default function HospitalsPage() {
     // KHAMMAM
     {
       id: "4",
+      type: "hospital",
       name: "MGM Hospital Khammam",
       address: "Yellandu Cross Road, Khammam, Telangana",
       phone: "+91-8742-255344",
@@ -137,6 +143,7 @@ export default function HospitalsPage() {
     },
     {
       id: "5",
+      type: "hospital",
       name: "Sree Venkateshwara Hospital",
       address: "Wyra Road, Khammam, Telangana",
       phone: "+91-8742-274511",
@@ -152,6 +159,7 @@ export default function HospitalsPage() {
     },
     {
       id: "6",
+      type: "hospital",
       name: "Prashanthi Hospital",
       address: "Kothagudem Road, Khammam, Telangana",
       phone: "+91-8742-289000",
@@ -169,6 +177,7 @@ export default function HospitalsPage() {
     // NIZAMABAD
     {
       id: "7",
+      type: "hospital",
       name: "Care Hospital Nizamabad",
       address: "Bodhan Road, Nizamabad, Telangana",
       phone: "+91-8462-224477",
@@ -184,6 +193,7 @@ export default function HospitalsPage() {
     },
     {
       id: "8",
+      type: "hospital",
       name: "Sunshine Hospital Nizamabad",
       address: "Armoor Road, Nizamabad, Telangana",
       phone: "+91-8462-233344",
@@ -199,6 +209,7 @@ export default function HospitalsPage() {
     },
     {
       id: "9",
+      type: "hospital",
       name: "Life Care Hospital",
       address: "Tilak Garden, Nizamabad, Telangana",
       phone: "+91-8462-225566",
@@ -212,7 +223,84 @@ export default function HospitalsPage() {
       beds: { total: 90, available: 12 },
       lastUpdated: new Date().toISOString(),
     },
+
+    {
+      id: "10",
+      type: "diagnostic",
+      name: "Lucid Diagnostics Hyderabad",
+      address: "Himayatnagar, Hyderabad, Telangana",
+      phone: "+91-40-4444-4444",
+      distance: 2.1,
+      rating: 4.3,
+      specialties: ["Blood Test", "MRI", "CT Scan"],
+      emergencyServices: false,
+      availability: "open",
+      coordinates: { lat: 17.3951, lng: 78.4867 },
+      waitTime: "5 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+
+    {
+      id: "11",
+      type: "diagnostic",
+      name: "Vijaya Diagnostic Centre",
+      address: "Nehru Nagar, Khammam, Telangana",
+      phone: "+91-8742-333222",
+      distance: 1.2,
+      rating: 4.2,
+      specialties: ["X-Ray", "Ultrasound", "Blood Test"],
+      emergencyServices: false,
+      availability: "open",
+      coordinates: { lat: 17.2553, lng: 80.1487 },
+      waitTime: "7 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+
+    {
+      id: "12",
+      type: "diagnostic",
+      name: "MedPlus Diagnostics Nizamabad",
+      address: "Subhash Nagar, Nizamabad, Telangana",
+      phone: "+91-8462-555666",
+      distance: 1.6,
+      rating: 4.4,
+      specialties: ["ECG", "Blood Test", "Thyroid Profile"],
+      emergencyServices: false,
+      availability: "open",
+      coordinates: { lat: 18.6709, lng: 78.0932 },
+      waitTime: "6 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+
   ]
+
+  // Place filteredHospitals here, after mockHospitals and cachedHospitals are defined
+  const filteredHospitals = (isOffline ? cachedHospitals : mockHospitals)
+    .filter((hospital) => {
+      const matchesType = filterType === "all" || hospital.type === filterType
+      const matchesSearch =
+        hospital.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        hospital.address.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesSpecialty =
+        filterSpecialty === "all" ||
+        hospital.specialties.some((s) => s.toLowerCase().includes(filterSpecialty.toLowerCase()))
+      return matchesType && matchesSearch && matchesSpecialty
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "distance":
+          return a.distance - b.distance
+        case "rating":
+          return b.rating - a.rating
+        case "availability":
+          return a.beds ? (b.beds?.available || 0) - a.beds.available : 0
+        default:
+          return 0
+      }
+    })
 
   useEffect(() => {
     initializeOfflineData()
@@ -221,9 +309,9 @@ export default function HospitalsPage() {
 
   useEffect(() => {
     if (userLocation) {
-      loadMap()
+      loadMap(filteredHospitals)
     }
-  }, [userLocation, isOffline])
+  }, [userLocation, isOffline, filteredHospitals])
 
   const initializeOfflineData = async () => {
     try {
@@ -348,7 +436,7 @@ export default function HospitalsPage() {
     }
   }
 
-  const loadMap = async () => {
+  const loadMap = async (hospitalsToShow = filteredHospitals) => {
     try {
       const L = (await import("leaflet")).default
 
@@ -429,30 +517,52 @@ export default function HospitalsPage() {
       markersRef.current = []
 
       // Add hospital markers with enhanced functionality
-      const hospitalsToShow = isOffline ? cachedHospitals : mockHospitals
       hospitalsToShow.forEach((hospital) => {
-        const hospitalIcon = L.divIcon({
-          html: `
+        let iconHtml = ""
+        let iconColor = hospital.emergencyServices ? "#ef4444" : "#10b981"
+        if (hospital.type === "diagnostic") {
+          iconHtml = `
             <div style="
-              background-color: ${hospital.emergencyServices ? "#ef4444" : "#10b981"}; 
-              color: white; 
-              width: 28px; 
-              height: 28px; 
-              border-radius: 50%; 
-              display: flex; 
-              align-items: center; 
-              justify-content: center; 
-              font-size: 14px; 
+              background-color: #6366f1;
+              color: white;
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 14px;
               font-weight: bold;
               border: 2px solid white;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            ">H</div>
-          `,
+              box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+              D
+            </div>
+          `
+        } else {
+          iconHtml = `
+            <div style="
+              background-color: ${iconColor};
+              color: white;
+              width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 14px;
+              font-weight: bold;
+              border: 2px solid white;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+              H
+            </div>
+          `
+        }
+        const markerIcon = L.divIcon({
+          html: iconHtml,
           iconSize: [32, 32],
-          className: "hospital-marker",
+          className: hospital.type === "diagnostic" ? "center-marker" : "hospital-marker",
         })
-
-        const marker = L.marker([hospital.coordinates.lat, hospital.coordinates.lng], { icon: hospitalIcon })
+        const marker = L.marker([hospital.coordinates.lat, hospital.coordinates.lng], { icon: markerIcon })
           .addTo(map)
           .bindPopup(`
             <div style="min-width: 200px;">
@@ -464,28 +574,29 @@ export default function HospitalsPage() {
               ${hospital.beds ? `<p style="margin: 0 0 8px 0; font-size: 12px; color: #666;">🏥 ${hospital.beds.available}/${hospital.beds.total} beds available</p>` : ""}
               <div style="display: flex; gap: 4px; margin-top: 8px;">
                 <button onclick="window.getDirectionsOffline('${hospital.id}')" style="
-                  background: #3b82f6; 
-                  color: white; 
-                  border: none; 
-                  padding: 4px 8px; 
-                  border-radius: 4px; 
+                  background: #3b82f6;
+                  color: white;
+                  border: none;
+                  padding: 4px 8px;
+                  border-radius: 4px;
                   font-size: 11px;
-                  cursor: pointer;
-                ">Directions</button>
+                  cursor: pointer;">
+                  Directions
+                </button>
                 <button onclick="window.location.href='tel:${hospital.phone}'" style="
-                  background: #10b981; 
-                  color: white; 
-                  border: none; 
-                  padding: 4px 8px; 
-                  border-radius: 4px; 
+                  background: #10b981;
+                  color: white;
+                  border: none;
+                  padding: 4px 8px;
+                  border-radius: 4px;
                   font-size: 11px;
-                  cursor: pointer;
-                ">Call</button>
+                  cursor: pointer;">
+                  Call
+                </button>
               </div>
               ${isOffline ? `<p style="margin: 4px 0 0 0; font-size: 10px; color: #999;">Last updated: ${new Date(hospital.lastUpdated || "").toLocaleString()}</p>` : ""}
             </div>
           `)
-
         markersRef.current.push(marker)
       })
 
@@ -538,7 +649,7 @@ export default function HospitalsPage() {
     setShowOfflineRoute(true)
 
     // Reload map to show route
-    loadMap()
+    loadMap(filteredHospitals)
 
     toast({
       title: t("offlineRouteGenerated"),
@@ -585,29 +696,6 @@ export default function HospitalsPage() {
       `
     }
   }
-
-  const filteredHospitals = (isOffline ? cachedHospitals : mockHospitals)
-    .filter((hospital) => {
-      const matchesSearch =
-        hospital.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        hospital.address.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesSpecialty =
-        filterSpecialty === "all" ||
-        hospital.specialties.some((s) => s.toLowerCase().includes(filterSpecialty.toLowerCase()))
-      return matchesSearch && matchesSpecialty
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "distance":
-          return a.distance - b.distance
-        case "rating":
-          return b.rating - a.rating
-        case "availability":
-          return a.beds ? (b.beds?.available || 0) - a.beds.available : 0
-        default:
-          return 0
-      }
-    })
 
   const getAvailabilityColor = (availability: string) => {
     switch (availability) {
@@ -706,6 +794,16 @@ export default function HospitalsPage() {
                   className="pl-10"
                 />
               </div>
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-full md:w-40">
+                  <SelectValue placeholder={t("filterByType") || "Type"} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("allTypes") || "All"}</SelectItem>
+                  <SelectItem value="hospital">{t("hospitals") || "Hospitals"}</SelectItem>
+                  <SelectItem value="diagnostic">{t("centers") || "Centers"}</SelectItem>
+                </SelectContent>
+              </Select>
               <Select value={filterSpecialty} onValueChange={setFilterSpecialty}>
                 <SelectTrigger className="w-full md:w-48">
                   <Filter className="h-4 w-4 mr-2" />

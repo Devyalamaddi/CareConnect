@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -40,6 +40,23 @@ export default function PatientRecords() {
     description: "",
   })
   const [fhirPreview, setFhirPreview] = useState<any>(null)
+
+  const [diagnosisRecords, setDiagnosisRecords] = useState<any[]>([])
+  const [loadingDiagnosisRecords, setLoadingDiagnosisRecords] = useState(true)
+
+  useEffect(() => {
+    async function fetchDiagnosisRecords() {
+      setLoadingDiagnosisRecords(true)
+      try {
+        const res = await fetch("/api/patient/records")
+        const data = await res.json()
+        setDiagnosisRecords(data.records || [])
+      } finally {
+        setLoadingDiagnosisRecords(false)
+      }
+    }
+    fetchDiagnosisRecords()
+  }, [])
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
@@ -98,7 +115,23 @@ export default function PatientRecords() {
   // TODO: Fetch records from backend API
   // TODO: Implement real-time search with debouncing
   // TODO: Add advanced filtering options
-  const records = mockPatientData.medicalRecords
+  const records = [
+    ...diagnosisRecords.map((rec) => ({
+      id: rec.id,
+      type: "diagnosis",
+      title: rec.diagnosis.condition,
+      description: rec.diagnosis.description,
+      date: rec.timestamp.split("T")[0],
+      doctor: "AI Assistant",
+      confidence: rec.diagnosis.confidence,
+      severity: rec.diagnosis.severity,
+      recommendations: rec.diagnosis.recommendations,
+      whenToSeekCare: rec.diagnosis.whenToSeekCare,
+      followUp: rec.diagnosis.followUp,
+      isAIDiagnosis: true,
+    })),
+    ...mockPatientData.medicalRecords,
+  ]
 
   const filteredRecords = records.filter((record) => {
     const matchesSearch =
@@ -324,46 +357,53 @@ export default function PatientRecords() {
 
         {/* Records List */}
         <div className="space-y-4">
-          {paginatedRecords.map((record) => (
-            <Card key={record.id} className="hover:shadow-lg transition-shadow">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4 flex-1">
-                    <div className={`p-2 rounded-lg ${getRecordColor(record.type)}`}>{getRecordIcon(record.type)}</div>
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="text-lg font-semibold">{record.title}</h3>
-                        <Badge variant="secondary" className="capitalize">
-                          {record.type}
-                        </Badge>
-                      </div>
-                      <p className="text-gray-600 dark:text-gray-300 mb-2">{record.description}</p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{record.date}</span>
+          {loadingDiagnosisRecords ? (
+            <div className="text-center py-8 text-gray-500">{t("loading")}</div>
+          ) : (
+            paginatedRecords.map((record) => (
+              <Card key={record.id} className="hover:shadow-lg transition-shadow">
+                <CardContent className="pt-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-start space-x-4 flex-1">
+                      <div className={`p-2 rounded-lg ${getRecordColor(record.type)}`}>{getRecordIcon(record.type)}</div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h3 className="text-lg font-semibold">{record.title}</h3>
+                          <Badge variant="secondary" className="capitalize">
+                            {record.type}
+                          </Badge>
                         </div>
-                        <span>•</span>
-                        <span>
-                          {t("doctor")}: {record.doctor}
-                        </span>
+                        <p className="text-gray-600 dark:text-gray-300 mb-2">{record.description}</p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="h-4 w-4" />
+                            <span>{record.date}</span>
+                          </div>
+                          <span>•</span>
+                          <span>
+                            {t("doctor")}: {record.doctor}
+                          </span>
+                        </div>
+                        {record.isAIDiagnosis && (
+                          <div className="mt-2 text-xs text-blue-600 font-semibold">AI Diagnosis</div>
+                        )}
                       </div>
                     </div>
+                    <div className="flex space-x-2">
+                      <Button variant="outline" size="sm">
+                        <Eye className="h-4 w-4 mr-2" />
+                        {t("view")}
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Download className="h-4 w-4 mr-2" />
+                        {t("download")}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button variant="outline" size="sm">
-                      <Eye className="h-4 w-4 mr-2" />
-                      {t("view")}
-                    </Button>
-                    <Button variant="outline" size="sm">
-                      <Download className="h-4 w-4 mr-2" />
-                      {t("download")}
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                </CardContent>
+              </Card>
+            ))
+          )}
         </div>
 
         {/* Pagination */}

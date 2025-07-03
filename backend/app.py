@@ -139,5 +139,18 @@ def list_agents():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/get-call-logs', methods=['GET'])
+def get_call_logs():
+    try:
+        page = int(request.args.get('page', 1))
+        page_size = int(request.args.get('page_size', 10))
+        response = client.call.get_call_logs(page=page, page_size=page_size, agent_id="3015")
+        if isinstance(response, dict) and 'json' in response:
+            return jsonify(response['json'])
+        else:
+            return jsonify(response)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000) 

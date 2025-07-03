@@ -1,3 +1,10 @@
 flask
-omnidimension 
+fastapi
+uvicorn
 gunicorn
+omnidimension
+requests
+python-dotenv
+PyPDF2
+reportlab
+pillow

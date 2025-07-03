@@ -92,6 +92,22 @@
 - **Improves patient education** through interactive conversations
 - **Enables appointment booking** through natural language processing
 
+### 🖼️ **11. Medical Image Annotation via AI**
+**What it does**: Enables users to upload medical scans (X-rays, MRIs) and receive AI-annotated insights for faster, more accurate diagnosis.
+**Real Impact**:
+- **Assists doctors** with rapid, automated image analysis and annotation
+- **Provides a reliable second opinion** for patients and clinicians
+- **Reduces diagnostic errors** by highlighting critical findings
+- **Accelerates clinical workflows** and improves patient outcomes
+
+### 🎯 **12. Personal Health Goals Tracking**
+**What it does**: Lets patients set, track, and manage their personal health goals (e.g., exercise, diet, habits) directly in the app. Data is saved locally for privacy and ease of use.
+**Real Impact**:
+- **Empowers patients** to take charge of their health journey
+- **Improves adherence** to healthy habits and care plans
+- **Boosts motivation** with goal completion tracking
+- **Facilitates personalized care** and self-management
+
 ---
 
 ## 🛠️ **Technology Stack**

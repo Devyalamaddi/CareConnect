@@ -35,6 +35,8 @@ export default function SymptomsPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [triageAdvice, setTriageAdvice] = useState<string | null>(null)
   const [callStatus, setCallStatus] = useState<string | null>(null)
+  const [diagnosis, setDiagnosis] = useState<any | null>(null)
+  const [diagnosisError, setDiagnosisError] = useState<string | null>(null)
 
   const commonSymptoms = [
     "Headache",
@@ -88,24 +90,33 @@ export default function SymptomsPage() {
     if (!validateForm()) return
 
     setIsSubmitting(true)
+    setDiagnosis(null)
+    setDiagnosisError(null)
 
-    // TODO: Submit symptoms to backend API
-    // TODO: Process images with AI analysis
-    // TODO: Generate real diagnosis using ML model
-    // TODO: Store submission in patient records
-
-    // Simulate triage advice (replace with AI logic)
-    let advice = "self-treat"
-    if (formData.severity === "severe" || selectedSymptoms.includes("Chest Pain") || selectedSymptoms.includes("Shortness of Breath")) {
-      advice = "go to ER"
-    } else if (formData.severity === "moderate") {
-      advice = "consult GP"
-    }
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/symptoms/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          symptoms: formData.symptoms || selectedSymptoms.join(", "),
+          additionalInfo: formData.additionalInfo,
+        }),
+      })
+      const data = await response.json()
+      if (data.diagnosis) {
+        setDiagnosis(data.diagnosis)
+        setDiagnosisError(null)
+      } else {
+        setDiagnosis(null)
+        setDiagnosisError(data.error || 'Unknown error')
+      }
+    } catch (error) {
+      setDiagnosis(null)
+      setDiagnosisError('Error analyzing symptoms.')
+    } finally {
       setIsSubmitting(false)
-      setTriageAdvice(advice)
       setShowDiagnosis(true)
-    }, 3000)
+    }
   }
 
   const initiateVoiceAICall = async () => {
@@ -447,7 +458,7 @@ export default function SymptomsPage() {
         )}
 
         {/* Diagnosis Modal */}
-        <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} />
+        <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} diagnosis={diagnosis} error={diagnosisError} />
       </div>
     </PatientLayout>
   )
