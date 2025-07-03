@@ -27,6 +27,7 @@ import { PatientLayout } from "@/components/patient/patient-layout"
 import { useLanguage } from "@/components/language/language-provider"
 import { usePWA } from "@/components/pwa/pwa-provider"
 import { toast } from "@/hooks/use-toast"
+import { fetchDirectionsORS } from "@/lib/utils"
 
 interface HospitalData {
   id: string
@@ -477,6 +478,19 @@ export default function HospitalsPage() {
     }
   }, [userLocation, isOffline, filteredHospitals])
 
+  // Register service worker for offline map tiles
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(() => {
+          console.log('[Service Worker] Registered for offline map tiles')
+          console.log('[MapTiles] Leaflet-based offline tile caching is now active')
+        })
+        .catch((err) => console.error('[Service Worker] Registration failed:', err))
+    }
+  }, [])
+
   const initializeOfflineData = async () => {
     try {
       // Load cached hospitals from localStorage
@@ -764,6 +778,41 @@ export default function HospitalsPage() {
       }
 
       setMapLoaded(true)
+
+      // --- ENHANCED: Proactively cache visible tiles after map load and on pan/zoom ---
+      function cacheVisibleTiles() {
+        if (
+          'serviceWorker' in navigator &&
+          navigator.onLine &&
+          map &&
+          navigator.serviceWorker.controller
+        ) {
+          navigator.serviceWorker.ready.then((registration) => {
+            if (registration.active) {
+              const tiles = []
+              const bounds = map.getBounds()
+              const zoom = map.getZoom()
+              const tileSize = 256
+              const nw = map.project(bounds.getNorthWest(), zoom).divideBy(tileSize).floor()
+              const se = map.project(bounds.getSouthEast(), zoom).divideBy(tileSize).floor()
+              for (let x = nw.x; x <= se.x; x++) {
+                for (let y = nw.y; y <= se.y; y++) {
+                  tiles.push(`https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`)
+                }
+              }
+              registration.active.postMessage({
+                type: 'CACHE_TILES',
+                tiles,
+              })
+            }
+          })
+        }
+      }
+      // Cache tiles on initial load
+      cacheVisibleTiles()
+      // Cache tiles on pan/zoom
+      map.on('moveend zoomend', cacheVisibleTiles)
+      // --- END ENHANCEMENT ---
     } catch (error) {
       console.error("Error loading map:", error)
       // Show fallback static map
@@ -771,39 +820,69 @@ export default function HospitalsPage() {
     }
   }
 
-  const generateOfflineRoute = (hospitalId: string) => {
-    if (!userLocation) return
+  // Add helper functions for caching
+  function getCacheKey(hospitalId: string, from: { lat: number; lng: number }) {
+    const lat = from.lat.toFixed(3);
+    const lng = from.lng.toFixed(3);
+    return `directions_${hospitalId}_${lat}_${lng}`;
+  }
+  function cacheDirections(key: string, directions: any) {
+    try {
+      localStorage.setItem(key, JSON.stringify(directions));
+    } catch {}
+  }
+  function getCachedDirections(key: string) {
+    try {
+      const data = localStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
+    }
+  }
 
+  const generateOfflineRoute = async (hospitalId: string) => {
+    if (!userLocation) return
     const hospital = (isOffline ? cachedHospitals : mockHospitals).find((h) => h.id === hospitalId)
     if (!hospital) return
-
-    // Generate basic offline route (straight line with waypoints)
-    const route: OfflineRoute = {
-      distance: hospital.distance,
-      duration: Math.round(hospital.distance * 3), // Estimate 3 minutes per km
-      coordinates: [
-        [userLocation.lat, userLocation.lng],
-        [hospital.coordinates.lat, hospital.coordinates.lng],
-      ],
-      instructions: [
-        `Start at your current location`,
-        `Head towards ${hospital.name}`,
-        `Distance: ${hospital.distance} km`,
-        `Estimated time: ${Math.round(hospital.distance * 3)} minutes`,
-        `Arrive at ${hospital.name}, ${hospital.address}`,
-      ],
+    const key = getCacheKey(hospital.id, userLocation)
+    let route: OfflineRoute | null = null
+    const cached = getCachedDirections(key)
+    if (cached) {
+      route = {
+        distance: hospital.distance,
+        duration: Math.round(hospital.distance * 3), // fallback duration
+        coordinates: cached.geometry.coordinates,
+        instructions: cached.steps,
+      }
+    } else if (!isOffline) {
+      try {
+        const result = await fetchDirectionsORS(userLocation, hospital.coordinates)
+        route = {
+          distance: hospital.distance,
+          duration: Math.round(hospital.distance * 3), // fallback duration
+          coordinates: result.geometry.coordinates,
+          instructions: result.steps,
+        }
+        cacheDirections(key, result)
+      } catch {
+        route = null
+      }
     }
-
-    setSelectedRoute(route)
-    setShowOfflineRoute(true)
-
-    // Reload map to show route
-    loadMap(filteredHospitals)
-
-    toast({
-      title: t("offlineRouteGenerated"),
-      description: `${t("routeTo")} ${hospital.name}`,
-    })
+    if (route) {
+      setSelectedRoute(route)
+      setShowOfflineRoute(true)
+      loadMap(filteredHospitals)
+      toast({
+        title: t("offlineRouteGenerated"),
+        description: `${t("routeTo")} ${hospital.name}`,
+      })
+    } else {
+      toast({
+        title: t("directionsUnavailable"),
+        description: t("directionsUnavailableDesc"),
+        variant: "destructive",
+      })
+    }
   }
 
   const showFallbackMap = () => {
@@ -863,9 +942,7 @@ export default function HospitalsPage() {
     if (isOffline) {
       generateOfflineRoute(hospital.id)
     } else {
-      // TODO: Integrate with Google Maps or Apple Maps
-      const url = `https://www.google.com/maps/dir/?api=1&destination=${hospital.coordinates.lat},${hospital.coordinates.lng}`
-      window.open(url, "_blank")
+      generateOfflineRoute(hospital.id)
     }
   }
 
@@ -1027,7 +1104,7 @@ export default function HospitalsPage() {
           <div className="space-y-4 mt-10">
             {/* Offline Route Display */}
             {selectedRoute && showOfflineRoute && (
-              <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">
+              <Card className="border-b">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2 text-blue-800 dark:text-blue-200">
                     <Route className="h-5 w-5" />
@@ -1045,11 +1122,15 @@ export default function HospitalsPage() {
                       </span>
                     </div>
                     <div className="space-y-1">
-                      {selectedRoute.instructions.map((instruction, index) => (
-                        <p key={index} className="text-xs text-gray-600 dark:text-gray-300">
-                          {index + 1}. {instruction}
-                        </p>
-                      ))}
+                      {(selectedRoute.instructions && selectedRoute.instructions.length > 0) ? (
+                        selectedRoute.instructions.map((instruction, index) => (
+                          <p key={index} className="text-xs text-gray-600 dark:text-gray-300">
+                            {index + 1}. {instruction}
+                          </p>
+                        ))
+                      ) : (
+                        <p className="text-xs text-gray-600 dark:text-gray-300">{t("noDirectionsAvailable")}</p>
+                      )}
                     </div>
                   </div>
                 </CardContent>
