@@ -37,21 +37,34 @@ function extractSectionsMap(markdown: string): Record<string, string> {
 }
 
 // Helper to render markdown in jsPDF (supports bold, lists, and normal text)
-function renderMarkdownToPDF(doc: any, markdown: string, x: number, y: number, contentWidth: number): number {
+const renderMarkdownToPDF = (doc: any, markdown: string, x: number, y: number, contentWidth: number, pageHeight: number, margin: number) => {
   const lines = markdown.split(/\n|\r/)
   let curY = y
+  doc.setFont('helvetica', 'normal')
   lines.forEach(line => {
     if (/^\s*\* |^\s*- /.test(line)) {
       // Bullet list
-      doc.setFont('helvetica', 'normal')
+      if (curY + 8 > pageHeight - margin) {
+        doc.addPage()
+        curY = margin + 12
+        doc.setDrawColor(33, 150, 243)
+        doc.setLineWidth(0.7)
+        doc.rect(margin / 2, margin / 2 + 10, 210 - margin, pageHeight - margin - 10, 'S')
+      }
       doc.text('•', x, curY)
       doc.text(line.replace(/^\s*\* |^\s*- /, ''), x + 5, curY)
-      curY += 6
+      curY += 7
     } else if (/^\s*\d+\. /.test(line)) {
       // Numbered list
-      doc.setFont('helvetica', 'normal')
+      if (curY + 8 > pageHeight - margin) {
+        doc.addPage()
+        curY = margin + 12
+        doc.setDrawColor(33, 150, 243)
+        doc.setLineWidth(0.7)
+        doc.rect(margin / 2, margin / 2 + 10, 210 - margin, pageHeight - margin - 10, 'S')
+      }
       doc.text(line, x, curY)
-      curY += 6
+      curY += 7
     } else if (/\*\*(.+)\*\*/.test(line)) {
       // Bold
       const boldMatch = line.match(/\*\*(.+)\*\*/)
@@ -59,18 +72,24 @@ function renderMarkdownToPDF(doc: any, markdown: string, x: number, y: number, c
         doc.setFont('helvetica', 'bold')
         doc.text(boldMatch[1], x, curY)
         doc.setFont('helvetica', 'normal')
-        curY += 6
+        curY += 7
       }
     } else if (line.trim() !== '') {
       // Normal text
-      doc.setFont('helvetica', 'normal')
       const split = doc.splitTextToSize(line, contentWidth)
       split.forEach((l: string) => {
+        if (curY + 8 > pageHeight - margin) {
+          doc.addPage()
+          curY = margin + 12
+          doc.setDrawColor(33, 150, 243)
+          doc.setLineWidth(0.7)
+          doc.rect(margin / 2, margin / 2 + 10, 210 - margin, pageHeight - margin - 10, 'S')
+        }
         doc.text(l, x, curY)
-        curY += 6
+        curY += 7
       })
     } else {
-      curY += 2
+      curY += 3
     }
   })
   return curY
@@ -84,6 +103,7 @@ const ScanAnalysisPage = () => {
   const [gemini, setGemini] = useState<string>("")
   const [modalOpen, setModalOpen] = useState(false)
   const [error, setError] = useState<string>("")
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,8 +142,10 @@ const ScanAnalysisPage = () => {
     }
   }
 
-  const handleDownloadPDF = async () => {
-    if (!gemini || !preview) return
+  const handleDownloadPDF = () => {
+    if (!result && !gemini) return
+    // Use the diagnosis structure if available, else fallback to gemini string
+    const diagnosis = result || { condition: 'AI Scan', confidence: 90, severity: 'N/A', description: gemini, recommendations: [], whenToSeekCare: [], followUp: null }
     const doc = new jsPDF({ unit: "mm", format: "a4" })
     const pageWidth = 210
     const pageHeight = 297
@@ -152,17 +174,75 @@ const ScanAnalysisPage = () => {
     doc.rect(margin / 2, margin / 2 + 10, pageWidth - margin, pageHeight - margin - 10, "S")
     y = margin + 12
 
-    // Extract sections as a map
-    const sectionsMap = extractSectionsMap(gemini)
-    for (const heading of SECTION_HEADINGS) {
-      doc.setFontSize(14)
+    // Report Details
+    doc.setFontSize(14)
+    doc.setFont("helvetica", "bold")
+    doc.text("Diagnosis Summary", margin + 4, y)
+    y += 8
+    doc.setFontSize(12)
+    doc.setFont("helvetica", "normal")
+    doc.text(`Condition: `, margin + 4, y)
+    doc.setFont("helvetica", "bold")
+    doc.text(diagnosis.condition, margin + 38, y)
+    doc.setFont("helvetica", "normal")
+    y += 7
+    doc.text(`Confidence: `, margin + 4, y)
+    doc.text(`${diagnosis.confidence}%`, margin + 38, y)
+    y += 7
+    doc.text(`Severity: `, margin + 4, y)
+    doc.text(`${diagnosis.severity}`, margin + 38, y)
+    y += 10
+    doc.setFont("helvetica", "bold")
+    doc.text("Description:", margin + 4, y)
+    doc.setFont("helvetica", "normal")
+    y += 6
+    const descLines = doc.splitTextToSize(diagnosis.description, contentWidth)
+    descLines.forEach((line: string) => {
+      doc.text(line, margin + 8, y)
+      y += 6
+    })
+    y += 2
+
+    // Recommendations
+    doc.setFont("helvetica", "bold")
+    doc.text("Recommendations:", margin + 4, y)
+    doc.setFont("helvetica", "normal")
+    y += 6
+    diagnosis.recommendations.forEach((rec: string) => {
+      const recLines = doc.splitTextToSize(`• ${rec}`, contentWidth)
+      recLines.forEach((line: string) => {
+        doc.text(line, margin + 8, y)
+        y += 6
+      })
+    })
+    y += 2
+
+    // When to Seek Care
+    doc.setFont("helvetica", "bold")
+    doc.text("When to Seek Care:", margin + 4, y)
+    doc.setFont("helvetica", "normal")
+    y += 6
+    diagnosis.whenToSeekCare.forEach((w: string) => {
+      const wLines = doc.splitTextToSize(`• ${w}`, contentWidth)
+      wLines.forEach((line: string) => {
+        doc.text(line, margin + 8, y)
+        y += 6
+      })
+    })
+    y += 2
+
+    // Follow-up
+    if (diagnosis.followUp?.recommended) {
       doc.setFont("helvetica", "bold")
-      doc.text(heading, margin + 4, y)
-      y += 8
-      doc.setFontSize(12)
+      doc.text("Follow-up:", margin + 4, y)
       doc.setFont("helvetica", "normal")
-      const content = sectionsMap[heading] || SECTION_FALLBACKS[heading]
-      y = renderMarkdownToPDF(doc, content, margin + 8, y, contentWidth)
+      y += 6
+      const followUpText = `Recommended in ${diagnosis.followUp.timeframe} to ${diagnosis.followUp.reason}`
+      const followUpLines = doc.splitTextToSize(followUpText, contentWidth)
+      followUpLines.forEach((line: string) => {
+        doc.text(line, margin + 8, y)
+        y += 6
+      })
       y += 2
     }
 
@@ -174,7 +254,7 @@ const ScanAnalysisPage = () => {
     doc.setTextColor(120, 120, 120)
     doc.text("This report is generated by CareConnect AI. For informational purposes only.", pageWidth / 2, pageHeight - margin + 10, { align: "center" })
     doc.setTextColor(0, 0, 0)
-    doc.save("CareConnect_Scan_Report.pdf")
+    doc.save("CareConnect_Diagnosis_Report.pdf")
   }
 
   const getImageDataUrl = (url: string): Promise<string> => {
@@ -195,9 +275,24 @@ const ScanAnalysisPage = () => {
   }
 
   const handleSaveRecord = async () => {
-    // Save PDF to medical records (simulate API call)
-    await handleDownloadPDF()
-    alert("Report saved to My Medical Records as 'AI Scan Report'.")
+    if (!gemini) return
+    setSaveStatus('saving')
+    try {
+      // Compose a diagnosis object (simulate, or use result if available)
+      const diagnosis = { gemini, date: new Date().toISOString() }
+      const res = await fetch('/api/patient/records', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(diagnosis),
+      })
+      if (res.ok) {
+        setSaveStatus('saved')
+      } else {
+        setSaveStatus('error')
+      }
+    } catch {
+      setSaveStatus('error')
+    }
   }
 
   const handleConsultDoctor = async () => {
@@ -242,7 +337,7 @@ const ScanAnalysisPage = () => {
         {/* Modal */}
         {modalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-4xl w-full relative max-h-[90vh] overflow-y-auto">
               <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => setModalOpen(false)}>✕</Button>
               <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
                 <CheckCircle className="h-6 w-6 text-green-500" /> Scan Analysis Result
@@ -285,8 +380,14 @@ const ScanAnalysisPage = () => {
                         <Phone className="h-4 w-4 mr-2" /> Consult Doctor
                       </Button>
                     </Link>
-                    <Button variant="outline" className="flex-1 px-12 w-full sm:w-auto" onClick={handleSaveRecord}>
-                      <FileText className="h-4 w-4 mr-2" /> Save to My Medical Records
+                    <Button
+                      variant="outline"
+                      className="flex-1 px-12 w-full sm:w-auto"
+                      onClick={handleSaveRecord}
+                      disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      {saveStatus === 'saved' ? 'Saved to My Medical Records' : saveStatus === 'saving' ? 'Saving...' : 'Save to My Medical Records'}
                     </Button>
                     <Button variant="outline" className="flex-1 px-12 w-full sm:w-auto" onClick={handleDownloadPDF}>
                       <Download className="h-4 w-4 mr-2" /> Download PDF
@@ -305,6 +406,28 @@ const ScanAnalysisPage = () => {
                 </div>
               )}
             </div>
+          </div>
+        )}
+        {/* Show actions if a result is available and not loading or error */}
+        {gemini && !loading && !error && (
+          <div className="flex flex-col sm:flex-row gap-3 w-full justify-center items-center mt-8">
+            <Link href="/patient/appointments" className="w-full sm:w-auto">
+              <Button className="flex-1 px-12 w-full sm:w-auto">
+                <Phone className="h-4 w-4 mr-2" /> Consult Doctor
+              </Button>
+            </Link>
+            <Button
+              variant="outline"
+              className="flex-1 px-12 w-full sm:w-auto"
+              onClick={handleSaveRecord}
+              disabled={saveStatus === 'saving' || saveStatus === 'saved'}
+            >
+              <FileText className="h-4 w-4 mr-2" />
+              {saveStatus === 'saved' ? 'Saved to My Medical Records' : saveStatus === 'saving' ? 'Saving...' : 'Save to My Medical Records'}
+            </Button>
+            <Button variant="outline" className="flex-1 px-12 w-full sm:w-auto" onClick={handleDownloadPDF}>
+              <Download className="h-4 w-4 mr-2" /> Download PDF
+            </Button>
           </div>
         )}
       </div>

@@ -19,6 +19,9 @@ import {
   Wifi,
   WifiOff,
   Route,
+  Building,
+  TestTube,
+  Pill,
 } from "lucide-react"
 import { PatientLayout } from "@/components/patient/patient-layout"
 import { useLanguage } from "@/components/language/language-provider"
@@ -274,6 +277,167 @@ export default function HospitalsPage() {
       beds: null,
       lastUpdated: new Date().toISOString(),
     },
+    {
+      id: "13",
+      type: "diagnostic",
+      name: "Lucid Medical Diagnostics",
+      address: "Banjara Hills, Hyderabad, Telangana",
+      phone: "+91-40-6606-6606",
+      distance: 2.1,
+      rating: 4.6,
+      specialties: ["MRI", "CT Scan", "Ultrasound", "Blood Test"],
+      emergencyServices: true,
+      availability: "open",
+      coordinates: { lat: 17.4191, lng: 78.4483 },
+      waitTime: "5 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "14",
+      type: "diagnostic",
+      name: "Medall Diagnostics",
+      address: "Kukatpally, Hyderabad, Telangana",
+      phone: "+91-40-2306-3456",
+      distance: 3.0,
+      rating: 4.3,
+      specialties: ["X-Ray", "ECG", "Diabetes Test", "Lipid Profile"],
+      emergencyServices: false,
+      availability: "open",
+      coordinates: { lat: 17.4935, lng: 78.3996 },
+      waitTime: "8 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "15",
+      type: "diagnostic",
+      name: "Vijaya Diagnostic Centre",
+      address: "Himayatnagar, Hyderabad, Telangana",
+      phone: "+91-40-2340-2340",
+      distance: 2.7,
+      rating: 4.7,
+      specialties: ["Blood Test", "MRI", "Pathology", "COVID-19 RT-PCR"],
+      emergencyServices: true,
+      availability: "open",
+      coordinates: { lat: 17.3961, lng: 78.4867 },
+      waitTime: "4 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "16",
+      type: "diagnostic",
+      name: "Elbit Medical Diagnostics",
+      address: "Ameerpet, Hyderabad, Telangana",
+      phone: "+91-40-2373-5555",
+      distance: 2.4,
+      rating: 4.5,
+      specialties: ["CT Scan", "Ultrasound", "Blood Tests"],
+      emergencyServices: false,
+      availability: "open",
+      coordinates: { lat: 17.4375, lng: 78.4483 },
+      waitTime: "7 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "17",
+      type: "diagnostic",
+      name: "Tesla Diagnostics",
+      address: "Madhapur, Hyderabad, Telangana",
+      phone: "+91-40-2311-0022",
+      distance: 3.2,
+      rating: 4.6,
+      specialties: ["MRI", "PET Scan", "Mammography", "Blood Tests"],
+      emergencyServices: true,
+      availability: "open",
+      coordinates: { lat: 17.4412, lng: 78.3915 },
+      waitTime: "6 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "18",
+      type: "pharmacy",
+      name: "MedPlus Pharmacy Banjara Hills",
+      address: "Road No. 12, Banjara Hills, Hyderabad, Telangana",
+      phone: "+91-40-6700-0300",
+      distance: 1.9,
+      rating: 4.5,
+      specialties: ["Prescription Medicines", "Health Supplements", "First Aid"],
+      emergencyServices: true,
+      availability: "open",
+      coordinates: { lat: 17.4123, lng: 78.4372 },
+      waitTime: "2 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "19",
+      type: "pharmacy",
+      name: "Apollo Pharmacy Madhapur",
+      address: "Near Image Hospital, Madhapur, Hyderabad, Telangana",
+      phone: "+91-40-2355-1000",
+      distance: 2.6,
+      rating: 4.4,
+      specialties: ["Prescription Drugs", "OTC Products", "Baby Care"],
+      emergencyServices: true,
+      availability: "open",
+      coordinates: { lat: 17.4489, lng: 78.3915 },
+      waitTime: "3 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "20",
+      type: "pharmacy",
+      name: "Netmeds Store Ameerpet",
+      address: "Ameerpet Main Road, Hyderabad, Telangana",
+      phone: "+91-40-4000-4000",
+      distance: 2.2,
+      rating: 4.3,
+      specialties: ["Generic Medicines", "Healthcare Devices", "Skin Care"],
+      emergencyServices: false,
+      availability: "open",
+      coordinates: { lat: 17.4376, lng: 78.4482 },
+      waitTime: "4 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "21",
+      type: "pharmacy",
+      name: "1mg Pharmacy Begumpet",
+      address: "Opposite Lifestyle, Begumpet, Hyderabad, Telangana",
+      phone: "+91-40-6666-1111",
+      distance: 3.1,
+      rating: 4.2,
+      specialties: ["Prescription Drugs", "Wellness Products", "Homeopathy"],
+      emergencyServices: false,
+      availability: "open",
+      coordinates: { lat: 17.4438, lng: 78.4623 },
+      waitTime: "5 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    {
+      id: "22",
+      type: "pharmacy",
+      name: "Practo Pharmacy Himayatnagar",
+      address: "Main Road, Himayatnagar, Hyderabad, Telangana",
+      phone: "+91-40-4444-8888",
+      distance: 2.8,
+      rating: 4.4,
+      specialties: ["Prescription Medicines", "Diabetic Care", "Vaccines"],
+      emergencyServices: true,
+      availability: "open",
+      coordinates: { lat: 17.3986, lng: 78.4782 },
+      waitTime: "2 mins",
+      beds: null,
+      lastUpdated: new Date().toISOString(),
+    },
+    
 
   ]
 
@@ -520,47 +684,32 @@ export default function HospitalsPage() {
       hospitalsToShow.forEach((hospital) => {
         let iconHtml = ""
         let iconColor = hospital.emergencyServices ? "#ef4444" : "#10b981"
-        if (hospital.type === "diagnostic") {
-          iconHtml = `
-            <div style="
-              background-color: #6366f1;
-              color: white;
-              width: 28px;
-              height: 28px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 14px;
-              font-weight: bold;
-              border: 2px solid white;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-              D
-            </div>
-          `
-        } else {
-          iconHtml = `
-            <div style="
-              background-color: ${iconColor};
-              color: white;
-              width: 28px;
-              height: 28px;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-size: 14px;
-              font-weight: bold;
-              border: 2px solid white;
-              box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-              H
-            </div>
-          `
-        }
+        iconHtml = `
+          <div style="
+            background-color: ${hospital.type === "diagnostic" ? "#6366f1" : hospital.type === "pharmacy" ? "#f59e42" : iconColor};
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+            ${hospital.type === "diagnostic" ? 'D' : hospital.type === "pharmacy" ? 'P' : 'H'}
+          </div>
+        `
         const markerIcon = L.divIcon({
           html: iconHtml,
           iconSize: [32, 32],
-          className: hospital.type === "diagnostic" ? "center-marker" : "hospital-marker",
+          className:
+            hospital.type === "diagnostic"
+              ? "center-marker"
+              : hospital.type === "pharmacy"
+              ? "pharmacy-marker"
+              : "hospital-marker",
         })
         const marker = L.marker([hospital.coordinates.lat, hospital.coordinates.lng], { icon: markerIcon })
           .addTo(map)
@@ -782,7 +931,7 @@ export default function HospitalsPage() {
         )}
 
         {/* Search and Filters */}
-        <Card>
+        <Card className="mb-12">
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
@@ -802,6 +951,7 @@ export default function HospitalsPage() {
                   <SelectItem value="all">{t("allTypes") || "All"}</SelectItem>
                   <SelectItem value="hospital">{t("hospitals") || "Hospitals"}</SelectItem>
                   <SelectItem value="diagnostic">{t("centers") || "Centers"}</SelectItem>
+                  <SelectItem value="pharmacy">{t("pharmacies") || "Pharmacies"}</SelectItem>
                 </SelectContent>
               </Select>
               <Select value={filterSpecialty} onValueChange={setFilterSpecialty}>
@@ -831,7 +981,7 @@ export default function HospitalsPage() {
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
+        <div className="space-y-6 mt-12">
           {/* Enhanced Map with Offline Support - Full Width */}
           <Card>
             <CardHeader>
@@ -874,7 +1024,7 @@ export default function HospitalsPage() {
           </Card>
 
           {/* Hospital List with Offline Indicators */}
-          <div className="space-y-4">
+          <div className="space-y-4 mt-10">
             {/* Offline Route Display */}
             {selectedRoute && showOfflineRoute && (
               <Card className="border-blue-200 bg-blue-50 dark:bg-blue-900/20">

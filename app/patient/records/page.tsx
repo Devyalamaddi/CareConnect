@@ -135,8 +135,8 @@ export default function PatientRecords() {
 
   const filteredRecords = records.filter((record) => {
     const matchesSearch =
-      record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      record.doctor.toLowerCase().includes(searchTerm.toLowerCase())
+      record.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.doctor?.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesFilter = filterType === "all" || record.type === filterType
     return matchesSearch && matchesFilter
   })
