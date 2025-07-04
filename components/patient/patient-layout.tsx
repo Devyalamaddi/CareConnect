@@ -148,7 +148,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
                 <span className="text-blue-600 font-semibold text-sm">JD</span>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900 dark:text-white">Pattient</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Devendra</p>
                 <p className="text-xs text-blue-600 dark:text-blue-400">{t("patient")}</p>
               </div>
             </div>
