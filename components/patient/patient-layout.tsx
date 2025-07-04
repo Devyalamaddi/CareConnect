@@ -12,6 +12,7 @@ import { PWAInstallBanner } from "@/components/pwa/pwa-install-banner"
 import { OfflineIndicator } from "@/components/pwa/offline-indicator"
 import { useEffect, useState } from "react"
 import { Logo } from "@/components/common/logo"
+import { EmergencySOSButton } from "../emergency/emergency-sos-button"
 
 interface PatientLayoutProps {
   children: ReactNode
@@ -65,14 +66,14 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     { name: t("postOpFollowup"), href: "/patient/postop-followup", icon: Activity },
     { name: t("recipes"), href: "/patient/recipes", icon: SoupIcon },
     { name: t("scanAnalysis"), href: "/patient/diagnosys", icon: Scan },
-    { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
-    { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
-    { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
-    { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
-    { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
-    { name: t("goals"), href: "/patient/goals", icon: Target },
     { name: t("healthFitnessPlan"), href: "/patient/health-plan", icon: Dumbbell },
     { name: t("workout"), href: "/patient/workout", icon: BicepsFlexed },
+    { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
+    { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
+    { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
+    { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
+    { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
+    { name: t("goals"), href: "/patient/goals", icon: Target },
     // { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
   ]
 
@@ -197,6 +198,10 @@ export function PatientLayout({ children }: PatientLayoutProps) {
         isMobile ? 'ml-0' : 'ml-64'
       }`} style={{ marginTop: '64px' }}>
         <main className="p-8">{children}</main>
+      </div>
+      {/* Emergency SOS Button - fixed position */}
+      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}>
+        <EmergencySOSButton />
       </div>
     </div>
   )

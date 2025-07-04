@@ -20,7 +20,7 @@ export default function PatientDashboard() {
         {/* Welcome Section */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            {t("welcome")}, {patient.name}!
+            {t("welcome")}, Devendra!
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mt-2">{t("dashboardSubtitle")}</p>
         </div>

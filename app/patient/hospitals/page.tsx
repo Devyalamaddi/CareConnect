@@ -942,7 +942,17 @@ export default function HospitalsPage() {
     if (isOffline) {
       generateOfflineRoute(hospital.id)
     } else {
-      generateOfflineRoute(hospital.id)
+      if (userLocation) {
+        // Construct Google Maps directions URL
+        const origin = `${userLocation.lat},${userLocation.lng}`
+        const destination = `${hospital.coordinates.lat},${hospital.coordinates.lng}`
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&travelmode=driving`
+        window.open(url, '_blank', 'noopener,noreferrer')
+      } else {
+        // fallback: just show hospital location
+        const url = `https://www.google.com/maps/search/?api=1&query=${hospital.coordinates.lat},${hospital.coordinates.lng}`
+        window.open(url, '_blank', 'noopener,noreferrer')
+      }
     }
   }
 
