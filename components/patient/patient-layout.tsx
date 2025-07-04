@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
-import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock, SoupIcon, Menu, X, Target, Scan, Heart, Dumbbell } from "lucide-react"
+import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock, SoupIcon, Menu, X, Target, Scan, BicepsFlexed, Dumbbell } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language/language-provider"
@@ -12,7 +12,6 @@ import { PWAInstallBanner } from "@/components/pwa/pwa-install-banner"
 import { OfflineIndicator } from "@/components/pwa/offline-indicator"
 import { useEffect, useState } from "react"
 import { Logo } from "@/components/common/logo"
-import { EmergencySOSButton } from "@/components/emergency/emergency-sos-button"
 
 interface PatientLayoutProps {
   children: ReactNode
@@ -73,7 +72,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
     { name: t("goals"), href: "/patient/goals", icon: Target },
     { name: t("healthFitnessPlan"), href: "/patient/health-plan", icon: Dumbbell },
-    { name: t("workout"), href: "/patient/workout", icon: Dumbbell },
+    { name: t("workout"), href: "/patient/workout", icon: BicepsFlexed },
     // { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
   ]
 
@@ -138,28 +137,25 @@ export function PatientLayout({ children }: PatientLayoutProps) {
         }`}
         style={{ top: '64px' }} // Account for sticky header height
       >
-        <div className="flex flex-col h-full">
+        <div
+          className="flex flex-col h-full overflow-y-auto"
+          style={{ maxHeight: 'calc(100vh - 64px)' }}
+        >
           {/* User Info */}
-          <div className={`py-4 bg-blue-25 dark:bg-blue-900/10 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-            isMobile ? 'px-6' : 'px-6'
-          }`}>
-            <div className={`flex items-center ${isMobile ? 'space-x-3' : 'space-x-3'}`}>
+          <div className={`py-4 bg-blue-25 dark:bg-blue-900/10 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 px-6`}>
+            <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-blue-600 font-semibold text-sm">JD</span>
               </div>
-              {(isMobile || true) && (
-                <div>
-                  <p className="text-sm font-medium text-gray-900 dark:text-white">John Doe</p>
-                  <p className="text-xs text-blue-600 dark:text-blue-400">{t("patient")}</p>
-                </div>
-              )}
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Pattient</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400">{t("patient")}</p>
+              </div>
             </div>
           </div>
 
           {/* Navigation */}
-          <nav className={`flex-1 py-6 space-y-2 transition-all duration-300 ${
-            isMobile ? 'px-4' : 'px-4'
-          }`}>
+          <nav className="flex-1 py-6 space-y-2 transition-all duration-300 px-4">
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
@@ -179,11 +175,9 @@ export function PatientLayout({ children }: PatientLayoutProps) {
             })}
           </nav>
 
-          {/* User Actions */}
-          <div className={`border-t border-gray-200 dark:border-gray-700 transition-all duration-300 ${
-            isMobile ? 'p-4' : 'p-4'
-          }`}>
-            <div className={`flex items-center ${isMobile ? 'justify-between mb-4' : 'justify-between mb-4'}`}>
+          {/* User Actions (Sticky Logout) */}
+          <div className="border-t border-gray-200 dark:border-gray-700 transition-all duration-300 p-4 sticky bottom-0 bg-white dark:bg-gray-800 z-10">
+            <div className="flex items-center justify-between mb-4">
               <Button
                 variant="outline"
                 size="sm"
@@ -196,14 +190,6 @@ export function PatientLayout({ children }: PatientLayoutProps) {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className={`transition-all duration-300 ease-in-out ${
-        isMobile ? 'ml-0' : 'ml-64'
-      }`} style={{ marginTop: '64px' }}> {/* Account for sticky header */}
-        <main className="p-8">{children}</main>
-        <EmergencySOSButton />
       </div>
     </div>
   )

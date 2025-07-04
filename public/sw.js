@@ -4,7 +4,6 @@ const HOSPITAL_CACHE_NAME = "healthcare-hospitals-v1"
 
 const urlsToCache = [
   "/",
-  "/patient/dashboard",
   "/patient/symptoms",
   "/patient/med-reminder",
   "/patient/postop-followup",
