@@ -473,6 +473,8 @@ export const translations = {
     recipes: "Recipes",
     postOpFollowup: "Post-Op Follow-up",
     postOpFollowupDesc: "Daily recovery check-in after surgery",
+    healthFitnessPlan: "Health & Fitness Plan",
+    workout: "Workout",
 
     // OmniDim Voice Appointment Booking
     voiceAppointmentBooking: "Voice Appointment Booking",
@@ -1029,6 +1031,10 @@ export const translations = {
     lunch: "दोपहर का भोजन",
     dinner: "रात का भोजन",
     recipes: "व्यंजन",
+    postOpFollowup: "पोस्ट-ऑप फॉलो-अप",
+    postOpFollowupDesc: "सर्जरी के बाद दैनिक रिकवरी चेक-इन",
+    healthFitnessPlan: "स्वास्थ्य और फिटनेस योजना",
+    workout: "वर्कआउट",
 
     // OmniDim Voice Appointment Booking
     voiceAppointmentBooking: "वॉइस अपॉइंटमेंट बुकिंग",

@@ -355,8 +355,8 @@ export default function WorkoutPage() {
               onChange={e => setExerciseName(e.target.value as ExerciseType)}
               disabled={active}
             >
-              <option value="squat">Squat</option>
               <option value="curl">Bicep Curl</option>
+              <option value="squat">Squat</option>
             </select>
           </div>
           <div className="flex flex-col items-center">
