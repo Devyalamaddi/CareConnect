@@ -191,6 +191,13 @@ export function PatientLayout({ children }: PatientLayoutProps) {
           </div>
         </div>
       </div>
+
+      {/* Main Content */}
+      <div className={`transition-all duration-300 ease-in-out ${
+        isMobile ? 'ml-0' : 'ml-64'
+      }`} style={{ marginTop: '64px' }}>
+        <main className="p-8">{children}</main>
+      </div>
     </div>
   )
 }
