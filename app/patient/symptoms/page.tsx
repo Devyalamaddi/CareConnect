@@ -85,6 +85,15 @@ export default function SymptomsPage() {
     return Object.keys(newErrors).length === 0
   }
 
+  function saveRecordToLocalStorage(record: any) {
+    if (typeof window === 'undefined') return;
+    try {
+      const key = "careconnect_patient_records";
+      const existing = JSON.parse(localStorage.getItem(key) || "[]");
+      localStorage.setItem(key, JSON.stringify([record, ...existing]));
+    } catch {}
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validateForm()) return
@@ -123,12 +132,20 @@ export default function SymptomsPage() {
         if (data.diagnosis) {
           setDiagnosis(data.diagnosis)
           setDiagnosisError(null)
+          // Save the exact API response to localStorage
+          const record = {
+            id: Date.now().toString(),
+            source: 'symptoms',
+            response: data,
+            date: new Date().toISOString()
+          }
+          saveRecordToLocalStorage(record)
         } else {
           setDiagnosis(null)
           setDiagnosisError(data.error || 'Unknown error')
         }
       }
-    } catch (error) {
+    } catch {
       setDiagnosis(null)
       setImageAnalysis(null)
       setDiagnosisError('Error analyzing symptoms.')

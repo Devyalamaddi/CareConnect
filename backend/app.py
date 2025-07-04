@@ -254,5 +254,73 @@ def analyze_xray():
 
     return jsonify({'gemini': result})
 
+@app.route('/patient/health-plan', methods=['POST'])
+def patient_health_plan():
+    data = request.json
+    # Extract parameters with defaults for safety
+    name = data.get('name', 'Patient')
+    age = data.get('age', None)
+    weight = data.get('weight', None)
+    height = data.get('height', None)
+    gender = data.get('gender', None)
+    activity_level = data.get('activity_level', None)
+    dietary_preference = data.get('dietary_preference', None)
+    fitness_goal = data.get('fitness_goal', None)
+    medical_conditions = data.get('medical_conditions', [])
+    allergies = data.get('allergies', [])
+    medications = data.get('medications', [])
+
+    # Refined, healthcare-aligned prompt
+    prompt = f'''
+You are a compassionate, evidence-based digital health coach. Create a comprehensive, safe, and actionable health plan for the following patient:
+
+- Name: {name}
+- Age: {age}
+- Weight: {weight} kg
+- Height: {height} cm
+- Gender: {gender}
+- Activity Level: {activity_level}
+- Dietary Preference: {dietary_preference}
+- Fitness Goal: {fitness_goal}
+- Medical Conditions: {', '.join(medical_conditions) if medical_conditions else 'None'}
+- Allergies: {', '.join(allergies) if allergies else 'None'}
+- Medications: {', '.join(medications) if medications else 'None'}
+
+**Instructions:**
+- Always structure your response in exactly 5 sections, each starting with the following H2 markdown headings (##):
+  - ## 1. Personalized Nutrition Plan
+  - ## 2. Personalized Fitness Plan
+  - ## 3. Lifestyle & Wellness Tips
+  - ## 4. Patient-Friendly Explanation
+  - ## 5. References & Research
+- Use these exact headings and order so the response can be split and paginated in the frontend.
+- Personalize all advice to the above profile.
+- Ensure all recommendations are safe for the listed medical conditions, allergies, and medications.
+- In the Nutrition Plan, provide a daily meal plan (breakfast, lunch, dinner, snacks) with nutritional breakdown (macros, vitamins) using markdown tables where possible.
+- In the Fitness Plan, provide a workout plan (warm-up, main exercises, cool-down) tailored to the goal and ability, using lists or tables.
+- In Lifestyle & Wellness Tips, suggest healthy habits (hydration, sleep, stress, etc.) in a clear, actionable way.
+- In Patient-Friendly Explanation, summarize the plan in simple, supportive language.
+- In References & Research, cite reputable sources or guidelines.
+- Use supportive, inclusive, and motivating language throughout.
+- If unsure, say so and suggest consulting a healthcare professional.
+'''
+    try:
+        # Use the Gemini agent (with DuckDuckGo tools for up-to-date info)
+        health_agent = Agent(
+            model=Gemini(id="gemini-2.0-flash-exp"),
+            description="Creates holistic, safe, and actionable health plans for patients.",
+            instructions=[],
+            tools=[DuckDuckGoTools()],
+            show_tool_calls=True,
+            markdown=True
+        )
+        response = health_agent.run(prompt)
+        return jsonify({
+            "success": True,
+            "plan": response.content
+        })
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000) 

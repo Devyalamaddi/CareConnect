@@ -102,17 +102,26 @@ function extractTitleAndDescription(markdown: string): { title: string, descript
   let match = sectionRegex.exec(markdown)
   let title = "AI Scan Report"
   let description = ""
-  if (match) {
-    title = match[1].replace(/^[\d.]+\s*/, "").trim()
-    // Use the first non-empty line as description
-    const lines = match[2].split(/\n|\r/).map(l => l.trim()).filter(Boolean)
-    if (lines.length > 0) {
-      description = lines[0]
-    }
-  }
+  // if (match) {
+  //   title = match[1].replace(/^[\d.]+\s*/, "").trim()
+  //   // Use the first non-empty line as description
+  //   const lines = match[2].split(/\n|\r/).map(l => l.trim()).filter(Boolean)
+  //   if (lines.length > 0) {
+  //     description = lines[0]
+  //   }
+  // }
   // Fallback if not found
   if (!description) description = title
   return { title, description }
+}
+
+function saveRecordToLocalStorage(record: any) {
+  if (typeof window === 'undefined') return;
+  try {
+    const key = "careconnect_patient_records";
+    const existing = JSON.parse(localStorage.getItem(key) || "[]");
+    localStorage.setItem(key, JSON.stringify([record, ...existing]));
+  } catch {}
 }
 
 const ScanAnalysisPage = () => {
@@ -299,18 +308,16 @@ const ScanAnalysisPage = () => {
     setSaveStatus('saving')
     try {
       const { title, description } = extractTitleAndDescription(gemini)
-      // Compose a diagnosis object (simulate, or use result if available)
-      const diagnosis = { gemini, date: new Date().toISOString(), title, description }
-      const res = await fetch('/api/patient/records', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(diagnosis),
-      })
-      if (res.ok) {
-        setSaveStatus('saved')
-      } else {
-        setSaveStatus('error')
+      const diagnosis = result || { condition: title, confidence: 90, severity: 'N/A', description, recommendations: [], whenToSeekCare: [], followUp: null }
+      // Save the exact scan result to localStorage
+      const record = {
+        id: Date.now().toString(),
+        source: 'scan',
+        response: { gemini, result, diagnosis },
+        date: new Date().toISOString()
       }
+      saveRecordToLocalStorage(record)
+      setSaveStatus('saved')
     } catch {
       setSaveStatus('error')
     }

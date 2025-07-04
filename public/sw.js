@@ -5,12 +5,21 @@ const HOSPITAL_CACHE_NAME = "healthcare-hospitals-v1"
 const urlsToCache = [
   "/",
   "/patient/dashboard",
+  "/patient/symptoms",
+  "/patient/med-reminder",
+  "/patient/postop-followup",
+  "/patient/recipes",
+  "/patient/diagnosys",
+  "/patient/appointments",
+  "/patient/hospitals",
+  "/patient/records",
+  "/patient/prescriptions",
+  "/patient/ai-prescriptions",
+  "/patient/goals",
+  "/patient/chat",
   "/doctor/dashboard",
   "/doctor/chat",
   "/manifest.json",
-  "/patient/hospitals",
-  "/patient/prescriptions",
-  "/patient/ai-prescriptions",
 ]
 
 // Install event

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -22,6 +22,18 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import jsPDF from "jspdf"
+import ReactMarkdown from 'react-markdown'
+import { AlertTriangle, CheckCircle, Phone } from "lucide-react"
+
+function getLocalRecords() {
+  if (typeof window === 'undefined') return [];
+  try {
+    return JSON.parse(localStorage.getItem("careconnect_patient_records") || "[]");
+  } catch {
+    return [];
+  }
+}
 
 export default function PatientRecords() {
   const { t } = useLanguage()
@@ -44,18 +56,34 @@ export default function PatientRecords() {
   const [diagnosisRecords, setDiagnosisRecords] = useState<any[]>([])
   const [loadingDiagnosisRecords, setLoadingDiagnosisRecords] = useState(true)
 
+  const [modalOpen, setModalOpen] = useState(false)
+  const [modalRecord, setModalRecord] = useState<any | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
   useEffect(() => {
     async function fetchDiagnosisRecords() {
       setLoadingDiagnosisRecords(true)
       try {
         const res = await fetch("/api/patient/records")
         const data = await res.json()
-        setDiagnosisRecords(data.records || [])
+        const localRecords = getLocalRecords()
+        setDiagnosisRecords([...(localRecords || []), ...(data.records || [])])
       } finally {
         setLoadingDiagnosisRecords(false)
       }
     }
     fetchDiagnosisRecords()
+    // Listen for localStorage changes (e.g., from other tabs)
+    const onStorage = () => {
+      setDiagnosisRecords((prev) => {
+        const localRecords = getLocalRecords()
+        // Merge with already fetched API records (assume API records are after local)
+        const apiRecords = prev.filter(r => !localRecords.find((lr: any) => lr.id === r.id))
+        return [...localRecords, ...apiRecords]
+      })
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
   }, [])
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -112,24 +140,74 @@ export default function PatientRecords() {
     setShowUploadModal(false)
   }
 
-  // TODO: Fetch records from backend API
-  // TODO: Implement real-time search with debouncing
-  // TODO: Add advanced filtering options
+  // Read localStorage records (exact API responses)
+  const localRecords = getLocalRecords()
+
+  // Merge and flatten records for display
   const records = [
-    ...diagnosisRecords.map((rec) => ({
-      id: rec.id,
-      type: "diagnosis",
-      title: rec.diagnosis.condition,
-      description: rec.diagnosis.description,
-      date: rec.timestamp.split("T")[0],
-      doctor: "AI Assistant",
-      confidence: rec.diagnosis.confidence,
-      severity: rec.diagnosis.severity,
-      recommendations: rec.diagnosis.recommendations,
-      whenToSeekCare: rec.diagnosis.whenToSeekCare,
-      followUp: rec.diagnosis.followUp,
-      isAIDiagnosis: true,
-    })),
+    ...localRecords.map((rec: any) => {
+      if (rec.source === 'symptoms' && rec.response?.diagnosis) {
+        return {
+          ...rec,
+          id: rec.id,
+          type: "diagnosis",
+          title: rec.response.diagnosis.condition,
+          description: rec.response.diagnosis.description,
+          date: rec.date?.split("T")[0] || rec.date,
+          doctor: "AI Assistant",
+          confidence: rec.response.diagnosis.confidence,
+          severity: rec.response.diagnosis.severity,
+          recommendations: rec.response.diagnosis.recommendations,
+          whenToSeekCare: rec.response.diagnosis.whenToSeekCare,
+          followUp: rec.response.diagnosis.followUp,
+          isAIDiagnosis: true,
+          _raw: rec,
+        }
+      } else if (rec.source === 'scan' && rec.response?.diagnosis) {
+        return {
+          ...rec,
+          id: rec.id,
+          type: "diagnosis",
+          title: rec.response.diagnosis.condition,
+          description: rec.response.diagnosis.description,
+          date: rec.date?.split("T")[0] || rec.date,
+          doctor: "AI Assistant",
+          confidence: rec.response.diagnosis.confidence,
+          severity: rec.response.diagnosis.severity,
+          recommendations: rec.response.diagnosis.recommendations,
+          whenToSeekCare: rec.response.diagnosis.whenToSeekCare,
+          followUp: rec.response.diagnosis.followUp,
+          isAIDiagnosis: true,
+          _raw: rec,
+        }
+      } else {
+        // fallback for any other structure
+        return rec
+      }
+    }),
+    ...diagnosisRecords.map((rec) => {
+      if (rec.diagnosis) {
+        // API record
+        return {
+          id: rec.id,
+          type: "diagnosis",
+          title: rec.diagnosis.condition,
+          description: rec.diagnosis.description,
+          date: rec.timestamp?.split("T")[0] || rec.date,
+          doctor: "AI Assistant",
+          confidence: rec.diagnosis.confidence,
+          severity: rec.diagnosis.severity,
+          recommendations: rec.diagnosis.recommendations,
+          whenToSeekCare: rec.diagnosis.whenToSeekCare,
+          followUp: rec.diagnosis.followUp,
+          isAIDiagnosis: true,
+          _raw: rec,
+        }
+      } else {
+        // LocalStorage record (already flat)
+        return rec
+      }
+    }),
     ...mockPatientData.medicalRecords,
   ]
 
@@ -168,6 +246,162 @@ export default function PatientRecords() {
         return "bg-purple-100 text-purple-800"
       default:
         return "bg-gray-100 text-gray-800"
+    }
+  }
+
+  // PDF download logic (from symptoms page)
+  function downloadDiagnosisPDF(record: any) {
+    const diagnosis = record.response?.diagnosis || record.response?.diagnosis || record.diagnosis || record
+    const doc = new jsPDF({ unit: "mm", format: "a4" })
+    const pageWidth = 210
+    const pageHeight = 297
+    const margin = 18
+    const contentWidth = pageWidth - margin * 2 - 4
+    let y = margin
+    doc.setFillColor(33, 150, 243)
+    doc.rect(0, 0, pageWidth, 22, "F")
+    doc.setTextColor(255, 255, 255)
+    doc.setFontSize(20)
+    doc.setFont("helvetica", "bold")
+    doc.text("CareConnect Health", pageWidth / 2, y, { align: "center" })
+    y += 10
+    doc.setFontSize(10)
+    doc.text("AI-Powered Diagnosis Report", pageWidth / 2, y, { align: "center" })
+    y += 10
+    doc.setTextColor(0, 0, 0)
+    doc.setFontSize(12)
+    doc.setFont("helvetica", "normal")
+    doc.setDrawColor(33, 150, 243)
+    doc.setLineWidth(0.7)
+    doc.rect(margin / 2, margin / 2 + 10, pageWidth - margin, pageHeight - margin - 10, "S")
+    y = margin + 12
+    doc.setFontSize(14)
+    doc.setFont("helvetica", "bold")
+    doc.text("Diagnosis Summary", margin + 4, y)
+    y += 8
+    doc.setFontSize(12)
+    doc.setFont("helvetica", "normal")
+    doc.text(`Condition: `, margin + 4, y)
+    doc.setFont("helvetica", "bold")
+    doc.text(diagnosis.condition || "", margin + 38, y)
+    doc.setFont("helvetica", "normal")
+    y += 7
+    doc.text(`Confidence: `, margin + 4, y)
+    doc.text(`${diagnosis.confidence || ""}%`, margin + 38, y)
+    y += 7
+    doc.text(`Severity: `, margin + 4, y)
+    doc.text(`${diagnosis.severity || ""}`, margin + 38, y)
+    y += 10
+    doc.setFont("helvetica", "bold")
+    doc.text("Description:", margin + 4, y)
+    doc.setFont("helvetica", "normal")
+    y += 6
+    const descLines = doc.splitTextToSize(diagnosis.description || "", contentWidth)
+    descLines.forEach((line: string) => {
+      doc.text(line, margin + 8, y)
+      y += 6
+    })
+    y += 2
+    doc.setFont("helvetica", "bold")
+    doc.text("Recommendations:", margin + 4, y)
+    doc.setFont("helvetica", "normal")
+    y += 6
+    ;(diagnosis.recommendations || []).forEach((rec: string) => {
+      const recLines = doc.splitTextToSize(`• ${rec}`, contentWidth)
+      recLines.forEach((line: string) => {
+        doc.text(line, margin + 8, y)
+        y += 6
+      })
+    })
+    y += 2
+    doc.setFont("helvetica", "bold")
+    doc.text("When to Seek Care:", margin + 4, y)
+    doc.setFont("helvetica", "normal")
+    y += 6
+    ;(diagnosis.whenToSeekCare || []).forEach((w: string) => {
+      const wLines = doc.splitTextToSize(`• ${w}`, contentWidth)
+      wLines.forEach((line: string) => {
+        doc.text(line, margin + 8, y)
+        y += 6
+      })
+    })
+    y += 2
+    if (diagnosis.followUp?.recommended) {
+      doc.setFont("helvetica", "bold")
+      doc.text("Follow-up:", margin + 4, y)
+      doc.setFont("helvetica", "normal")
+      y += 6
+      const followUpText = `Recommended in ${diagnosis.followUp.timeframe} to ${diagnosis.followUp.reason}`
+      const followUpLines = doc.splitTextToSize(followUpText, contentWidth)
+      followUpLines.forEach((line: string) => {
+        doc.text(line, margin + 8, y)
+        y += 6
+      })
+      y += 2
+    }
+    doc.setDrawColor(200, 200, 200)
+    doc.setLineWidth(0.3)
+    doc.line(margin / 2, pageHeight - margin + 4, pageWidth - margin / 2, pageHeight - margin + 4)
+    doc.setFontSize(9)
+    doc.setTextColor(120, 120, 120)
+    doc.text("This report is generated by CareConnect AI. For informational purposes only.", pageWidth / 2, pageHeight - margin + 10, { align: "center" })
+    doc.setTextColor(0, 0, 0)
+    doc.save("CareConnect_Diagnosis_Report.pdf")
+  }
+
+  // Modal content for viewing a record
+  function renderModalContent(record: any) {
+    if (!record) return null
+    if (record.source === 'symptoms' && record.response?.diagnosis) {
+      const diagnosis = record.response.diagnosis
+      return (
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <CheckCircle className="h-6 w-6 text-green-500" /> AI Diagnosis
+          </h2>
+          <div className="prose max-w-none">
+            <strong>Condition:</strong> {diagnosis.condition}<br />
+            <strong>Confidence:</strong> {diagnosis.confidence}%<br />
+            <strong>Severity:</strong> {diagnosis.severity}<br />
+            <strong>Description:</strong> {diagnosis.description}<br />
+            <strong>Recommendations:</strong>
+            <ul>{diagnosis.recommendations?.map((rec: string, i: number) => <li key={i}>{rec}</li>)}</ul>
+            <strong>When to Seek Care:</strong>
+            <ul>{diagnosis.whenToSeekCare?.map((w: string, i: number) => <li key={i}>{w}</li>)}</ul>
+            {diagnosis.followUp?.recommended && (
+              <div><strong>Follow-up:</strong> {diagnosis.followUp.timeframe} - {diagnosis.followUp.reason}</div>
+            )}
+          </div>
+          <Button onClick={() => downloadDiagnosisPDF(record)}>
+            <Download className="h-4 w-4 mr-2" /> Download PDF
+          </Button>
+        </div>
+      )
+    } else if (record.source === 'scan' && record.response?.gemini) {
+      // Render markdown sections from gemini
+      return (
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <FileText className="h-6 w-6 text-blue-500" /> Scan Analysis
+          </h2>
+          <div className="prose max-w-none">
+            <ReactMarkdown>{record.response.gemini}</ReactMarkdown>
+          </div>
+          <Button onClick={() => downloadDiagnosisPDF(record)}>
+            <Download className="h-4 w-4 mr-2" /> Download PDF
+          </Button>
+        </div>
+      )
+    } else {
+      // fallback for other records
+      return (
+        <div className="space-y-4">
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <FileText className="h-6 w-6 text-gray-500" /> Medical Record
+          </h2>
+          <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-xs">{JSON.stringify(record, null, 2)}</pre>
+        </div>
+      )
     }
   }
 
@@ -384,17 +618,17 @@ export default function PatientRecords() {
                             {t("doctor")}: {record.doctor}
                           </span>
                         </div>
-                        {record.isAIDiagnosis && (
+                        {('isAIDiagnosis' in record) && record.isAIDiagnosis && (
                           <div className="mt-2 text-xs text-blue-600 font-semibold">AI Diagnosis</div>
                         )}
                       </div>
                     </div>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => { setModalRecord(record); setModalOpen(true); }}>
                         <Eye className="h-4 w-4 mr-2" />
                         {t("view")}
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => downloadDiagnosisPDF(record)}>
                         <Download className="h-4 w-4 mr-2" />
                         {t("download")}
                       </Button>
@@ -460,6 +694,16 @@ export default function PatientRecords() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Modal for viewing record */}
+        {modalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
+              <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={() => setModalOpen(false)}>✕</Button>
+              {renderModalContent(modalRecord)}
+            </div>
+          </div>
         )}
       </div>
     </PatientLayout>

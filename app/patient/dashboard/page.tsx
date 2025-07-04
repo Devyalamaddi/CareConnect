@@ -133,6 +133,18 @@ export default function PatientDashboard() {
               </CardHeader>
             </Link>
           </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+            <Link href="/patient/health-plan">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Activity className="h-5 w-5 text-green-600" />
+                  <span>Health & Fitness Plan</span>
+                </CardTitle>
+                <CardDescription>Get a personalized, holistic health and fitness plan</CardDescription>
+              </CardHeader>
+            </Link>
+          </Card>
         </div> */}
 
         {/* Recent Activity */}
