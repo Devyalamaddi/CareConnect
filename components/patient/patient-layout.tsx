@@ -145,7 +145,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
           <div className={`py-4 bg-blue-25 dark:bg-blue-900/10 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 px-6`}>
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-semibold text-sm">JD</span>
+                <span className="text-blue-600 font-semibold text-sm">D</span>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900 dark:text-white">Devendra</p>
