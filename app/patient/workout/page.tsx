@@ -264,7 +264,7 @@ function FinalModal({ open, onClose, sets, exercise }: { open: boolean, onClose:
         <p className="mb-2 text-lg text-gray-800 dark:text-gray-200">You did <span className="font-bold">{sets.length}</span> sets of {exercise === "squat" ? "Squats" : "Bicep Curls"}:</p>
         <ul className="mb-4 w-full text-center">
           {sets.map((set, i) => (
-            <li key={i} className="text-lg text-blue-600 dark:text-blue-400">Set {i + 1}: <span className="font-bold">{set}</span> reps</li>
+            <li key={i} className="text-lg text-blue-600 dark:text-blue-400">Set {i+1}: <span className="font-bold">{set}</span> reps</li>
           ))}
         </ul>
         <button
