@@ -93,6 +93,9 @@ export default function HomePage() {
                 className="w-full h-full rounded-2xl transform group-hover:scale-105 transition-transform duration-500"
                 title="NexBot Robot Character"
               />
+              <span className="absolute right-4 bottom-5 z-50 bg-white dark:bg-gray-800 text-xs font-semibold px-8 py-3 rounded shadow-md">
+                Care Connect
+              </span>
               <div className="absolute inset-0 ring-1 ring-white/20 rounded-2xl pointer-events-none"></div>
             </div>
           </div>
