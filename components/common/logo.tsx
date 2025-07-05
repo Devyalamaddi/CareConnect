@@ -5,9 +5,10 @@ interface LogoProps {
   showText?: boolean
   variant?: "default" | "pro"
   className?: string
+  isLanding: boolean
 }
 
-export function Logo({ size = "md", showText = true, variant = "default", className = "" }: LogoProps) {
+export function Logo({ size = "md", showText = true, variant = "default", className = "", isLanding = false }: LogoProps) {
   const sizeClasses = {
     sm: "h-6 w-6",
     md: "h-8 w-8",
@@ -27,7 +28,7 @@ export function Logo({ size = "md", showText = true, variant = "default", classN
         alt="CareConnect Logo"
         className={`object-contain ${sizeClasses[size]}`}
       />
-      {showText && (
+      {showText && !isLanding && (
         <h1 className={`font-bold ${textSizeClasses[size]}`}>Care Connect</h1>
       )}
     </div>

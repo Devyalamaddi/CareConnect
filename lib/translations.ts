@@ -6,7 +6,7 @@ export const translations = {
 
     // Hero Section
     heroTitle: "Smart Healthcare at Your Fingertips",
-    heroSubtitle: "Get instant AI-powered health insights and connect with doctors seamlessly",
+    heroSubtitle: "Get instant AI-powered health insights, symptom analysis, medical triage, and connect with doctors seamlessly for personalized care",
 
     // Features
     aiDiagnosis: "AI Diagnosis",
