@@ -90,7 +90,7 @@ export default function HomePage() {
                 frameBorder='0' 
                 width='100%' 
                 height='100%'
-                className="w-full h-full rounded-2xl transform group-hover:scale-105 transition-transform duration-500"
+                className="w-full h-full rounded-2xl transform group-hover:scale-101 transition-transform duration-500"
                 title="NexBot Robot Character"
               />
               <span className="absolute right-4 bottom-5 z-50 bg-white dark:bg-gray-800 text-xs font-semibold px-8 py-3 rounded shadow-md">

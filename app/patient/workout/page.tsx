@@ -9,7 +9,7 @@ import { useTheme } from "next-themes"
 import { Sun, Moon, PauseCircle } from "lucide-react"
 
 // --- HOOK: useWorkoutPose ---
-type ExerciseType = "squat" | "curl"
+type ExerciseType = "pushup" | "curl"
 
 function getAngle(a: any, b: any, c: any) {
   const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x)
@@ -22,25 +22,26 @@ function useWorkoutPose(exercise: ExerciseType, onRepCount?: (count: number) => 
   const [repCount, setRepCount] = React.useState(0)
   const [phase, setPhase] = React.useState<"up" | "down" | null>(null)
   const [feedback, setFeedback] = React.useState<string>("")
+  const [warning, setWarning] = React.useState<string>("")
+  const [progress, setProgress] = React.useState<number>(0)
   const isRep = React.useRef(false)
   const onRepCountRef = React.useRef(onRepCount)
   React.useEffect(() => { onRepCountRef.current = onRepCount }, [onRepCount])
 
-  // This function will be called with the latest pose keypoints
   const processPose = React.useCallback((keypoints: any[]) => {
     if (!keypoints) return
+    setWarning("")
     // Map keypoints by name for easier access
     const kp: Record<string, any> = {}
     keypoints.forEach((k: any) => { if (k.score > 0.5) kp[k.name] = k })
 
     if (exercise === "curl") {
-      // Use right arm for demo
       const shoulder = kp["right_shoulder"]
       const elbow = kp["right_elbow"]
       const wrist = kp["right_wrist"]
       if (shoulder && elbow && wrist) {
         const angle = getAngle(shoulder, elbow, wrist)
-        // Rep logic
+        setProgress(Math.max(0, Math.min(100, ((160 - angle) / 110) * 100)))
         if (angle > 160) isRep.current = true
         if (isRep.current && angle < 50) {
           setRepCount((c) => {
@@ -50,20 +51,28 @@ function useWorkoutPose(exercise: ExerciseType, onRepCount?: (count: number) => 
           })
           isRep.current = false
         }
-        // Simple feedback
         if (angle < 40) setFeedback("Great contraction! Squeeze at the top.")
         else if (angle > 160) setFeedback("Lower your arm fully for a full rep.")
         else setFeedback("")
+        if (angle > 170) setWarning("Don't hyperextend your elbow.")
       }
-    } else if (exercise === "squat") {
-      // Use right leg for demo
-      const hip = kp["right_hip"]
-      const knee = kp["right_knee"]
-      const ankle = kp["right_ankle"]
-      if (hip && knee && ankle) {
-        const angle = getAngle(hip, knee, ankle)
-        if (angle < 70) isRep.current = true
-        if (isRep.current && angle > 160) {
+    } else if (exercise === "pushup") {
+      // Use right arm for pushup: shoulder, elbow, wrist
+      const shoulder = kp["right_shoulder"]
+      const elbow = kp["right_elbow"]
+      const wrist = kp["right_wrist"]
+      const leftShoulder = kp["left_shoulder"]
+      const leftElbow = kp["left_elbow"]
+      const leftWrist = kp["left_wrist"]
+      // Use both arms for more robust detection
+      if (shoulder && elbow && wrist && leftShoulder && leftElbow && leftWrist) {
+        const angleR = getAngle(shoulder, elbow, wrist)
+        const angleL = getAngle(leftShoulder, leftElbow, leftWrist)
+        const avgAngle = (angleR + angleL) / 2
+        setProgress(Math.max(0, Math.min(100, ((160 - avgAngle) / 110) * 100)))
+        // Rep logic: down < 70, up > 150
+        if (avgAngle < 70) isRep.current = true
+        if (isRep.current && avgAngle > 150) {
           setRepCount((c) => {
             const newCount = c + 1
             if (onRepCountRef.current) onRepCountRef.current(newCount)
@@ -71,30 +80,47 @@ function useWorkoutPose(exercise: ExerciseType, onRepCount?: (count: number) => 
           })
           isRep.current = false
         }
-        // Simple feedback
-        if (angle < 70) setFeedback("Good squat depth!")
-        else if (angle > 160) setFeedback("Stand tall at the top.")
+        // Feedback and warnings
+        if (avgAngle < 70) setFeedback("Good depth! Chest close to the ground.")
+        else if (avgAngle > 150) setFeedback("Lock out at the top.")
         else setFeedback("")
+        // Suggestion: if not going low enough
+        if (avgAngle > 90 && avgAngle < 150) setWarning("Go lower for a full rep.")
+        // Suggestion: if not locking out
+        if (avgAngle < 150 && avgAngle > 70) setWarning("Lock your elbows at the top.")
+        // Optional: check for hip sag (body not straight)
+        const rightHip = kp["right_hip"]
+        const leftHip = kp["left_hip"]
+        const rightShoulderY = shoulder.y
+        const leftShoulderY = leftShoulder.y
+        if (rightHip && leftHip) {
+          const avgHipY = (rightHip.y + leftHip.y) / 2
+          const avgShoulderY = (rightShoulderY + leftShoulderY) / 2
+          if (Math.abs(avgHipY - avgShoulderY) > 80) {
+            setWarning("Keep your body straight! Don't let your hips sag or pike.")
+          }
+        }
       }
     }
   }, [exercise])
 
-  // Reset on exercise change
   React.useEffect(() => {
     setRepCount(0)
     setFeedback("")
+    setWarning("")
+    setProgress(0)
     isRep.current = false
     if (onRepCountRef.current) onRepCountRef.current(0)
   }, [exercise])
 
-  return { repCount, feedback, processPose }
+  return { repCount, feedback, warning, progress, processPose }
 }
 
 // --- COMPONENT ---
 const WorkoutTracker = ({ exerciseName, onRepCount, active }: { exerciseName: ExerciseType, onRepCount: (count: number) => void, active: boolean }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const { repCount, feedback, processPose } = useWorkoutPose(exerciseName, onRepCount)
+  const { repCount, feedback, warning, progress, processPose } = useWorkoutPose(exerciseName, onRepCount)
 
   useEffect(() => {
     if (!active) return // Only run pose detection if active
@@ -177,12 +203,25 @@ const WorkoutTracker = ({ exerciseName, onRepCount, active }: { exerciseName: Ex
   }
   return (
     <div className="relative w-full max-w-5xl mx-auto aspect-[16/7] border rounded-2xl overflow-hidden shadow-lg bg-white dark:bg-gray-800 transition-colors duration-300">
-      <video ref={videoRef} className="absolute w-full h-full object-cover" />
+      <video ref={videoRef} className="absolute w-full h-[full] object-cover" />
       <canvas ref={canvasRef} className="absolute w-full h-full" />
+      {/* Progress Bar */}
+      <div className="absolute left-4 top-4 w-[56px] h-[95%] my-auto bg-gray-200 rounded-full flex flex-col justify-end">
+        <div
+          className="w-full bg-green-500 rounded-full transition-all duration-300"
+          style={{ height: `${progress}%` }}
+        />
+      </div>
       {/* Feedback overlay */}
       {feedback && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-xl text-lg font-semibold shadow-lg pointer-events-none">
+        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 bg-black/70 text-white px-4 py-2 rounded-xl text-lg font-semibold shadow-lg pointer-events-none">
           {feedback}
+        </div>
+      )}
+      {/* Warning overlay */}
+      {warning && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-yellow-600/90 text-white px-4 py-2 rounded-xl text-md font-semibold shadow-lg pointer-events-none">
+          {warning}
         </div>
       )}
     </div>
@@ -261,7 +300,7 @@ function FinalModal({ open, onClose, sets, exercise }: { open: boolean, onClose:
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 max-w-sm w-full flex flex-col items-center">
         <h2 className="text-2xl font-bold mb-4 text-green-600 dark:text-green-400">Workout Complete!</h2>
-        <p className="mb-2 text-lg text-gray-800 dark:text-gray-200">You did <span className="font-bold">{sets.length}</span> sets of {exercise === "squat" ? "Squats" : "Bicep Curls"}:</p>
+        <p className="mb-2 text-lg text-gray-800 dark:text-gray-200">You did <span className="font-bold">{sets.length}</span> sets of {exercise === "pushup" ? "Pushups" : "Bicep Curls"}:</p>
         <ul className="mb-4 w-full text-center">
           {sets.map((set, i) => (
             <li key={i} className="text-lg text-blue-600 dark:text-blue-400">Set {i+1}: <span className="font-bold">{set}</span> reps</li>
@@ -278,7 +317,7 @@ function FinalModal({ open, onClose, sets, exercise }: { open: boolean, onClose:
 
 export default function WorkoutPage() {
   const { theme, setTheme } = useTheme()
-  const [exerciseName, setExerciseName] = useState<ExerciseType>("squat")
+  const [exerciseName, setExerciseName] = useState<ExerciseType>("pushup")
   const [repCount, setRepCount] = useState(0)
   const [lastSetRepBase, setLastSetRepBase] = useState(0)
   const [active, setActive] = useState(false)
@@ -356,7 +395,7 @@ export default function WorkoutPage() {
               disabled={active}
             >
               <option value="curl">Bicep Curl</option>
-              <option value="squat">Squat</option>
+              <option value="pushup">Pushup</option>
             </select>
           </div>
           <div className="flex flex-col items-center">

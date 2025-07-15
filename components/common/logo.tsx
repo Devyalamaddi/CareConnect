@@ -26,7 +26,7 @@ export function Logo({ size = "md", showText = true, variant = "default", classN
       <img
         src="/images/careconnect-logo.png"
         alt="CareConnect Logo"
-        className={`object-contain ${sizeClasses[size]}`}
+        className={`object-contain ${sizeClasses[size]} rounded-full`}
       />
       {showText && !isLanding && (
         <h1 className={`font-bold ${textSizeClasses[size]}`}>Care Connect</h1>

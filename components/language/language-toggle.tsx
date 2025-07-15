@@ -21,12 +21,12 @@ export function LanguageToggle() {
         variant="outline"
         pressed={theme === "dark"}
         onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
-        className="h-10 w-10 p-3 flex items-center justify-center"
+        className="h-10 w-10 p-3 flex items-center justify-center bg-transparent"
       >
         {theme === "dark" ? <Moon className="h-6 w-6" /> : <Sun className="h-16 w-16" />}
       </Toggle>
       <Select value={language} onValueChange={(value: "en" | "hi") => storeLang(value)} >
-        <SelectTrigger className="w-24">
+        <SelectTrigger className="w-24 bg-transparent">
           {/* <Globe className="h-3 w-3 mr-1" /> */}
           <SelectValue />
         </SelectTrigger>
