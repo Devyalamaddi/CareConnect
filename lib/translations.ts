@@ -447,6 +447,8 @@ export const translations = {
     consultDoctor: "Consult Doctor",
     saveForLater: "Save for Later",
     interactions: "Drug Interactions",
+    forYoungsters: "For Youngsters",
+
 
     // Recipe Suggestions
     aiDietAssistant: "AI Diet Assistant",
@@ -575,6 +577,8 @@ export const translations = {
     secureRecordsDesc: "आपका मेडिकल डेटा एन्क्रिप्टेड और सुरक्षित रूप से संग्रहीत है",
     instantConnect: "तुरंत कनेक्ट",
     instantConnectDesc: "कभी भी, कहीं भी डॉक्टरों के साथ वीडियो चैट करें",
+    forYoungsters: "युवाओं के लिए",
+
 
     // New Features
     symptomScreener: "लक्षण स्क्रीनर",

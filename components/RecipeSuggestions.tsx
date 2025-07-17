@@ -35,7 +35,7 @@ export default function RecipeSuggestions({ className }: RecipeSuggestionsProps)
   const getMealType = (): string => {
     const hour = new Date().getHours();
     if (hour < 10) return 'breakfast';
-    if (hour < 12) return 'lunch';
+    if (hour < 15) return 'lunch';
     if (hour < 18) return 'dinner';
     return 'dinner'; // Default to dinner for late hours
   };

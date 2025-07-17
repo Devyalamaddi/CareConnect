@@ -83,7 +83,7 @@ export default function HomePage() {
             </div>
 
             {/* Spline iframe */}
-            <div className="w-full h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl relative group">
+            <div className="w-full h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl relative group hidden md:block">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-2xl group-hover:from-blue-500/30 group-hover:to-purple-500/30 transition-all duration-500"></div>
               <iframe 
                 src='https://my.spline.design/nexbotrobotcharacterconcept-22637c44a77736a58365c65e225a8d97/' 
