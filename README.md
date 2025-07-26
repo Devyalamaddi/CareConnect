@@ -201,7 +201,6 @@ npm run dev
 
 Built with ❤️ for **better healthcare accessibility** and **improved patient outcomes**.
 
-**Contact**: [Your Contact Information]
 
 ---
 
