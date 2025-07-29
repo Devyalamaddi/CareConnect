@@ -100,7 +100,7 @@ useEffect(() => {
     { name: t("medReminder"), href: "/patient/med-reminder", icon: AlarmClock },
     { name: t("postOpFollowup"), href: "/patient/postop-followup", icon: Activity },
     { name: t("recipes"), href: "/patient/recipes", icon: SoupIcon },
-    // { name: t("scanAnalysis"), href: "/patient/diagnosys", icon: Scan },
+    { name: t("scanAnalysis"), href: "/patient/diagnosys", icon: Scan },
     // { name: t("healthFitnessPlan"), href: "/patient/health-plan", icon: Dumbbell },
     { name: t("workout"), href: "/patient/workout", icon: BicepsFlexed },
     { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
