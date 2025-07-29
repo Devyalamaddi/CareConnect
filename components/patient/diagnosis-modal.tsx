@@ -10,6 +10,8 @@ import { useLanguage } from "@/components/language/language-provider"
 import Link from "next/link"
 import jsPDF from "jspdf"
 import { useState } from "react"
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface Diagnosis {
   condition: string
@@ -23,6 +25,22 @@ interface Diagnosis {
     timeframe: string
     reason: string
   }
+  nearbyFacilities?: {
+    name: string;
+    type: string;
+    address: string;
+    phone: string;
+    mapsLink: string;
+    directions?: string;
+  }[];
+  medications?: {
+    name: string;
+    links?: {
+      provider: string;
+      url: string;
+    }[];
+  }[];
+  doctorVideoScript?: string;
 }
 
 interface DiagnosisModalProps {
@@ -30,11 +48,32 @@ interface DiagnosisModalProps {
   onClose: () => void
   diagnosis: Diagnosis | null
   error?: string | null
+  diagnosisMarkdown?: string | null
 }
 
-export function DiagnosisModal({ isOpen, onClose, diagnosis, error }: DiagnosisModalProps) {
+function parseMarkdownSections(markdown: string) {
+  // Very basic parser for the expected markdown structure
+  // Returns an object with keys: diagnosis, facilities, medications, videoScript
+  const sections: any = {};
+  const diagnosisMatch = markdown.match(/### 1\. Diagnosis[\s\S]*?(?=---|###|$)/i);
+  const facilitiesMatch = markdown.match(/### 2\. Nearby Facilities[\s\S]*?(?=---|###|$)/i);
+  const medicationsMatch = markdown.match(/### 3\. Suggested Medications[\s\S]*?(?=---|###|$)/i);
+  const videoScriptMatch = markdown.match(/### 4\. AI Video Script[\s\S]*?(?=---|###|$)/i);
+  if (diagnosisMatch) sections.diagnosis = diagnosisMatch[0];
+  if (facilitiesMatch) sections.facilities = facilitiesMatch[0];
+  if (medicationsMatch) sections.medications = medicationsMatch[0];
+  if (videoScriptMatch) sections.videoScript = videoScriptMatch[0];
+  return sections;
+}
+
+export function DiagnosisModal({ isOpen, onClose, diagnosis, error, diagnosisMarkdown }: DiagnosisModalProps) {
   const { t } = useLanguage()
   const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "saved" | "error">("idle")
+
+  let markdownSections: any = null;
+  if (diagnosisMarkdown) {
+    markdownSections = parseMarkdownSections(diagnosisMarkdown);
+  }
 
   const getConfidenceColor = (confidence: number) => {
     if (confidence >= 80) return "text-green-600"
@@ -157,6 +196,65 @@ export function DiagnosisModal({ isOpen, onClose, diagnosis, error }: DiagnosisM
       y += 2
     }
 
+    // Nearby Facilities
+    if (diagnosis.nearbyFacilities && diagnosis.nearbyFacilities.length > 0) {
+      doc.setFont("helvetica", "bold")
+      doc.text("Nearby Facilities:", margin + 4, y)
+      doc.setFont("helvetica", "normal")
+      y += 6
+      diagnosis.nearbyFacilities.forEach((facility) => {
+        const facilityLines = doc.splitTextToSize(`• ${facility.name} (${facility.type})`, contentWidth)
+        facilityLines.forEach((line: string) => {
+          doc.text(line, margin + 8, y)
+          y += 6
+        })
+        doc.text(`Address: ${facility.address}`, margin + 8, y)
+        doc.text(`Phone: ${facility.phone}`, margin + 8, y)
+        doc.text(`Maps: ${facility.mapsLink}`, margin + 8, y)
+        if (facility.directions) {
+          doc.text(`Directions: ${facility.directions}`, margin + 8, y)
+        }
+        y += 6
+      })
+      y += 2
+    }
+
+    // Medications
+    if (diagnosis.medications && diagnosis.medications.length > 0) {
+      doc.setFont("helvetica", "bold")
+      doc.text("Recommended Medications:", margin + 4, y)
+      doc.setFont("helvetica", "normal")
+      y += 6
+      diagnosis.medications.forEach((med) => {
+        const medLines = doc.splitTextToSize(`• ${med.name}`, contentWidth)
+        medLines.forEach((line: string) => {
+          doc.text(line, margin + 8, y)
+          y += 6
+        })
+        if (med.links && med.links.length > 0) {
+          med.links.forEach((link) => {
+            doc.text(`Order from: ${link.provider} (${link.url})`, margin + 8, y)
+            y += 6
+          })
+        }
+        y += 2
+      })
+    }
+
+    // Doctor Video Script
+    if (diagnosis.doctorVideoScript) {
+      doc.setFont("helvetica", "bold")
+      doc.text("Doctor Video Script:", margin + 4, y)
+      doc.setFont("helvetica", "normal")
+      y += 6
+      const scriptLines = doc.splitTextToSize(diagnosis.doctorVideoScript, contentWidth)
+      scriptLines.forEach((line: string) => {
+        doc.text(line, margin + 8, y)
+        y += 6
+      })
+      y += 2
+    }
+
     // Footer
     doc.setDrawColor(200, 200, 200)
     doc.setLineWidth(0.3)
@@ -199,6 +297,59 @@ export function DiagnosisModal({ isOpen, onClose, diagnosis, error }: DiagnosisM
           <DialogDescription>{t("aiDiagnosisDesc")}</DialogDescription>
         </DialogHeader>
 
+        {/* Render markdown sections as cards if markdown is present */}
+        {!diagnosis && diagnosisMarkdown && markdownSections && (
+          <>
+            {markdownSections.diagnosis && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Diagnosis, Severity, and Recommendations</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownSections.diagnosis}</ReactMarkdown>
+                </CardContent>
+              </Card>
+            )}
+            {markdownSections.facilities && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Nearby Facilities</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownSections.facilities}</ReactMarkdown>
+                </CardContent>
+              </Card>
+            )}
+            {markdownSections.medications && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Suggested Medications</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownSections.medications}</ReactMarkdown>
+                </CardContent>
+              </Card>
+            )}
+            {markdownSections.videoScript && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>AI Video Script</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdownSections.videoScript}</ReactMarkdown>
+                </CardContent>
+              </Card>
+            )}
+            {/* Fallback: if no sections parsed, render all markdown */}
+            {!markdownSections.diagnosis && !markdownSections.facilities && !markdownSections.medications && !markdownSections.videoScript && (
+              <div className="prose max-w-none">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>{diagnosisMarkdown}</ReactMarkdown>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Existing logic for JSON diagnosis ... */}
         {!diagnosis && !error && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -214,7 +365,7 @@ export function DiagnosisModal({ isOpen, onClose, diagnosis, error }: DiagnosisM
           </div>
         )}
         {diagnosis && (
-          <div className="space-y-6">
+          <>
             {/* Main Diagnosis */}
             <Card>
               <CardHeader>
@@ -301,8 +452,73 @@ export function DiagnosisModal({ isOpen, onClose, diagnosis, error }: DiagnosisM
               </Card>
             )}
 
+            {/* Nearby Facilities Section */}
+            {diagnosis.nearbyFacilities && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Nearby Hospitals, Clinics, and Pharmacies</CardTitle>
+                  <CardDescription>Facilities near your location with directions and contact info.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {diagnosis.nearbyFacilities.map((facility, idx) => (
+                      <li key={idx} className="mb-2">
+                        <div className="font-semibold">{facility.name} <span className="text-xs text-gray-500">({facility.type})</span></div>
+                        <div className="text-sm">{facility.address}</div>
+                        <div className="text-sm">Phone: <a href={`tel:${facility.phone}`} className="text-blue-600 underline">{facility.phone}</a></div>
+                        <div className="text-sm mt-1">
+                          <a href={facility.mapsLink} target="_blank" rel="noopener noreferrer" className="text-blue-700 underline">Google Maps Directions</a>
+                        </div>
+                        {facility.directions && (
+                          <div className="text-xs text-gray-700 mt-1">Directions: {facility.directions}</div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+            {/* Medications Section */}
+            {diagnosis.medications && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recommended Medications</CardTitle>
+                  <CardDescription>Order online from trusted pharmacies.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {diagnosis.medications.map((med, idx) => (
+                      <li key={idx} className="mb-2">
+                        <span className="font-semibold">{med.name}</span>
+                        {med.links && med.links.length > 0 && (
+                          <span className="ml-2 text-xs">[
+                            {med.links.map((link, lidx) => (
+                              <a key={lidx} href={link.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline ml-1">{link.provider}</a>
+                            ))}
+                          ]</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+            {/* Doctor Video Script Section */}
+            {/* {diagnosis.doctorVideoScript && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Doctor Video Script</CardTitle>
+                  <CardDescription>Share this script with your AI video assistant.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <pre className="whitespace-pre-wrap text-sm bg-gray-50 p-3 rounded border border-gray-200">{diagnosis.doctorVideoScript}</pre>
+                </CardContent>
+              </Card>
+            )} */}
+
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            {/* Always show action buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 mt-6">
               <Link href="/patient/appointments">
                 <Button className="flex-1 px-12">
                   <Phone className="h-4 w-4 mr-2" />
@@ -313,12 +529,17 @@ export function DiagnosisModal({ isOpen, onClose, diagnosis, error }: DiagnosisM
                 variant="outline"
                 className="flex-1 px-12"
                 onClick={handleSaveToRecords}
-                disabled={saveStatus === "saving" || saveStatus === "saved"}
+                disabled={!diagnosis || saveStatus === "saving" || saveStatus === "saved"}
               >
                 <FileText className="h-4 w-4 mr-2" />
                 {saveStatus === "saved" ? t("savedToRecords") : t("saveToRecords")}
               </Button>
-              <Button variant="outline" className="flex-1 px-12" onClick={handleDownloadPDF}>
+              <Button
+                variant="outline"
+                className="flex-1 px-12"
+                onClick={handleDownloadPDF}
+                disabled={!diagnosis}
+              >
                 <Download className="h-4 w-4 mr-2" />
                 {t("downloadReport")}
               </Button>
@@ -338,7 +559,7 @@ export function DiagnosisModal({ isOpen, onClose, diagnosis, error }: DiagnosisM
             {saveStatus === "error" && (
               <div className="text-red-600 text-sm mt-2">{t("saveToRecordsError")}</div>
             )}
-          </div>
+          </>
         )}
       </DialogContent>
     </Dialog>

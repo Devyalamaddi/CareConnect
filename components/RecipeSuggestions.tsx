@@ -31,13 +31,15 @@ export default function RecipeSuggestions({ className }: RecipeSuggestionsProps)
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentMeal, setCurrentMeal] = useState('');
+  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [allergies, setAllergies] = useState<string[]>([]);
 
   const getMealType = (): string => {
     const hour = new Date().getHours();
     if (hour < 10) return 'breakfast';
-    if (hour < 15) return 'lunch';
-    if (hour < 18) return 'dinner';
-    return 'dinner'; // Default to dinner for late hours
+    if (hour < 16) return 'lunch';
+    if (hour < 18) return 'snack';
+    return 'dinner';
   };
 
   const getMealDisplayName = (meal: string): string => {
@@ -69,7 +71,7 @@ export default function RecipeSuggestions({ className }: RecipeSuggestionsProps)
 2. Follow traditional or modern **Indian cuisine styles**.
 3. Include **budget classification**: "Low", "Medium", or "Costly".
 4. Provide concise **Health Benefits**, **Ingredients**, and **Step-by-step Instructions**.
-5. Use ingredients commonly found in Indian kitchens or easily available in Indian markets.
+5. Use ingredients(have to be in listed ingredients: ${ingredients})) commonly found in Indian kitchens or easily available in Indian markets.(NOte: keep in mind about allergires also, make sure to provide the recipes that do not contain the listed allergies: ${allergies.join(', ')})
 6. Are categorized for **${mealType}** only.
 7. Output must be structured for rendering in frontend UI.
 8. **AVOID chicken-related recipes unless the health condition specifically indicates protein deficiency**.
@@ -79,6 +81,8 @@ export default function RecipeSuggestions({ className }: RecipeSuggestionsProps)
 Here is the input you will get:
 Health Condition: ${disease}
 Current Meal Time: ${mealType}
+Ingredients: ${ingredients.join(', ')}
+Allergies: ${allergies.join(', ')}
 
 ---
 
@@ -190,6 +194,32 @@ Make sure the recipes are practical, healthy, and specifically beneficial for ${
               placeholder={t('healthConditionPlaceholder')}
               value={disease}
               onChange={(e) => setDisease(e.target.value)}
+              className="w-full"
+            />
+          </div>
+          <div className="flex-1">
+            <Label htmlFor="ingredients" className="text-sm font-medium text-gray-700 mb-2 block">
+              {t('ingredients')} ({t('commaSeparated')})
+            </Label>
+            <Input
+              id="ingredients"
+              type="text"
+              placeholder={t('ingredientsPlaceholder')}
+              value={ingredients.join(', ')}
+              onChange={(e) => setIngredients(e.target.value.split(',').map(item => item.trim()).filter(item => item.length > 0))}
+              className="w-full"
+            />
+          </div>
+          <div className="flex-1">
+            <Label htmlFor="allergies" className="text-sm font-medium text-gray-700 mb-2 block">
+              {t('allergies')} ({t('commaSeparated')})
+            </Label>
+            <Input
+              id="allergies"
+              type="text"
+              placeholder={t('allergiesPlaceholder')}
+              value={allergies.join(', ')}
+              onChange={(e) => setAllergies(e.target.value.split(',').map(item => item.trim()).filter(item => item.length > 0))}
               className="w-full"
             />
           </div>

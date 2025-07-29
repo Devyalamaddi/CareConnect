@@ -1,5 +1,11 @@
 "use client"
 
+declare global {
+  interface Window {
+    loadAgent: (config: { agentId: string; xApiKey: string; variables: Record<string, string> }) => void;
+  }
+}
+
 import type { ReactNode } from "react"
 import { Button } from "@/components/ui/button"
 import { Home, FileText, MessageSquare, Calendar, LogOut, Plus, Bot, MapPin, Pill, Activity, AlarmClock, SoupIcon, Menu, X, Target, Scan, BicepsFlexed, Dumbbell } from "lucide-react"
@@ -46,18 +52,47 @@ export function PatientLayout({ children }: PatientLayoutProps) {
   }, [pathname, router])
 
   // Inject OmniDimension web widget script
-  useEffect(() => {
-    if (!document.getElementById("omnidimension-web-widget")) {
-      const script = document.createElement("script")
-      script.id = "omnidimension-web-widget"
-      script.async = true
-      script.src = "https://backend.omnidim.io/web_widget.js?secret_key=65e1ca056af208664a78c4660fe44972"
-      document.body.appendChild(script)
-      return () => {
-        if (script.parentNode) script.parentNode.removeChild(script)
-      }
+  // Inject DesiVocal Agent script
+useEffect(() => {
+  const loadAgentsCdn = (version: string, callback: () => void) => {
+    const cssId = "desivocal-style"
+    const jsId = "desivocal-script"
+
+    if (!document.getElementById(cssId)) {
+      const cssLink = document.createElement("link")
+      cssLink.id = cssId
+      cssLink.rel = "stylesheet"
+      cssLink.type = "text/css"
+      cssLink.href = `https://cdn.jsdelivr.net/npm/@desivocal/agents-cdn@${version}/dist/style.css`
+      document.head.appendChild(cssLink)
     }
-  }, [])
+
+    if (!document.getElementById(jsId)) {
+      const jsScript = document.createElement("script")
+      jsScript.id = jsId
+      jsScript.type = "text/javascript"
+      jsScript.src = `https://cdn.jsdelivr.net/npm/@desivocal/agents-cdn@${version}/dist/dv-agent.es.js`
+      jsScript.onload = () => callback()
+      document.head.appendChild(jsScript)
+    } else {
+      // Already loaded, invoke directly
+      callback()
+    }
+  }
+
+  loadAgentsCdn("1.0.3", () => {
+    if (typeof window.loadAgent === "function") {
+      window.loadAgent({
+        agentId: "39ee043e-9259-4be9-a16b-311d8f3b7610",
+        xApiKey: "849b0b44-454f-473a-ab96-938836e1f744",
+        variables: { callee_name: "CALLEE_NAME" },
+      })
+    } else {
+      console.warn("DesiVocal agent script loaded but `loadAgent` not found.")
+    }
+  })
+}, [])
+
 
   const navigation = [
     { name: t("dashboard"), href: "/patient/dashboard", icon: Home },
@@ -65,13 +100,13 @@ export function PatientLayout({ children }: PatientLayoutProps) {
     { name: t("medReminder"), href: "/patient/med-reminder", icon: AlarmClock },
     { name: t("postOpFollowup"), href: "/patient/postop-followup", icon: Activity },
     { name: t("recipes"), href: "/patient/recipes", icon: SoupIcon },
-    { name: t("scanAnalysis"), href: "/patient/diagnosys", icon: Scan },
-    { name: t("healthFitnessPlan"), href: "/patient/health-plan", icon: Dumbbell },
+    // { name: t("scanAnalysis"), href: "/patient/diagnosys", icon: Scan },
+    // { name: t("healthFitnessPlan"), href: "/patient/health-plan", icon: Dumbbell },
     { name: t("workout"), href: "/patient/workout", icon: BicepsFlexed },
     { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
     { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
-    { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
-    { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
+    // { name: t("aiPrescriptions"), href: "/patient/ai-prescriptions", icon: Bot },
+    // { name: t("prescriptions"), href: "/patient/prescriptions", icon: Pill },
     { name: t("medicalRecords"), href: "/patient/records", icon: FileText },
     { name: t("goals"), href: "/patient/goals", icon: Target },
     // { name: t("chat"), href: "/patient/chat", icon: MessageSquare },
@@ -201,7 +236,7 @@ export function PatientLayout({ children }: PatientLayoutProps) {
       </div>
       {/* Emergency SOS Button - fixed position */}
       <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}>
-        <EmergencySOSButton />
+        {/* <EmergencySOSButton /> */}
       </div>
     </div>
   )

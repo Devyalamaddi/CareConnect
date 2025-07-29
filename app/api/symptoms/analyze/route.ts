@@ -3,52 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   // Check if the request is multipart (image upload)
   const contentType = req.headers.get("content-type") || "";
-  if (contentType.includes("multipart/form-data")) {
-    // Image-based analysis
-    const formData = await req.formData();
-    const file = formData.get("file") as File | null;
-    if (!file) {
-      return NextResponse.json({ error: "No file uploaded" }, { status: 400 });
-    }
-    const arrayBuffer = await file.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const prompt =
-      "You are a highly accurate medical AI. Analyze the attached medical scan (X-ray or MRI) and provide a structured, patient-friendly report. " +
-      "Your response should include: 1) The most likely condition, 2) Confidence (0-100), 3) Severity (mild/moderate/severe), 4) Short description, " +
-      "5) Recommendations, 6) When to seek care, 7) Follow-up advice. Respond in English and also provide a Hindi translation. " +
-      "If you cannot analyze the image, explain why.";
-    const apiKey = process.env.GEMINI_API_KEY;
-    const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
-    const body = {
-      contents: [
-        {
-          parts: [
-            { text: prompt },
-            { inlineData: { mimeType: "image/jpeg", data: base64 } },
-          ],
-        },
-      ],
-    };
-    try {
-      const headers = new Headers();
-      headers.set("Content-Type", "application/json");
-      if (apiKey) headers.set("x-goog-api-key", apiKey);
-      const response = await fetch(url, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(body),
-      });
-      const data = await response.json();
-      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
-      return NextResponse.json({ analysis: text });
-    } catch (error) {
-      return NextResponse.json({ error: "Failed to analyze scan." }, { status: 500 });
-    }
-  } else {
-    // Text-based analysis (existing flow)
-    const { symptoms, additionalInfo } = await req.json();
-    const prompt = `
-You are a highly accurate medical assistant. Analyze the following symptoms and provide a structured JSON diagnosis and Indian-style home remedies/cures. Your response MUST be a valid JSON object with the following fields:
+    const { symptoms, additionalInfo, location, prompt: customPrompt } = await req.json();
+    // Enhanced prompt for AI
+    const enhancedPrompt =`
+You are a highly accurate medical assistant. Analyze the following symptoms and provide a structured JSON diagnosis and Indian-style home remedies/cures. Respond with ONLY a valid JSON object, no markdown, no explanation, no extra text, no code block, no comments. The response must start with { and end with }. Your response MUST be a valid JSON object with the following fields:
 
 {
   "condition": string, // Name of the most likely condition
@@ -61,19 +19,39 @@ You are a highly accurate medical assistant. Analyze the following symptoms and 
     "recommended": boolean, // Whether follow-up is recommended
     "timeframe": string, // Suggested timeframe for follow-up
     "reason": string // Reason for follow-up
-  }
+  },
+  "nearbyFacilities": [
+    {
+      "name": string, // Facility name
+      "type": "hospital" | "clinic" | "pharmacy", // Type of facility
+      "address": string, // Address
+      "phone": string, // Phone number
+      "mapsLink": string, // Google Maps directions link from the user's location
+      "directions": string // Step-by-step driving directions (road to road, turn by turn)
+    }
+  ],
+  "medications": [
+    {
+      "name": string, // Medication name
+      "links": [
+        { "provider": string, "url": string } // e.g. Apollo, Amazon, Medlife
+      ]
+    }
+  ],how 
+  "doctorVideoScript": string // A positive, doctor-tone script (max 2 min) briefing about the condition, 3 hospitals, 1 pharmacy (with durations), and a few medications
 }
 
 Symptoms: ${symptoms}
 Additional Info: ${additionalInfo || "None"}
+Location: ${location ? JSON.stringify(location) : "Not available"}
 
-Respond ONLY with the JSON object, no extra text or explanation.`;
+Your tasks:\n1. Analyze the symptoms and provide a likely diagnosis, severity, and recommendations.\n2. List at least 3 hospitals, 2 clinics, and 1 pharmacy near the given location. For each, provide: name, address, phone, Google Maps link, and step-by-step directions.\n3. Suggest a list of medications that can be purchased at Apollo Pharmacy or online (Amazon, Medlife, etc.), with direct order links.\n4. Write a positive, doctor-tone script for an AI video (max 2 min) that briefs about the condition, mentions 3 nearby hospitals, 1 pharmacy (with estimated travel durations), and lists a few recommended medications.\n\nRespond ONLY with the JSON object, no extra text or explanation.`;
     const apiKey = process.env.GEMINI_API_KEY;
     const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
     const body = {
       contents: [
         {
-          parts: [{ text: prompt }],
+          parts: [{ text: enhancedPrompt }],
         },
       ],
     };
@@ -86,7 +64,9 @@ Respond ONLY with the JSON object, no extra text or explanation.`;
         headers,
         body: JSON.stringify(body),
       });
+      console.log(response);
       const data = await response.json();
+      console.log("DATAA:",data.candidates[0].content.parts[0].text);
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
       // Try to parse the JSON from the model's response
       let diagnosis = null;
@@ -102,10 +82,10 @@ Respond ONLY with the JSON object, no extra text or explanation.`;
       if (diagnosis) {
         return NextResponse.json({ diagnosis });
       } else {
-        return NextResponse.json({ error: "Could not parse diagnosis JSON.", raw: text }, { status: 200 });
+        // Fallback: return markdown if present
+        return NextResponse.json({ error: "Could not parse diagnosis JSON.", diagnosisMarkdown: text, raw: text }, { status: 200 });
       }
     } catch (error) {
       return NextResponse.json({ error: "Failed to analyze symptoms." }, { status: 500 });
     }
   }
-} 

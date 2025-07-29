@@ -1,26 +1,53 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Change this to your deployed backend URL in production
-const PY_BACKEND_URL = process.env.PY_BACKEND_URL || 'http://localhost:5000';
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { phoneNumber } = body
+    const {
+      phoneNumber = '+918019227239',
+      patientName = 'Devendra'
+    } = body
 
-    if (!phoneNumber) {
-      return NextResponse.json({ error: 'Phone number is required' }, { status: 400 })
+    if (!phoneNumber || !patientName) {
+      return NextResponse.json(
+        { error: 'Phone number and patient name are required' },
+        { status: 400 }
+      )
     }
 
-    const res = await fetch(`${PY_BACKEND_URL}/call-patient`, {
+    const apiKey = process.env.RINGG_API_KEY
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'API key is not configured' },
+        { status: 500 }
+      )
+    }
+
+    const payload = {
+      name: patientName,
+      mobile_number: phoneNumber,
+      agent_id: '59585a20-5726-41ff-a89b-0078ea892f44', 
+      from_number: '+918035736726',
+    }
+
+    const res = await fetch('https://prod-api.ringg.ai/ca/api/v0/calling/outbound/individual', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-    const data = await res.json();
-    return NextResponse.json(data);
-  }    catch (error) {
-    console.error('API error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-KEY': apiKey
+      },
+      body: JSON.stringify(payload)
+    })
+
+    const data = await res.json()
+
+    if (!res.ok) {
+      return NextResponse.json({ error: data?.error?.message || 'Call initiation failed' }, { status: res.status })
+    }
+
+    return NextResponse.json(data)
+  } catch (error) {
+    console.error('Voice call API error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
-} 
+}

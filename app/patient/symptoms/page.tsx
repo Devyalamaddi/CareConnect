@@ -38,6 +38,7 @@ export default function SymptomsPage() {
   const [diagnosis, setDiagnosis] = useState<any | null>(null)
   const [diagnosisError, setDiagnosisError] = useState<string | null>(null)
   const [imageAnalysis, setImageAnalysis] = useState<string | null>(null)
+  const [diagnosisMarkdown, setDiagnosisMarkdown] = useState<string | null>(null)
 
   const commonSymptoms = [
     "Headache",
@@ -95,65 +96,74 @@ export default function SymptomsPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!validateForm()) return
-    setIsSubmitting(true)
-    setDiagnosis(null)
-    setDiagnosisError(null)
-    setImageAnalysis(null)
+    e.preventDefault();
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+    setDiagnosis(null);
+    setDiagnosisError(null);
+    setImageAnalysis(null);
+    setDiagnosisMarkdown(null);
+
+    // 1. Get user location
+    let userLocation = null;
     try {
-      if (uploadedImages.length > 0) {
-        // Send first image for analysis
-        const formDataToSend = new FormData()
-        formDataToSend.append("file", uploadedImages[0])
-        const response = await fetch('/api/symptoms/analyze', {
-          method: 'POST',
-          body: formDataToSend,
-        })
-        const data = await response.json()
-        if (data.analysis) {
-          setImageAnalysis(data.analysis)
-          setDiagnosisError(null)
-        } else {
-          setImageAnalysis(null)
-          setDiagnosisError(data.error || 'Unknown error')
-        }
+      userLocation = await new Promise<{ lat: number; lng: number }>((resolve, reject) => {
+        if (!navigator.geolocation) return reject('Geolocation not supported');
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+          (err) => reject(err)
+        );
+      });
+    } catch (err) {
+      // If location denied, continue without location
+      userLocation = null;
+    }
+
+    // 2. Build enhanced AI prompt
+    const symptomsText = formData.symptoms || selectedSymptoms.join(", ");
+    const additionalInfo = formData.additionalInfo;
+    const locationText = userLocation ? `Latitude: ${userLocation.lat}, Longitude: ${userLocation.lng}` : 'Location not available';
+
+    const aiPrompt = `You are a virtual healthcare assistant.\n\nPatient symptoms: ${symptomsText}\nAdditional info: ${additionalInfo}\nPatient location: ${locationText}\n\nYour tasks:\n1. Analyze the symptoms and provide a likely diagnosis, severity, and recommendations.\n2. List at least 3 hospitals, 2 clinics, and 1 pharmacy near the given location. For each, provide:\n   - Name, address, phone number\n   - Google Maps directions link from the user's location\n   - Step-by-step driving directions (road to road, turn by turn)\n3. Suggest a list of medications that can be purchased at Apollo Pharmacy or online (Amazon, Medlife, etc.), with direct order links.\n4. Write a positive, doctor-tone script for an AI video (max 2 min) that:\n   - Briefs about the condition\n   - Mentions 3 nearby hospitals, 1 pharmacy (with estimated travel durations)\n   - Lists a few recommended medications.\n   - The script should be friendly, reassuring, and informative.\n\nFormat your response in clear sections: Diagnosis, Nearby Facilities, Medications, Doctor Video Script.`;
+
+    try {
+      const response = await fetch('/api/symptoms/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: aiPrompt,
+          symptoms: symptomsText,
+          additionalInfo,
+          location: userLocation,
+        }),
+      });
+      const data = await response.json();
+      if (data.diagnosis) {
+        setDiagnosis(data.diagnosis);
+        setDiagnosisError(null);
+        setDiagnosisMarkdown(null);
+        // Save the exact API response to localStorage
+        const record = {
+          id: Date.now().toString(),
+          source: 'symptoms',
+          response: data,
+          date: new Date().toISOString()
+        };
+        saveRecordToLocalStorage(record);
       } else {
-        // Text-based flow
-        const response = await fetch('/api/symptoms/analyze', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            symptoms: formData.symptoms || selectedSymptoms.join(", "),
-            additionalInfo: formData.additionalInfo,
-          }),
-        })
-        const data = await response.json()
-        if (data.diagnosis) {
-          setDiagnosis(data.diagnosis)
-          setDiagnosisError(null)
-          // Save the exact API response to localStorage
-          const record = {
-            id: Date.now().toString(),
-            source: 'symptoms',
-            response: data,
-            date: new Date().toISOString()
-          }
-          saveRecordToLocalStorage(record)
-        } else {
-          setDiagnosis(null)
-          setDiagnosisError(data.error || 'Unknown error')
-        }
+        setDiagnosis(null);
+        setDiagnosisError(data.error || 'Unknown error');
+        setDiagnosisMarkdown(data.diagnosisMarkdown || null);
       }
     } catch {
-      setDiagnosis(null)
-      setImageAnalysis(null)
-      setDiagnosisError('Error analyzing symptoms.')
+      setDiagnosis(null);
+      setImageAnalysis(null);
+      setDiagnosisError('Error analyzing symptoms.');
     } finally {
-      setIsSubmitting(false)
-      setShowDiagnosis(true)
+      setIsSubmitting(false);
+      setShowDiagnosis(true);
     }
-  }
+  };
 
   const initiateVoiceAICall = async () => {
     if (!formData.phoneNumber.trim()) {
@@ -497,7 +507,7 @@ export default function SymptomsPage() {
         {imageAnalysis ? (
           <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} diagnosis={null} error={imageAnalysis} />
         ) : (
-          <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} diagnosis={diagnosis} error={diagnosisError} />
+          <DiagnosisModal isOpen={showDiagnosis} onClose={() => setShowDiagnosis(false)} diagnosis={diagnosis} error={diagnosisError} diagnosisMarkdown={diagnosisMarkdown} />
         )}
       </div>
     </PatientLayout>

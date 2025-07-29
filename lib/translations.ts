@@ -472,11 +472,11 @@ export const translations = {
     breakfast: "Breakfast",
     lunch: "Lunch",
     dinner: "Dinner",
-    recipes: "Recipes",
+    recipes: "Diet Assistant",
     postOpFollowup: "Post-Op Follow-up",
     postOpFollowupDesc: "Daily recovery check-in after surgery",
     healthFitnessPlan: "Health & Fitness Plan",
-    workout: "Workout",
+    workout: "Workout Trainer",
 
     // OmniDim Voice Appointment Booking
     voiceAppointmentBooking: "Voice Appointment Booking",
