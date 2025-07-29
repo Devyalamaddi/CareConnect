@@ -34,7 +34,7 @@ export function DoctorLayout({ children }: DoctorLayoutProps) {
     { name: t("dashboard"), href: "/doctor/dashboard", icon: Home },
     { name: t("patients"), href: "/doctor/patients", icon: Users },
     { name: t("appointments"), href: "/doctor/appointments", icon: Calendar },
-    { name: t("chat"), href: "/doctor/chat", icon: MessageSquare },
+    // { name: t("chat"), href: "/doctor/chat", icon: MessageSquare },
     { name: t("reports"), href: "/doctor/reports", icon: FileText },
     { name: t("analytics"), href: "/doctor/analytics", icon: Activity },
   ]

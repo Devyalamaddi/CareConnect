@@ -101,7 +101,7 @@ useEffect(() => {
     { name: t("postOpFollowup"), href: "/patient/postop-followup", icon: Activity },
     { name: t("recipes"), href: "/patient/recipes", icon: SoupIcon },
     { name: t("scanAnalysis"), href: "/patient/diagnosys", icon: Scan },
-    // { name: t("healthFitnessPlan"), href: "/patient/health-plan", icon: Dumbbell },
+    { name: t("healthFitnessPlan"), href: "/patient/health-plan", icon: Dumbbell },
     { name: t("workout"), href: "/patient/workout", icon: BicepsFlexed },
     { name: t("appointments"), href: "/patient/appointments", icon: Calendar },
     { name: t("nearbyHospitals"), href: "/patient/hospitals", icon: MapPin },
@@ -236,7 +236,7 @@ useEffect(() => {
       </div>
       {/* Emergency SOS Button - fixed position */}
       <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000 }}>
-        {/* <EmergencySOSButton /> */}
+        <EmergencySOSButton />
       </div>
     </div>
   )

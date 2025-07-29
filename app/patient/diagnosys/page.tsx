@@ -340,7 +340,7 @@ const ScanAnalysisPage = () => {
           >
             <svg className="w-12 h-12 text-blue-400 mb-2 group-hover:text-blue-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 16v-8m0 0l-4 4m4-4l4 4m-8 4h8a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v5a4 4 0 0 0 4 4z" /></svg>
             <span className="text-blue-700 font-medium">Click or drag & drop to upload X-ray or MRI image</span>
-            <span className="text-xs text-blue-400 mt-1">(Accepted: .jpg, .jpeg, .png)</span>
+            <span className="text-xs text-blue-400 mt-1">(Accepted: .jpg, .jpeg, .png, .dcm, .nii)</span>
             <input
               id="scan-upload"
               type="file"
