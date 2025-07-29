@@ -1068,7 +1068,7 @@ export default function HospitalsPage() {
           </CardContent>
         </Card>
 
-        <div className="space-y-6 mt-12">
+        <div className="space-y-6 mt-12 pt-12">
           {/* Enhanced Map with Offline Support - Full Width */}
           <Card>
             <CardHeader>
