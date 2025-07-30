@@ -221,7 +221,7 @@ export default function HealthPlanPage() {
                     <Input name="name" placeholder="Name" value={form.name} onChange={handleChange} required />
                     <Input name="age" type="number" placeholder="Age" value={form.age} onChange={handleChange} required />
                     <Input name="weight" type="number" placeholder="Weight (kg)" value={form.weight} onChange={handleChange} required />
-                    <Input name="height" type="number" placeholder="Height (cm)" value={form.height} onChange={handleChange} required />
+                    <Input name="height" type="number" placeholder="Height (ft)" value={form.height} onChange={handleChange} required />
                     <Select value={form.gender} onValueChange={v => handleSelect("gender", v)}>
                       <SelectTrigger><SelectValue placeholder="Gender" /></SelectTrigger>
                       <SelectContent>
