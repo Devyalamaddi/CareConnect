@@ -518,7 +518,7 @@ export default function DoctorAnalytics() {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={mockAnalytics.trends.consultationsThisMonth}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
+                    <XAxis dataKey="date" /> 
                     <YAxis />
                     <Tooltip formatter={(value) => `₹${value.toLocaleString()}`} />
                     <Bar dataKey="revenue" fill="#10b981" name="Weekly Revenue" />
