@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const apiKey = process.env.RINGG_API_KEY
+    const apiKey = process.env.RINGG_API_KEY2
     if (!apiKey) {
       return NextResponse.json(
         { error: 'API key is not configured' },
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     const payload = {
       name: patientName,
       mobile_number: phoneNumber,
-      agent_id: '59585a20-5726-41ff-a89b-0078ea892f44', 
+      agent_id: '8a206e82-4dca-4ea3-b5e4-082208a57c0f', 
       from_number: '+918035736726',
     }
 

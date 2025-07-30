@@ -53,45 +53,52 @@ export function PatientLayout({ children }: PatientLayoutProps) {
 
   // Inject OmniDimension web widget script
   // Inject DesiVocal Agent script
-useEffect(() => {
-  const loadAgentsCdn = (version: string, callback: () => void) => {
-    const cssId = "desivocal-style"
-    const jsId = "desivocal-script"
+ useEffect(() => {
+    const loadAgentsCdn = (version: string, callback: () => void) => {
+      const cssId = "desivocal-style"
+      const jsId = "desivocal-script"
 
-    if (!document.getElementById(cssId)) {
-      const cssLink = document.createElement("link")
-      cssLink.id = cssId
-      cssLink.rel = "stylesheet"
-      cssLink.type = "text/css"
-      cssLink.href = `https://cdn.jsdelivr.net/npm/@desivocal/agents-cdn@${version}/dist/style.css`
-      document.head.appendChild(cssLink)
+      if (!document.getElementById(cssId)) {
+        const cssLink = document.createElement("link")
+        cssLink.id = cssId
+        cssLink.rel = "stylesheet"
+        cssLink.type = "text/css"
+        cssLink.href = `https://cdn.jsdelivr.net/npm/@desivocal/agents-cdn@${version}/dist/style.css`
+        document.head.appendChild(cssLink)
+      }
+
+      if (!document.getElementById(jsId)) {
+        const jsScript = document.createElement("script")
+        jsScript.id = jsId
+        jsScript.type = "text/javascript"
+        jsScript.src = `https://cdn.jsdelivr.net/npm/@desivocal/agents-cdn@${version}/dist/dv-agent.es.js`
+        jsScript.onload = () => callback()
+        document.head.appendChild(jsScript)
+      } else {
+        callback()
+      }
     }
 
-    if (!document.getElementById(jsId)) {
-      const jsScript = document.createElement("script")
-      jsScript.id = jsId
-      jsScript.type = "text/javascript"
-      jsScript.src = `https://cdn.jsdelivr.net/npm/@desivocal/agents-cdn@${version}/dist/dv-agent.es.js`
-      jsScript.onload = () => callback()
-      document.head.appendChild(jsScript)
-    } else {
-      // Already loaded, invoke directly
-      callback()
-    }
-  }
+    loadAgentsCdn("1.0.3", () => {
+      if (typeof window.loadAgent === "function") {
+        // 🟢 First Agent
+        window.loadAgent({
+          agentId: "39ee043e-9259-4be9-a16b-311d8f3b7610",
+          xApiKey: "849b0b44-454f-473a-ab96-938836e1f744",
+          variables: { callee_name: "CALLEE_NAME" },
+        })
 
-  loadAgentsCdn("1.0.3", () => {
-    if (typeof window.loadAgent === "function") {
-      window.loadAgent({
-        agentId: "39ee043e-9259-4be9-a16b-311d8f3b7610",
-        xApiKey: "849b0b44-454f-473a-ab96-938836e1f744",
-        variables: { callee_name: "CALLEE_NAME" },
-      })
-    } else {
-      console.warn("DesiVocal agent script loaded but `loadAgent` not found.")
-    }
-  })
-}, [])
+        // 🟢 Second Agent (if needed simultaneously)
+        window.loadAgent({
+          agentId: "fd836412-73af-4748-a0b2-b9ff1ae64c66",
+          xApiKey: "755c3876-181c-473a-91f9-9da4228b4c58",
+          variables: { callee_name: "CALLEE_NAME" },
+        })
+      } else {
+        console.warn("DesiVocal agent script loaded but `loadAgent` not found.")
+      }
+    })
+  }, [])
 
 
   const navigation = [
