@@ -28,35 +28,42 @@ export default function PostOpFollowupPage() {
   const [callError, setCallError] = useState<string | null>(null)
 
   const handleVoiceAICall = async () => {
-    setIsCallInitiating(true)
-    setCallStatus("Initiating post-op follow-up call...")
-    setCallError(null)
-    try {
-      const response = await fetch("/api/postop-followup/voice-call", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phoneNumber,
-          patientName,
-          surgeryType,
-          daysPostOp
-        })
-      })
-      const data = await response.json()
-      if (data.success) {
-        setCallStatus("✅ Post-op follow-up call initiated successfully!")
-        setTimeout(() => setCallStatus(null), 5000)
-      } else {
-        setCallError(data.error || "Failed to initiate call")
-        setTimeout(() => setCallError(null), 5000)
-      }
-    } catch (err) {
-      setCallError("Error connecting to voice AI service")
+  setIsCallInitiating(true)
+  setCallStatus("Initiating post-op follow-up call...")
+  setCallError(null)
+
+  try {
+    const response = await fetch("https://api.bolna.ai/call", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer bn-2d224ea84894470c8e95a0503e8bd63f`, // ⚠️ exposed in frontend
+      },
+      body: JSON.stringify({
+        agent_id: "a13f1de7-6e39-4118-ad8b-7de3b7093a55", // ✅ post-op follow-up agent
+        recipient_phone_number: "+917981367685", 
+      }),
+    })
+
+    const data = await response.json()
+    console.log("Bolna.ai response:", data)
+
+    if (response.ok) {
+      setCallStatus("✅ Post-op follow-up call initiated successfully!")
+      setTimeout(() => setCallStatus(null), 5000)
+    } else {
+      setCallError(data.error || "Failed to initiate call")
       setTimeout(() => setCallError(null), 5000)
-    } finally {
-      setIsCallInitiating(false)
     }
+  } catch (err) {
+    console.error("Error connecting to voice AI service:", err)
+    setCallError("❌ Error connecting to voice AI service")
+    setTimeout(() => setCallError(null), 5000)
+  } finally {
+    setIsCallInitiating(false)
   }
+}
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
