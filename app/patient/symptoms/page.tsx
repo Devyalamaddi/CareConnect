@@ -166,43 +166,46 @@ export default function SymptomsPage() {
   };
 
   const initiateVoiceAICall = async () => {
-    if (!formData.phoneNumber.trim()) {
-      setErrors(prev => ({ ...prev, phoneNumber: "Phone number is required" }))
-      return
-    }
-
-    setIsCallInitiating(true)
-    setCallStatus("Initiating voice AI call...")
-
-    try {
-      const response = await fetch('/api/symptoms/voice-call', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phoneNumber: formData.phoneNumber,
-          patientName: "Demo Patient" // TODO: Get from user context
-        }),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
-        setCallStatus("✅ Voice AI call initiated successfully!")
-        setTimeout(() => setCallStatus(null), 5000)
-      } else {
-        setCallStatus(`❌ Failed to initiate call: ${data.error}`)
-        setTimeout(() => setCallStatus(null), 5000)
-      }
-    } catch (error) {
-      console.error('Error initiating voice AI call:', error)
-      setCallStatus("❌ Error connecting to voice AI service")
-      setTimeout(() => setCallStatus(null), 5000)
-    } finally {
-      setIsCallInitiating(false)
-    }
+  if (!formData.phoneNumber.trim()) {
+    setErrors(prev => ({ ...prev, phoneNumber: "Phone number is required" }))
+    return
   }
+
+  setIsCallInitiating(true)
+  setCallStatus("Initiating voice AI call...")
+
+  try {
+    const response = await fetch("https://api.bolna.ai/call", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer bn-2d224ea84894470c8e95a0503e8bd63f`, // ⚠️ exposed in frontend
+      },
+      body: JSON.stringify({
+        agent_id: "79d2bd65-dba4-488d-b695-64a5f77fb95b",
+        recipient_phone_number: "+917981367685",  
+      }),
+    })
+
+    const data = await response.json()
+    console.log("Bolna.ai response:", data)
+
+    if (response.ok) {
+      setCallStatus("✅ Voice AI call initiated successfully!")
+      setTimeout(() => setCallStatus(null), 5000)
+    } else {
+      setCallStatus(`❌ Failed to initiate call: ${data.error || "Unknown error"}`)
+      setTimeout(() => setCallStatus(null), 5000)
+    }
+  } catch (error) {
+    console.error("Error initiating voice AI call:", error)
+    setCallStatus("❌ Error connecting to voice AI service")
+    setTimeout(() => setCallStatus(null), 5000)
+  } finally {
+    setIsCallInitiating(false)
+  }
+}
+
 
   return (
     <PatientLayout>
