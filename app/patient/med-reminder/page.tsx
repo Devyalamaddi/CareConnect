@@ -71,37 +71,43 @@ export default function MedReminderPage() {
     // TODO: Notify caregiver if missed
   }
 
-  const handleDemoVoiceCall = async () => {
-    setIsCallInitiating(true)
-    setCallStatus("Initiating med-reminder voice call...")
-    setCallError(null)
-    try {
-      const response = await fetch("/api/med-reminder/voice-call", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phoneNumber: "+918019227239",
-          patientName: "Demo Patient",
-          medicineName: "Paracetamol",
-          dosage: "1 tablet",
-          reminderTime: "20:00"
-        })
-      })
-      const data = await response.json()
-      if (data.success) {
-        setCallStatus("✅ Med-reminder call initiated! (Call will hang up after 10 seconds)")
-        setTimeout(() => setCallStatus(null), 7000)
-      } else {
-        setCallError(data.error || "Failed to initiate call")
-        setTimeout(() => setCallError(null), 7000)
-      }
-    } catch (err) {
-      setCallError("Error connecting to voice AI service")
+ const handleDemoVoiceCall = async () => {
+  setIsCallInitiating(true)
+  setCallStatus("Initiating med-reminder voice call...")
+  setCallError(null)
+
+  try {
+    const response = await fetch("https://api.bolna.ai/call", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer bn-2d224ea84894470c8e95a0503e8bd63f`, // ⚠️ exposed in frontend
+      },
+      body: JSON.stringify({
+        agent_id: "db872035-1d39-4f3a-a945-5d112c02ef0e", // ✅ med-reminder agent
+        recipient_phone_number: "+917981367685",          // ✅ static demo number
+      }),
+    })
+
+    const data = await response.json()
+    console.log("Bolna.ai response:", data)
+
+    if (response.ok) {
+      setCallStatus("✅ Med-reminder call initiated! (Call will hang up after 10 seconds)")
+      setTimeout(() => setCallStatus(null), 7000)
+    } else {
+      setCallError(data.error || "Failed to initiate call")
       setTimeout(() => setCallError(null), 7000)
-    } finally {
-      setIsCallInitiating(false)
     }
+  } catch (err) {
+    console.error("Error connecting to voice AI service:", err)
+    setCallError("❌ Error connecting to voice AI service")
+    setTimeout(() => setCallError(null), 7000)
+  } finally {
+    setIsCallInitiating(false)
   }
+}
+
 
   // TODO: Integrate SMS/voice backend for reminders
 
