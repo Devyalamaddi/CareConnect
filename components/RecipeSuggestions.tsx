@@ -51,18 +51,27 @@ export default function RecipeSuggestions({ className }: RecipeSuggestionsProps)
     }
   };
 
+  let lastCall = 0;
+  const MIN_INTERVAL = 5000; 
+  
   const generateRecipes = async () => {
+    const now = Date.now();
+    if (now - lastCall < MIN_INTERVAL) {
+      toast.error("Please wait before generating recipes again.");
+      return;
+    }
+    lastCall = now;
+  
     if (!disease.trim()) {
       toast.error(t('pleaseEnterDisease'));
       return;
     }
-
+  
     setLoading(true);
     const mealType = getMealType();
     setCurrentMeal(mealType);
-
     try {
-      const genAI = new GoogleGenerativeAI("AIzaSyB59wiHoDdVlJHE77-pbPQ8ee_StswlAHQ");
+      const genAI = new GoogleGenerativeAI("AIzaSyBZtRTyqSWs5SRZD52Er0WRZydTbP0s1ao");
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
       const prompt = `You are a smart AI nutritionist focused on providing culturally relevant, healthy Indian ${mealType} recipes. A user will input a specific health condition, and your job is to recommend **3 structured ${mealType} recipes** that:
